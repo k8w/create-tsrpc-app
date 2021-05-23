@@ -1,0 +1,24 @@
+{
+  "name": "my-tsrpc-server",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "proto": "tsrpc proto -i src/shared/protocols -o src/shared/protocols/serviceProto.ts -n",
+    "api": "tsrpc api -i src/shared/protocols/serviceProto.ts -o src/api",
+    "dev": "onchange \"src/**/*.ts\" -i -k -- npx ts-node \"src/index.ts\"",
+    "build": "node scripts/build.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tsrpc": "^3.0.0-dev.6"
+  },
+  "devDependencies": {
+    "@types/node": "^15.6.0",
+    "onchange": "^7.1.0",
+    "ts-node": "^9.1.1",
+    "tsrpc-cli": "^2.0.0",
+    "typescript": "^4.2.4"
+  }
+}
