@@ -13,7 +13,7 @@ fs.rmSync('dist', { recursive: true, force: true });
 // Build TypeScript
 console.log('Start build TypeScript...');
 try {
-    child_process.execSync('node node_modules/.bin/tsc', { stdio: 'inherit' })
+    child_process.execSync('npx tsc', { stdio: 'inherit' })
 }
 catch (e) {
     console.error('TypeScript Compiled Error'.bgRed.white);
