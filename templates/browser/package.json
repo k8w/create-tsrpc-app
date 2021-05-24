@@ -1,0 +1,23 @@
+{
+  "name": "browser",
+  "version": "1.0.0",
+  "description": "TODO",
+  "private": "true",
+  "scripts": {
+    "dev": "webpack serve --mode=development",
+    "build": "webpack --mode=production"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.3.1",
+    "ts-loader": "^9.2.2",
+    "typescript": "^4.2.4",
+    "webpack": "^5.37.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "tsrpc-browser": "^3.0.0-dev.3"
+  }
+}
