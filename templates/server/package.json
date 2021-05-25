@@ -6,7 +6,7 @@
   "private": "true",
   "scripts": {
     "proto": "tsrpc proto -i src/shared/protocols -o src/shared/protocols/serviceProto.ts",
-    "sync": "shx rm -rf ../browser/src/shared && shx cp -rf src/shared ../browser/src/shared",
+    "sync": "shx rm -rf ../browser/src/shared && shx cp -rf src/shared ../client-browser/src/shared",
     "api": "tsrpc api -i src/shared/protocols/serviceProto.ts -o src/api",
     "dev": "onchange \"src/**/*.ts\" -i -k -- ts-node \"src/index.ts\"",
     "build": "shx rm -rf dist && tsc && shx cp package.json package-lock.json dist/"
