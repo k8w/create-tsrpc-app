@@ -1,0 +1,38 @@
+{
+  "name": "create-tsrpc-app",
+  "version": "0.1.0",
+  "description": "Quickly create TSRPC full-stack applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k8w/create-tsrpc-app.git"
+  },
+  "keywords": [
+    "tsrpc",
+    "tsrpc-cli",
+    "create",
+    "full-stack",
+    "rpc",
+    "tsbuffer",
+    "k8w",
+    "kingworks",
+    "protobuf",
+    "grpc"
+  ],
+  "author": "k8w",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/k8w/create-tsrpc-app/issues"
+  },
+  "homepage": "https://github.com/k8w/create-tsrpc-app#readme",
+  "devDependencies": {
+    "@types/inquirer": "^7.3.1",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "inquirer": "^8.1.0"
+  }
+}
