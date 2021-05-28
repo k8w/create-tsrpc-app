@@ -1,9 +1,8 @@
 import * as path from "path";
-import { HttpServer, WsServer } from "tsrpc";
-import { serviceProto } from "./shared/protocols/serviceProto";
+import { WsServer } from "tsrpc";
 
 // Create the Server
-let server = new HttpServer(serviceProto, {
+let server = new WsServer(serviceProto, {
     port: 3000,
     cors: '*'
 });

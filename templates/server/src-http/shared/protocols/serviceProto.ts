@@ -1,6 +1,9 @@
 import { ServiceProto } from 'tsrpc-proto';
 import { ReqHello, ResHello } from './PtlHello'
 
+// This is a template ServiceProto, which is automatically generated.
+// Delete it before generate your own's.
+
 export interface ServiceType {
     api: {
         "Hello": {
