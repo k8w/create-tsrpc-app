@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=375px, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TSRPC Browser</title>
 
     <style>
@@ -15,101 +15,137 @@
 
         body {
             background: #f7f7f7;
-            text-align: center;
-            padding: 20px;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+            align-items: center;
         }
 
-        .send,
-        .recv {
-            width: 300px;
-            height: 500px;
-            border-radius: 8px;
-            padding: 24px;
-            background: #fff;
+        .chatroom {
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+            box-sizing: border-box;
+            flex: 1;
+            border-radius: 10px;
+            background: #f2f2f2;
             border: solid #ccc 1px;
-            display: inline-block;
-            margin: 20px 20px 0 20px;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
 
-        .send>h2,
-        .recv>h2 {
+        .messages {
+            list-style: none;
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .messages>li {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: #fff;
+            padding: 20px;
+        }
+
+        .messages>li .name {
+            color: green;
+            font-weight: bold;
+        }
+
+        .messages>li .time {
+            color: gray;
+        }
+
+        .send {
+            flex: 0 0 auto;
+            /* padding: 10px 20px; */
+            border-top: 1px solid #ccc;
+        }
+
+        .send>.title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
             margin-bottom: 20px;
         }
 
-        #say-output,
-        #public-msg {
-            background: #f2f2f2;
-            border-radius: 8px;
-            overflow-y: auto;
-            padding: 16px;
-            text-align: left;
+        .send>.input-row {
+            display: flex;
+            line-height: 1.2em;
+            /* margin-bottom: 10px; */
         }
 
-        #say-output>p,
-        #public-msg>p {
-            font-size: 14px;
-            line-height: 1.5em;
-            margin-bottom: 14px;
+        .send>.input-row>label {
+            flex: 0 0 50px;
         }
 
-        #say-output {
-            height: 270px;
-        }
-
-        #public-msg {
-            height: 420px;
-        }
-
-        .send input {
-            border-radius: 99px;
-            padding: 8px 16px;
-            border: solid #ccc 1px;
-            width: 100%;
-            box-sizing: border-box;
+        .send>.input-row>input,
+        .send>.input-row>textarea {
+            flex: 0 1 100%;
             font-size: 16px;
-            text-align: center;
-            outline: none;
-            color: #333;
-        }
-
-        .send input:focus {
-            border-color: #333;
-        }
-
-        .send button {
-            border-radius: 99px;
-            width: 200px;
-            background: #333;
-            color: white;
-            font-size: 16px;
-            padding: 12px 0;
+            padding: 10px;
+            /* border-radius: 10px; */
             outline: none;
             border: none;
-            cursor: pointer;
+            resize: none;
         }
 
-        .send button:hover {
-            background: #666;
+        .send>.input-row>textarea {
+            height: 4rem;
+            border-top: 1px solid #ccc;
+        }
+
+        .send>.btn-send {
+            text-align: center;
+            font-size: 18px;
+            background: darkgreen;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            /* border-radius: 99px; */
+            /* margin-bottom: 40px; */
+        }
+
+        .send>.btn-send:hover {
+            background: green;
         }
     </style>
 </head>
 
 <body>
-    <h1>TSRPC Browser Example</h1>
-    <p style="color: #999; font-size: 14px; margin-top: 10px">Open console to see more details.</p>
+    <h1>TSRPC Chatroom</h1>
 
-    <div class="send">
-        <h2>Say Hello</h2>
-        <p style="color: #999; margin-bottom: 10px;">Your name</p>
-        <p><input type="text" id="input-name" /></p>
-        <p style="margin: 20px auto"><button id="btn-say">Say</button></p>
-        <div id="say-output"></div>
-    </div>
+    <div class="chatroom">
+        <ul class="messages">
+            <li class="other">
+                <div class="meta">
+                    <span class="name">King</span>
+                    <span class="time">00:09:14</span>
+                </div>
+                <div class="content">asdgasdgasdg</div>
+            </li>
+            <li class="self">
+                <div class="meta">
+                    <span class="name">King</span>
+                    <span class="time">00:09:14</span>
+                </div>
+                <div class="content">asdgasdgasdg</div>
+            </li>
+        </ul>
 
-    <div class="recv">
-        <h2>Public Channel</h2>
-        <div id="public-msg"></div>
+        <div class="send">
+            <div class="name input-row">
+                <input type="text" placeholder="请输入姓名..." />
+            </div>
+            <div class="content input-row">
+                <textarea placeholder="请输入消息内容..."></textarea>
+            </div>
+            <div class="btn-send">发 送</div>
+        </div>
     </div>
 </body>
 
