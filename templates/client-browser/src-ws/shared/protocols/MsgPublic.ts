@@ -1,4 +1,4 @@
-export interface MsgSystemNotice {
+export interface MsgPublic {
     content: string;
     time: Date;
 }

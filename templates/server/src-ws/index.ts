@@ -19,12 +19,12 @@ async function main() {
     server.start();
 };
 
-// Send `MsgSystemNotice`
-export function sendSystemNotice(content: string) {
-    server.broadcastMsg('SystemNotice', {
+// Send `MsgPublic`
+export async function sendPublicMsg(content: string) {
+    server.broadcastMsg('Public', {
         content: content,
         time: new Date()
-    })
+    });
 }
 
 main().catch(e => {

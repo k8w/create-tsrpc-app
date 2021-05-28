@@ -19,6 +19,6 @@
     "isolatedModules": true
   },
   "include": [
-    "src-http"
+    "src"
   ]
 }

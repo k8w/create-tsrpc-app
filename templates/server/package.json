@@ -12,7 +12,7 @@
     "build": "shx rm -rf dist && tsc && shx cp package.json package-lock.json dist/"
   },
   "dependencies": {
-    "tsrpc": "^3.0.0-dev.6"
+    "tsrpc": "^3.0.0-dev.9"
   },
   "devDependencies": {
     "@types/node": "^15.6.1",
