@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
-  "private": "true",
+  "private": true,
   "scripts": {
     "proto": "tsrpc proto -i src/shared/protocols -o src/shared/protocols/serviceProto.ts",
     "sync": "shx rm -rf ../browser/src/shared && shx cp -rf src/shared ../client-browser/src/shared",
@@ -11,8 +11,6 @@
     "dev": "onchange \"src/**/*.ts\" -i -k -- ts-node \"src/index.ts\"",
     "build": "shx rm -rf dist && tsc && shx cp package.json package-lock.json dist/"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "tsrpc": "^3.0.0-dev.6"
   },
