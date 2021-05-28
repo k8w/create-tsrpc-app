@@ -37,32 +37,50 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
         { name: 'NodeJS', value: 'node' },
         { name: '不创建客户端项目', value: 'none' },
     ], options.client);
+    let clientName = client === 'browser' ? '浏览器端' : client === 'wxapp' ? '小程序端' : '客户端';
 
     if (client === 'browser') {
         client = await select('请选择前端使用的框架：', [
+            { name: '无框架' + ' (仅含 webpack 基础配置)'.yellow, value: 'browser' },
             { name: 'React', value: 'react' },
             { name: 'Vue 2.x', value: 'vue2' },
             { name: 'Vue 3.x', value: 'vue3' },
-            { name: '无框架' + ' (仅含 webpack 基础配置)'.yellow, value: 'browser' },
         ]);
     }
 
     // features
-    let features = [
-        new inquirer.Separator(' = 服务端特性 = '),
+    let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
+    let featureChoices = platformClientFeatures.length ? [
+        new inquirer.Separator(' ===== 服务端 ===== '),
         ...serverFeatures,
-        new inquirer.Separator(' = 浏览器端特性 = '),
-        ...clientFeatures
-    ];
-    await inquirer.prompt([{
+        new inquirer.Separator(` ===== ${clientName} ===== `),
+        ...platformClientFeatures
+    ] : serverFeatures;
+    let features = (await inquirer.prompt([{
         type: 'checkbox',
-        message: 'sssss',
-        name: 'adsg',
-        choices: features,
-        pageSize: 20,
-    }])
+        message: '请按勾选需要的特性：',
+        name: 'features',
+        choices: featureChoices,
+        pageSize: 20
+    }], { features: options.features })).features as CreateOptions['features'];
+    if (!options.features) {
+        if (!(await inquirer.prompt({
+            type: 'confirm',
+            name: 'res',
+            message: '确认？',
+            default: true
+        })).res) {
+            console.log('已取消'.gray);
+            process.exit(-1);
+        }
+    }
 
-    return options as any;
+    return {
+        projectDir: projectDir,
+        server: server,
+        client: client,
+        features: features
+    };
 }
 
 export function getProjectName(projectDir: string) {
