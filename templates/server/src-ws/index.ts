@@ -1,10 +1,10 @@
 import * as path from "path";
 import { WsServer } from "tsrpc";
+import { serviceProto } from './shared/protocols/serviceProto';
 
 // Create the Server
 let server = new WsServer(serviceProto, {
-    port: 3000,
-    cors: '*'
+    port: 3000
 });
 
 // Entry function
@@ -18,6 +18,14 @@ async function main() {
     // Start the server
     server.start();
 };
+
+// Send `MsgSystemNotice`
+export function sendSystemNotice(content: string) {
+    server.broadcastMsg('SystemNotice', {
+        content: content,
+        time: new Date()
+    })
+}
 
 main().catch(e => {
     // Exit if any error during the startup
