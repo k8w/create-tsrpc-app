@@ -1,0 +1,35 @@
+{
+  "name": "browser",
+  "version": "1.0.0",
+  "description": "TODO",
+  "private": "true",
+  "scripts": {
+    "dev": "webpack serve --mode=development --open --stats minimal",
+    "build": "webpack --mode=production"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^17.0.8",
+    "@types/react-dom": "^17.0.5",
+    "copy-webpack-plugin": "^9.0.0",
+    "css-loader": "^5.2.6",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.3.1",
+    "img-loader": "^4.0.0",
+    "less": "^4.1.1",
+    "less-loader": "^9.0.0",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^9.2.2",
+    "typescript": "^4.3.2",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "tsrpc-browser": "^3.0.0-dev.5"
+  }
+}
