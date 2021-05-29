@@ -23,10 +23,7 @@ module.exports = {
                     loader: 'ts-loader',
                     options: {
                         compilerOptions: isProduction ? {
-                            "lib": [
-                                "dom",
-                                "es2015.promise"
-                            ],
+                            "lib": ["dom", "es2015.promise"],
                             "target": "es5",
                         } : undefined
                     }
@@ -34,7 +31,26 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-                test: /\.less$/, use: ['style-loader', 'css-loader',
+                test: /\.less$/,
+                exclude: /\.module\.less$/,
+                use: ['style-loader', 'css-loader', {
+                    loader: "less-loader",
+                    options: {
+                        lessOptions: {
+                            javascriptEnabled: true,
+                        }
+                    }
+                }]
+            },
+            {
+                test: /\.module\.less$/,
+                use: ['style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true
+                        }
+                    },
                     {
                         loader: "less-loader",
                         options: {
@@ -45,10 +61,44 @@ module.exports = {
                     }
                 ]
             },
-            { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-            { test: /\.(png|jpe?g|gif)$/, use: [{ loader: 'url-loader', options: { limit: 8192, esModule: false } }, 'img-loader'] }, // 内联 base64 URLs, 限定 <=8k 的图片, 其他的用 URL
-            { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader", options: { esModule: false } },
-            { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader", options: { esModule: false } }
+            {
+                test: /\.css$/,
+                exclude: /\.module\.css$/,
+                use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.module\.css$/,
+                use: ['style-loader', {
+                    loader: 'css-loader',
+                    options: {
+                        modules: true
+                    }
+                }]
+            },
+            {
+                test: /\.(png|jpe?g|gif)$/,
+                use: [{
+                    loader: 'url-loader',
+                    options: {
+                        limit: 8192, // 内联 base64 URLs, 限定 <=8k 的图片, 其他的用 URL
+                        esModule: false
+                    }
+                }, 'img-loader']
+            },
+            {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: "file-loader",
+                options: {
+                    esModule: false
+                }
+            },
+            {
+                test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: "file-loader",
+                options: {
+                    esModule: false
+                }
+            }
         ]
     },
     plugins: [
@@ -59,9 +109,7 @@ module.exports = {
                 toType: 'dir',
                 globOptions: {
                     gitignore: true,
-                    ignore: [
-                        path.resolve(__dirname, 'public/index.html')
-                    ]
+                    ignore: [path.resolve(__dirname, 'public/index.html')]
                 },
                 noErrorOnMissing: true
             }]
