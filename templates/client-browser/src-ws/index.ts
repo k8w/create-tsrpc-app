@@ -1,57 +1,61 @@
-import 'k8w-extend-native';
-import { WsClient } from 'tsrpc-browser';
+import { WsClient, WsClientStatus } from 'tsrpc-browser';
 import { serviceProto } from './shared/protocols/serviceProto';
+
+const $ = document.querySelector.bind(document) as (k: string) => HTMLElement;
 
 // Create the WebSocket Client
 const client = new WsClient(serviceProto, {
     server: 'ws://127.0.0.1:3000',
     onStatusChange: v => {
-        output('say', `Connection status: <b>${v}</b>`);
+        $('.conn-status')!.innerHTML = v === WsClientStatus.Opened ? '🟢 Server Connected' : '🟡 Server Connecting...';
     },
     onLostConnection: () => {
-        output('say', 'Connection is lost, start reconnecting...');
-        connect();
+        // Auto reconnect
+        client.connect();
     }
 });
+client.connect();
 
-// Connect to the server
-async function connect() {
-    output('say', `Connecting to the server...`);
-    let resConnect = await client.connect();
-    if (resConnect.isSucc) {
-        output('say', `✅ Connected successfully`, 'green');
+// CallAPI: Hello
+async function sayHello() {
+    let input = $('input.name') as HTMLInputElement;
+    if (!input.value) {
+        return;
     }
-    else {
-        output('say', `❌ Connected failed: ${resConnect.errMsg}`, 'red');
-    }
-}
-connect();
 
-// Call API
-document.getElementById('btn-say')!.onclick = async () => {
-    const inputName = document.getElementById('input-name') as HTMLInputElement;
-    output('say', `Say: "${inputName.value}"`);
+    $('.reply').style.display = 'none';
 
     let ret = await client.callApi('Hello', {
-        name: inputName.value
+        name: input.value
     });
 
     // Handle Error
     if (!ret.isSucc) {
-        output('say', `❌ ${ret.err.message}`, 'red');
+        alert('= ERROR =\n' + ret.err.message);
         return;
     }
 
-    output('say', `✅ Reply: ${ret.res.reply}`, 'green');
-};
+    input.value = '';
+    $('.reply .content').innerText = ret.res.reply;
+    $('.reply').style.display = 'block';
+}
+// on button "Say Hello click"
+$('button.btn-send').onclick = sayHello;
+// on enter key pressed when input
+$('input').onkeypress = e => {
+    if (e.key === 'Enter') {
+        sayHello();
+    }
+}
 
 // Listen server pushed message
-client.listenMsg('Public', msg => {
-    output('public', `<span style="color: gray;">${msg.time.format()}</span><br />${msg.content}`)
-});
+client.listenMsg('Hello', msg => {
+    let ul = $('.server-pushed-msg ul') as HTMLUListElement;
 
-function output(to: 'say' | 'public', content: string, color?: string) {
-    const container = document.getElementById(to === 'say' ? 'say-output' : 'public-msg') as HTMLDivElement;
-    container.innerHTML += `<p${color ? ` style="color:${color}"` : ''}>` + content + '</p>';
-    container.scrollTo(0, container.scrollHeight);
-}
+    let li = document.createElement('li');
+    li.innerHTML = `Welcome <b class="name"></b><p class="time"></p>`;
+    (li.querySelector('.name') as HTMLElement).innerText = msg.name;
+    (li.querySelector('.time') as HTMLElement).innerText = msg.time.toTimeString().substr(0, 8);
+
+    ul.prepend(li);
+});

@@ -21,15 +21,25 @@
             height: 100vh;
             box-sizing: border-box;
             align-items: center;
+            text-align: center;
+            line-height: 1.5em;
+            font-size: 16px;
         }
 
-        .chatroom {
-            max-width: 600px;
+        .conn-status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .say-hello,
+        .server-pushed-msg {
+            max-width: 400px;
             width: 100%;
             margin-top: 20px;
+            padding: 20px;
             box-sizing: border-box;
-            flex: 1;
-            border-radius: 10px;
+            border-radius: 5px;
             background: #f2f2f2;
             border: solid #ccc 1px;
             display: flex;
@@ -37,115 +47,112 @@
             overflow: hidden;
         }
 
-        .messages {
-            list-style: none;
-            flex: 1;
-            padding: 20px;
-            overflow: auto;
-        }
-
-        .messages>li {
-            margin-bottom: 20px;
-            border-radius: 10px;
-            background: #fff;
-            padding: 20px;
-        }
-
-        .messages>li .name {
-            color: green;
-            font-weight: bold;
-        }
-
-        .messages>li .time {
-            color: gray;
-        }
-
-        .send {
+        .say-hello {
             flex: 0 0 auto;
-            /* padding: 10px 20px; */
-            border-top: 1px solid #ccc;
         }
 
-        .send>.title {
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .send>.input-row {
+        .say-hello .say {
             display: flex;
-            line-height: 1.2em;
-            /* margin-bottom: 10px; */
+            border-radius: 99px;
+            overflow: hidden;
+            border: solid 1px #ccc;
         }
 
-        .send>.input-row>label {
-            flex: 0 0 50px;
-        }
-
-        .send>.input-row>input,
-        .send>.input-row>textarea {
-            flex: 0 1 100%;
-            font-size: 16px;
+        .say-hello input.name {
             padding: 10px;
-            /* border-radius: 10px; */
-            outline: none;
+            flex: 1;
             border: none;
-            resize: none;
+            padding: 10px 20px;
+            outline: none;
+            font-size: 1rem;
         }
 
-        .send>.input-row>textarea {
-            height: 4rem;
-            border-top: 1px solid #ccc;
-        }
-
-        .send>.btn-send {
-            text-align: center;
-            font-size: 18px;
+        .say-hello .btn-send {
             background: darkgreen;
-            color: white;
+            color: #fff;
+            border: none;
+            flex: 0 0 auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+            outline: none;
             cursor: pointer;
-            padding: 10px;
-            /* border-radius: 99px; */
-            /* margin-bottom: 40px; */
         }
 
-        .send>.btn-send:hover {
+        .say-hello .btn-send:hover {
             background: green;
+        }
+
+        .say-hello .reply {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .say-hello .reply .title {
+            background: green;
+            color: white;
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 2px 15px;
+            border-radius: 99px;
+            font-size: 14px;
+        }
+
+        .server-pushed-msg {
+            flex: 1;
+        }
+
+        .server-pushed-msg ul {
+            list-style: none;
+            overflow: auto;
+            margin-top: 10px;
+        }
+
+        .server-pushed-msg ul li {
+            margin-bottom: 10px;
+            background: #fff;
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .server-pushed-msg ul li .name {
+            color: green;
+        }
+
+        .server-pushed-msg ul li .time {
+            color: #ccc;
+            font-size: 14px;
         }
     </style>
 </head>
 
 <body>
-    <h1>TSRPC Chatroom</h1>
+    <h1>Hello, TSRPC</h1>
 
-    <div class="chatroom">
-        <ul class="messages">
-            <li class="other">
-                <div class="meta">
-                    <span class="name">King</span>
-                    <span class="time">00:09:14</span>
-                </div>
-                <div class="content">asdgasdgasdg</div>
-            </li>
-            <li class="self">
-                <div class="meta">
-                    <span class="name">King</span>
-                    <span class="time">00:09:14</span>
-                </div>
-                <div class="content">asdgasdgasdg</div>
-            </li>
-        </ul>
+    <div class="conn-status">🟡 Server Connecting...</div>
 
-        <div class="send">
-            <div class="name input-row">
-                <input type="text" placeholder="请输入姓名..." />
-            </div>
-            <div class="content input-row">
-                <textarea placeholder="请输入消息内容..."></textarea>
-            </div>
-            <div class="btn-send">发 送</div>
+    <div class="say-hello">
+        <div class="say">
+            <input type="text" class="name" placeholder="Input your name..." />
+            <button class="btn-send">Say Hello</button>
         </div>
+
+        <div class="reply" style="display: none;">
+            <div class="title">Server Reply</div>
+            <div class="content">Hello, King</div>
+        </div>
+    </div>
+
+    <div class="server-pushed-msg">
+        <div style="font-size: 20px; font-weight: bold;">Server Pushed Messages</div>
+        <p style="font-size: 12px; color: #999;">You can open multiple pages to see the effects</p>
+
+        <ul>
+            <!-- <li>
+                Welcome <b class="name">King</b>
+                <p class="time">11:23:23</p>
+            </li> -->
+        </ul>
     </div>
 </body>
 

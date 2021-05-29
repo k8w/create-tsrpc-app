@@ -1,6 +1,6 @@
 import { ServiceProto } from 'tsrpc-proto';
-import { MsgPublic } from './MsgPublic'
-import { ReqHello, ResHello } from './PtlHello'
+import { MsgHello } from '../../../src-ws/shared/protocols/MsgHello'
+import { ReqHello, ResHello } from '../../../src-ws/shared/protocols/PtlHello'
 
 export interface ServiceType {
     api: {
@@ -10,7 +10,7 @@ export interface ServiceType {
         }
     },
     msg: {
-        "Public": MsgPublic
+        "Hello": MsgHello
     }
 }
 
@@ -18,7 +18,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
     "services": [
         {
             "id": 0,
-            "name": "Public",
+            "name": "Hello",
             "type": "msg"
         },
         {
@@ -28,12 +28,12 @@ export const serviceProto: ServiceProto<ServiceType> = {
         }
     ],
     "types": {
-        "MsgPublic/MsgPublic": {
+        "MsgHello/MsgHello": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "content",
+                    "name": "name",
                     "type": {
                         "type": "String"
                     }

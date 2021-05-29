@@ -1,5 +1,3 @@
 node_modules
 dist
-.rpt2_cache
-.nyc_output
 .DS_STORE
