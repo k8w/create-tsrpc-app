@@ -35,6 +35,7 @@ const App = () => {
 
         // Error
         if (!ret.isSucc) {
+            setReply('');
             alert('= ERROR =\n' + ret.err.message);
             return;
         }
