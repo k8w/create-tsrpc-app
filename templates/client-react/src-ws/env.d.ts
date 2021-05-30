@@ -9,13 +9,13 @@ declare namespace NodeJS {
   }
 }
 
-declare module '*.css' {
+declare module '*.module.css' {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
 
 // #region Features/LESS
-declare module '*.less' {
+declare module '*.module.less' {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
