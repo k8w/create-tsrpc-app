@@ -50,16 +50,18 @@ export default class App extends Vue {
   serverMsgs: MsgHello[] = [];
 
   mounted() {
+    // ========== TSRPC Client -> listenMsg ==========
     client.listenMsg("Hello", (msg) => {
       this.serverMsgs.unshift(msg);
     });
+    // Client Event: connection status change
     client.on("StatusChange", (e) => {
       this.isConnected = e.newStatus === WsClientStatus.Opened;
     });
   }
 
   async onBtnSendClick() {
-    // Call API
+    // ========== TSRPC Client -> callApi ==========
     let ret = await client.callApi("Hello", {
       name: this.name,
     });
@@ -79,132 +81,5 @@ export default class App extends Vue {
 </script>
 
 <style lang="less">
-* {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background: #f7f7f7;
-}
-
-.App {
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  box-sizing: border-box;
-  align-items: center;
-  text-align: center;
-  line-height: 1.5em;
-  font-size: 16px;
-
-  > .conn-status {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #999;
-  }
-
-  > .say-hello,
-  > .server-pushed-msg {
-    max-width: 400px;
-    width: 100%;
-    margin-top: 20px;
-    padding: 20px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    background: #f2f2f2;
-    border: solid #ccc 1px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  > .say-hello {
-    flex: 0 0 auto;
-
-    > .say {
-      display: flex;
-      border-radius: 99px;
-      overflow: hidden;
-      border: solid 1px #ccc;
-
-      > .name {
-        padding: 10px;
-        flex: 1;
-        border: none;
-        padding: 10px 20px;
-        outline: none;
-        font-size: 1rem;
-      }
-
-      > .btn-send {
-        background: darkgreen;
-        color: #fff;
-        border: none;
-        flex: 0 0 auto;
-        padding: 10px 20px;
-        font-size: 1rem;
-        outline: none;
-        cursor: pointer;
-
-        &:hover {
-          background: green;
-        }
-      }
-    }
-
-    > .reply {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px dashed #ccc;
-
-      > .title {
-        background: green;
-        color: white;
-        display: inline-block;
-        margin-bottom: 10px;
-        padding: 2px 15px;
-        border-radius: 99px;
-        font-size: 14px;
-      }
-    }
-  }
-
-  > .server-pushed-msg {
-    flex: 1;
-
-    > .title {
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    > .hint {
-      font-size: 12px;
-      color: #999;
-    }
-
-    > ul {
-      list-style: none;
-      overflow: auto;
-      margin-top: 10px;
-
-      > li {
-        margin-bottom: 10px;
-        background: #fff;
-        border-radius: 4px;
-        padding: 20px;
-
-        > .name {
-          color: green;
-        }
-
-        > .time {
-          color: #ccc;
-          font-size: 14px;
-        }
-      }
-    }
-  }
-}
+@import "./App.less";
 </style>

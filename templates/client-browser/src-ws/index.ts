@@ -11,9 +11,11 @@ const client = new WsClient(serviceProto, {
 // Connect to the server at startup
 client.connect();
 
-// Auto reconnect after 1 second
+// Client Event: connection status change
 client.on('StatusChange', e => {
     $('.conn-status')!.innerHTML = e.newStatus === WsClientStatus.Opened ? '🟢 Server Connected' : '🟡 Server Connecting...';
+
+    // Auto reconnect after 1 second
     if (e.newStatus === WsClientStatus.Closed) {
         setTimeout(() => { client.connect() }, 1000)
     }
