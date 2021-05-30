@@ -37,19 +37,49 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { MsgHello } from "./shared/protocols/MsgHello";
-import { client } from "./main";
 import { WsClientStatus } from "tsrpc-browser";
+import { client } from "./main";
+import { MsgHello } from "./shared/protocols/MsgHello";
 
-@Component
-export default class App extends Vue {
-  name = "";
-  isConnected = false;
-  reply = "";
-  serverMsgs: MsgHello[] = [];
+export interface AppData {
+  name: string;
+  isConnected: boolean;
+  reply: string;
+  serverMsgs: MsgHello[];
+}
 
-  mounted() {
+export default {
+  name: "App",
+  data() {
+    return {
+      name: "",
+      isConnected: false,
+      reply: "",
+      serverMsgs: [],
+    } as AppData;
+  },
+
+  methods: {
+    async onBtnSendClick() {
+      // ========== TSRPC Client -> callApi ==========
+      let ret = await client.callApi("Hello", {
+        name: this.name,
+      });
+
+      // Error
+      if (!ret.isSucc) {
+        this.reply = "";
+        alert("= ERROR =\n" + ret.err.message);
+        return;
+      }
+
+      // Success
+      this.name = "";
+      this.reply = ret.res.reply;
+    },
+  },
+
+  mounted(this: AppData) {
     // ========== TSRPC Client -> listenMsg ==========
     client.listenMsg("Hello", (msg) => {
       this.serverMsgs.unshift(msg);
@@ -58,26 +88,8 @@ export default class App extends Vue {
     client.on("StatusChange", (e) => {
       this.isConnected = e.newStatus === WsClientStatus.Opened;
     });
-  }
-
-  async onBtnSendClick() {
-    // ========== TSRPC Client -> callApi ==========
-    let ret = await client.callApi("Hello", {
-      name: this.name,
-    });
-
-    // Error
-    if (!ret.isSucc) {
-      this.reply = "";
-      alert("= ERROR =\n" + ret.err.message);
-      return;
-    }
-
-    // Success
-    this.name = "";
-    this.reply = ret.res.reply;
-  }
-}
+  },
+};
 </script>
 
 <style lang="less">

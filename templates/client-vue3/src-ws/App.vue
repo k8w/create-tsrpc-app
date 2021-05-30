@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { WsClientStatus } from "tsrpc-browser";
-import { defineComponent, onMounted } from "vue";
+import { defineComponent } from "vue";
 import { client } from "./main";
 import { MsgHello } from "./shared/protocols/MsgHello";
 
