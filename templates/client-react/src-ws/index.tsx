@@ -5,7 +5,8 @@ import './index.less';
 import { MsgHello } from './shared/protocols/MsgHello';
 import { serviceProto } from './shared/protocols/serviceProto';
 
-export const client = new WsClient(serviceProto, {
+// Create WebSocket Client
+const client = new WsClient(serviceProto, {
     server: 'ws://127.0.0.1:3000'
 });
 

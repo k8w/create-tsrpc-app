@@ -3,52 +3,48 @@ import { serviceProto } from './shared/protocols/serviceProto';
 
 const $ = document.querySelector.bind(document) as (k: string) => HTMLElement;
 
-// Create the WebSocket Client
+// Create WebSocket Client
 const client = new WsClient(serviceProto, {
-    server: 'ws://127.0.0.1:3000',
-    onStatusChange: v => {
-        $('.conn-status')!.innerHTML = v === WsClientStatus.Opened ? '🟢 Server Connected' : '🟡 Server Connecting...';
-    },
-    onLostConnection: () => {
-        // Auto reconnect
-        client.connect();
-    }
+    server: 'ws://127.0.0.1:3000'
 });
+
+// Connect to the server at startup
 client.connect();
 
-// CallAPI: Hello
-async function sayHello() {
+// Auto reconnect after 1 second
+client.on('StatusChange', e => {
+    $('.conn-status')!.innerHTML = e.newStatus === WsClientStatus.Opened ? '🟢 Server Connected' : '🟡 Server Connecting...';
+    if (e.newStatus === WsClientStatus.Closed) {
+        setTimeout(() => { client.connect() }, 1000)
+    }
+})
+
+// on button "Say Hello click"
+$('button.btn-send').onclick = async function () {
     let input = $('input.name') as HTMLInputElement;
     if (!input.value) {
         return;
     }
 
-    $('.reply').style.display = 'none';
-
+    // ========== TSRPC Client -> callApi ==========
     let ret = await client.callApi('Hello', {
         name: input.value
     });
 
-    // Handle Error
+    // Error
     if (!ret.isSucc) {
+        $('.reply').style.display = 'none';
         alert('= ERROR =\n' + ret.err.message);
         return;
     }
 
+    // Success
     input.value = '';
     $('.reply .content').innerText = ret.res.reply;
     $('.reply').style.display = 'block';
-}
-// on button "Say Hello click"
-$('button.btn-send').onclick = sayHello;
-// on enter key pressed when input
-$('input').onkeypress = e => {
-    if (e.key === 'Enter') {
-        sayHello();
-    }
-}
+};
 
-// Listen server pushed message
+// ========== TSRPC Client -> listenMsg ==========
 client.listenMsg('Hello', msg => {
     let ul = $('.server-pushed-msg ul') as HTMLUListElement;
 
