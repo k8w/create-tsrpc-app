@@ -23,7 +23,7 @@ module.exports = {
                     loader: 'ts-loader',
                     options: {
                         compilerOptions: isProduction ? {
-                            "lib": ["dom", "es2015.promise"],
+                            "lib": ["dom", "es5", "es2015.promise"],
                             "target": "es5",
                         } : undefined
                     }
