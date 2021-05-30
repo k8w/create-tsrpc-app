@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "tsrpc-browser": "^3.0.0-dev.8",
     "vue": "^3.0.0"
   },
   "devDependencies": {
