@@ -79,8 +79,8 @@ export default class App extends Vue {
     }
 
     // Success
-    this.name = "";
     this.reply = ret.res.reply;
+    this.name = "";
   }
 }
 </script>
