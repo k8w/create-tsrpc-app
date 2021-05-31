@@ -10,6 +10,7 @@ if (type !== 'ws' && type !== 'http') {
 let dirs = fs.readdirSync('templates');
 dirs.forEach(dir => {
     try {
+        fse.unlinkSync(`templates/${dir}/src`)
         fse.ensureSymlinkSync(`templates/${dir}/src-${type}`, `templates/${dir}/src`);
     }
     catch (e) {

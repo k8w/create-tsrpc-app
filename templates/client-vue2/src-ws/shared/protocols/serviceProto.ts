@@ -1,6 +1,6 @@
 import { ServiceProto } from 'tsrpc-proto';
-import { MsgHello } from './MsgHello'
-import { ReqHello, ResHello } from './PtlHello'
+import { MsgHello } from '../../../src-ws/shared/protocols/MsgHello'
+import { ReqHello, ResHello } from '../../../src-ws/shared/protocols/PtlHello'
 
 export interface ServiceType {
     api: {

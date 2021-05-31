@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "switch": "node scripts/switch.js",
-    "sync": "node scripts/sync.js"
+    "switch:ws": "node scripts/switch.js ws",
+    "switch:http": "node scripts/switch.js http",
+    "sync": "node scripts/sync.js http && node scripts/sync.js ws"
   },
   "repository": {
     "type": "git",
