@@ -2,19 +2,19 @@ import { ApiCall } from "tsrpc";
 import { server } from "..";
 import { ReqHello, ResHello } from "../shared/protocols/PtlHello";
 
-const existNames = new Set();
-
 export async function ApiHello(call: ApiCall<ReqHello, ResHello>) {
-    if (existNames.has(call.req.name)) {
-        call.error('This name is existed already')
+    // Return Error
+    if (call.req.name.length === 0) {
+        call.error('Name can NOT be empty')
         return;
     }
-    existNames.add(call.req.name);
 
+    // Return Success
     call.succ({
         reply: 'Hello, ' + call.req.name
     });
 
+    // Server pushed message)
     server.broadcastMsg('Hello', {
         name: call.req.name,
         time: new Date()
