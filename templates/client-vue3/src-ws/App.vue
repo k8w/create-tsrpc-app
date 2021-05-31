@@ -54,7 +54,7 @@ export default defineComponent({
   data() {
     return {
       name: "",
-      isConnected: false,
+      isConnected: client.status === WsClientStatus.Opened,
       reply: "",
       serverMsgs: [] as MsgHello[],
     };
@@ -85,9 +85,14 @@ export default defineComponent({
     client.listenMsg("Hello", (msg) => {
       this.serverMsgs.unshift(msg);
     });
-    // Client Event: connection status change
-    client.on("StatusChange", (e) => {
-      this.isConnected = e.newStatus === WsClientStatus.Opened;
+    // Handle connection status change
+    client.flows.postConnectFlow.push((v) => {
+      this.isConnected = true;
+      return v;
+    });
+    client.flows.postDisconnectFlow.push((v) => {
+      this.isConnected = false;
+      return v;
     });
   },
 });

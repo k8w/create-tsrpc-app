@@ -45,22 +45,27 @@ import { WsClientStatus } from "tsrpc-browser";
 @Component
 export default class App extends Vue {
   name = "";
-  isConnected = false;
+  isConnected = client.status === WsClientStatus.Opened;
   reply = "";
   serverMsgs: MsgHello[] = [];
 
-  mounted() {
+  mounted(): void {
     // ========== TSRPC Client -> listenMsg ==========
     client.listenMsg("Hello", (msg) => {
       this.serverMsgs.unshift(msg);
     });
-    // Client Event: connection status change
-    client.on("StatusChange", (e) => {
-      this.isConnected = e.newStatus === WsClientStatus.Opened;
+    // Handle connection status change
+    client.flows.postConnectFlow.push((v) => {
+      this.isConnected = true;
+      return v;
+    });
+    client.flows.postDisconnectFlow.push((v) => {
+      this.isConnected = false;
+      return v;
     });
   }
 
-  async onBtnSendClick() {
+  async onBtnSendClick(): Promise<void> {
     // ========== TSRPC Client -> callApi ==========
     let ret = await client.callApi("Hello", {
       name: this.name,

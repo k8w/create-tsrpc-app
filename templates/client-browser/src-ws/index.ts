@@ -1,4 +1,4 @@
-import { WsClient, WsClientStatus } from 'tsrpc-browser';
+import { WsClient } from 'tsrpc-browser';
 import { serviceProto } from './shared/protocols/serviceProto';
 
 const $ = document.querySelector.bind(document) as (k: string) => HTMLElement;
@@ -8,18 +8,31 @@ const client = new WsClient(serviceProto, {
     server: 'ws://127.0.0.1:3000'
 });
 
-// Connect to the server at startup
-client.connect();
+async function connect() {
+    $('.conn-status')!.innerHTML = '🟡 Server Connecting...';
 
-// Client Event: connection status change
-client.on('StatusChange', e => {
-    $('.conn-status')!.innerHTML = e.newStatus === WsClientStatus.Opened ? '🟢 Server Connected' : '🟡 Server Connecting...';
+    // Connect to the server
+    let res = await client.connect();
 
-    // Auto reconnect after 1 second
-    if (e.newStatus === WsClientStatus.Closed) {
-        setTimeout(() => { client.connect() }, 1000)
+    // Error: retry after 1 second
+    if (!res.isSucc) {
+        await new Promise(rs => { setTimeout(rs, 1000) });
+        await connect();
+        return;
     }
-})
+
+    // Success
+    $('.conn-status')!.innerHTML = '🟢 Server Connected';
+}
+
+// Connect to the server at startup
+connect();
+
+// Auto reconnect when disconnected
+client.flows.postDisconnectFlow.push(v => {
+    connect();
+    return v;
+});
 
 // on button "Say Hello click"
 $('button.btn-send').onclick = async function () {

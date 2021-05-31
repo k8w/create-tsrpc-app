@@ -11,19 +11,31 @@ const client = new WsClient(serviceProto, {
 });
 
 // Connect to the server at startup
-client.connect();
+connect();
 
-// Auto reconnect after 1 second
-client.on('StatusChange', e => {
-    if (e.newStatus === WsClientStatus.Closed) {
-        setTimeout(() => { client.connect() }, 1000)
+// Connect and auto retry
+async function connect() {
+    // Connect to the server
+    let res = await client.connect();
+
+    // Failed: retry after 1 second
+    if (!res.isSucc) {
+        await new Promise(rs => { setTimeout(rs, 1000) });
+        await connect();
+        return;
     }
-})
+}
+
+// Auto reconnect when disconnected
+client.flows.postDisconnectFlow.push(v => {
+    connect();
+    return v;
+});
 
 const App = () => {
     // States
     const [name, setName] = useState('');
-    const [isConnected, setIsConnected] = useState(false);
+    const [isConnected, setIsConnected] = useState(client.status === WsClientStatus.Opened);
     const [reply, setReply] = useState<string | undefined>();
     const [serverMsgs, setServerMsgs] = useState<MsgHello[]>([]);
 
@@ -45,12 +57,21 @@ const App = () => {
         setReply(ret.res.reply);
     }
 
-    // Event: connection status changed
+    // Handle connection status changed
     useEffect(() => {
-        let handler = client.on('StatusChange', e => {
-            setIsConnected(e.newStatus === WsClientStatus.Opened);
+        let connectFlow = client.flows.postConnectFlow.push(v => {
+            setIsConnected(true);
+            return v;
         });
-        return () => { client.off('StatusChange', handler) }
+        let disconnectFlow = client.flows.postDisconnectFlow.push(v => {
+            setIsConnected(false);
+            return v;
+        });
+        // Clear when unmounted
+        return () => {
+            client.flows.postConnectFlow.remove(connectFlow);
+            client.flows.postDisconnectFlow.remove(disconnectFlow);
+        }
     }, [0]);
 
     // Listen server pushed messages

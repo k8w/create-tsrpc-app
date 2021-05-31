@@ -1,4 +1,4 @@
-import { WsClient, WsClientStatus } from 'tsrpc-browser'
+import { WsClient } from 'tsrpc-browser'
 import Vue from 'vue'
 import App from './App.vue'
 import { serviceProto } from './shared/protocols/serviceProto'
@@ -11,14 +11,26 @@ export const client = new WsClient(serviceProto, {
 });
 
 // Connect to the server at startup
-client.connect();
+connect();
 
-// Auto reconnect after 1 second
-client.on('StatusChange', e => {
-  if (e.newStatus === WsClientStatus.Closed) {
-    setTimeout(() => { client.connect() }, 1000)
+// Connect and auto retry
+async function connect() {
+  // Connect to the server
+  const res = await client.connect();
+
+  // Failed: retry after 1 second
+  if (!res.isSucc) {
+    await new Promise(rs => { setTimeout(rs, 1000) });
+    await connect();
+    return;
   }
-})
+}
+
+// Auto reconnect when disconnected
+client.flows.postDisconnectFlow.push(v => {
+  connect();
+  return v;
+});
 
 new Vue({
   render: h => h(App),

@@ -4,7 +4,7 @@
   "description": "TODO",
   "private": "true",
   "scripts": {
-    "dev": "webpack serve --mode=development --open --stats minimal",
+    "dev": "webpack serve --mode=development --open",
     "build": "webpack --mode=production"
   },
   "author": "",
@@ -18,6 +18,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "tsrpc-browser": "^3.0.0-dev.8"
+    "tsrpc-browser": "^3.0.0-dev.12"
   }
 }

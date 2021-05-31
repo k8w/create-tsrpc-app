@@ -102,6 +102,9 @@ module.exports = {
         ]
     },
     plugins: [
+        new HtmlWebpackPlugin({
+            template: 'public/index.html'
+        }),
         new CopyWebpackPlugin({
             patterns: [{
                 from: 'public',
@@ -109,13 +112,10 @@ module.exports = {
                 toType: 'dir',
                 globOptions: {
                     gitignore: true,
-                    ignore: [path.resolve(__dirname, 'public/index.html')]
+                    ignore: [path.resolve(__dirname, 'public/index.html').replace(/\\/g, '/')]
                 },
                 noErrorOnMissing: true
             }]
-        }),
-        new HtmlWebpackPlugin({
-            template: 'public/index.html'
         })
     ],
     devtool: isProduction ? false : 'inline-source-map'
