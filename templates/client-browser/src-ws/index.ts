@@ -8,38 +8,22 @@ const client = new WsClient(serviceProto, {
     server: 'ws://127.0.0.1:3000'
 });
 
-async function connect() {
-    $('.conn-status')!.innerHTML = '🟡 Server Connecting...';
-
-    // Connect to the server
-    let res = await client.connect();
-
-    // Error: retry after 1 second
-    if (!res.isSucc) {
-        await new Promise(rs => { setTimeout(rs, 1000) });
-        await connect();
-        return;
-    }
-
-    // Success
-    $('.conn-status')!.innerHTML = '🟢 Server Connected';
-}
-
 // Connect to the server at startup
-connect();
-
-// Auto reconnect when disconnected
-client.flows.postDisconnectFlow.push(v => {
-    connect();
-    return v;
+client.connect().then(v => {
+    if (!v.isSucc) {
+        alert('Connect failed: ' + v.errMsg);
+    }
 });
 
-// on button "Say Hello click"
+// When disconnected
+client.flows.postDisconnectFlow.push(v => {
+    alert('Server disconnected');
+    return v;
+})
+
+// Button Event
 $('button.btn-send').onclick = async function () {
     let input = $('input.name') as HTMLInputElement;
-    if (!input.value) {
-        return;
-    }
 
     // ========== TSRPC Client -> callApi ==========
     let ret = await client.callApi('Hello', {
@@ -54,9 +38,9 @@ $('button.btn-send').onclick = async function () {
     }
 
     // Success
-    input.value = '';
     $('.reply .content').innerText = ret.res.reply;
     $('.reply').style.display = 'block';
+    input.value = '';
 };
 
 // ========== TSRPC Client -> listenMsg ==========

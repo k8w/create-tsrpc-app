@@ -18,6 +18,6 @@
     "isolatedModules": true
   },
   "include": [
-    "src-ws"
-, "src-ws/env.d.ts"  ]
+    "src"
+  ]
 }

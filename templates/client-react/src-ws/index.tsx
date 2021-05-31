@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { WsClient, WsClientStatus } from 'tsrpc-browser';
+import { WsClient } from 'tsrpc-browser';
 import './index.less';
 import { MsgHello } from './shared/protocols/MsgHello';
 import { serviceProto } from './shared/protocols/serviceProto';
@@ -11,31 +11,21 @@ const client = new WsClient(serviceProto, {
 });
 
 // Connect to the server at startup
-connect();
-
-// Connect and auto retry
-async function connect() {
-    // Connect to the server
-    let res = await client.connect();
-
-    // Failed: retry after 1 second
-    if (!res.isSucc) {
-        await new Promise(rs => { setTimeout(rs, 1000) });
-        await connect();
-        return;
+client.connect().then(v => {
+    if (!v.isSucc) {
+        alert('Connect failed: ' + v.errMsg);
     }
-}
-
-// Auto reconnect when disconnected
-client.flows.postDisconnectFlow.push(v => {
-    connect();
-    return v;
 });
+
+// When disconnected
+client.flows.postDisconnectFlow.push(v => {
+    alert('Server disconnected');
+    return v;
+})
 
 const App = () => {
     // States
     const [name, setName] = useState('');
-    const [isConnected, setIsConnected] = useState(client.status === WsClientStatus.Opened);
     const [reply, setReply] = useState<string | undefined>();
     const [serverMsgs, setServerMsgs] = useState<MsgHello[]>([]);
 
@@ -57,23 +47,6 @@ const App = () => {
         setReply(ret.res.reply);
     }
 
-    // Handle connection status changed
-    useEffect(() => {
-        let connectFlow = client.flows.postConnectFlow.push(v => {
-            setIsConnected(true);
-            return v;
-        });
-        let disconnectFlow = client.flows.postDisconnectFlow.push(v => {
-            setIsConnected(false);
-            return v;
-        });
-        // Clear when unmounted
-        return () => {
-            client.flows.postConnectFlow.remove(connectFlow);
-            client.flows.postDisconnectFlow.remove(disconnectFlow);
-        }
-    }, [0]);
-
     // Listen server pushed messages
     useEffect(() => {
         let handler = client.listenMsg('Hello', msg => {
@@ -85,10 +58,6 @@ const App = () => {
 
     return <div className="App">
         <h1>Hello, TSRPC</h1>
-
-        <div className="conn-status">
-            {isConnected ? '🟢 Server Connected' : '🟡 Server Connecting...'}
-        </div>
 
         <div className="say-hello">
             <div className="say">

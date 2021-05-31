@@ -16,7 +16,7 @@
     "onchange": "^7.1.0",
     "shx": "^0.3.3",
     "ts-node": "^9.1.1",
-    "tsrpc-cli": "^2.0.1-dev.2",
+    "tsrpc-cli": "^2.0.1-dev.3",
     "typescript": "^4.3.2"
   },
   "dependencies": {

@@ -12,6 +12,7 @@ dirs.filter(v => v !== 'server').forEach(dir => {
     try {
         fse.rmSync(`templates/${dir}/src-${type}/shared`, { recursive: true, force: true });
         fse.copySync(`templates/server/src-${type}/shared`, `templates/${dir}/src-${type}/shared`, { recursive: true });
+        console.log(`done: ${dir} ${type}`)
     }
     catch (e) {
         console.error(`Error ${dir}: ${e.message}`)

@@ -2,10 +2,6 @@
   <div class="App">
     <h1>Hello, TSRPC</h1>
 
-    <div class="conn-status">
-      {{ isConnected ? "🟢 Server Connected" : "🟡 Server Connecting..." }}
-    </div>
-
     <div class="say-hello">
       <div class="say">
         <input
@@ -40,12 +36,10 @@
 import { Component, Vue } from "vue-property-decorator";
 import { MsgHello } from "./shared/protocols/MsgHello";
 import { client } from "./main";
-import { WsClientStatus } from "tsrpc-browser";
 
 @Component
 export default class App extends Vue {
   name = "";
-  isConnected = client.status === WsClientStatus.Opened;
   reply = "";
   serverMsgs: MsgHello[] = [];
 
@@ -53,15 +47,6 @@ export default class App extends Vue {
     // ========== TSRPC Client -> listenMsg ==========
     client.listenMsg("Hello", (msg) => {
       this.serverMsgs.unshift(msg);
-    });
-    // Handle connection status change
-    client.flows.postConnectFlow.push((v) => {
-      this.isConnected = true;
-      return v;
-    });
-    client.flows.postDisconnectFlow.push((v) => {
-      this.isConnected = false;
-      return v;
     });
   }
 

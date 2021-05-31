@@ -9,25 +9,16 @@ export const client = new WsClient(serviceProto, {
 });
 
 // Connect to the server at startup
-connect();
-
-// Connect and auto retry
-async function connect() {
-    // Connect to the server
-    const res = await client.connect();
-
-    // Failed: retry after 1 second
-    if (!res.isSucc) {
-        await new Promise(rs => { setTimeout(rs, 1000) });
-        await connect();
-        return;
+client.connect().then(v => {
+    if (!v.isSucc) {
+        alert('Connect failed: ' + v.errMsg);
     }
-}
-
-// Auto reconnect when disconnected
-client.flows.postDisconnectFlow.push(v => {
-    connect();
-    return v;
 });
+
+// When disconnected
+client.flows.postDisconnectFlow.push(v => {
+    alert('Server disconnected');
+    return v;
+})
 
 createApp(App).mount('#app')
