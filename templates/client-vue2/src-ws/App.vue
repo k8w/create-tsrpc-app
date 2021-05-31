@@ -60,7 +60,7 @@ export default {
   },
 
   methods: {
-    async onBtnSendClick() {
+    async onBtnSendClick(this: AppData) {
       // ========== TSRPC Client -> callApi ==========
       let ret = await client.callApi("Hello", {
         name: this.name,
