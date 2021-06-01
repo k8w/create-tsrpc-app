@@ -6,4 +6,3 @@ templates/client-browser/public
 templates/**/package-lock.json
 
 .DS_STORE
-.vscode

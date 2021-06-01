@@ -36,7 +36,7 @@ async function createServer(options: CreateOptions) {
     // TODO 改写 package.json
     // 安装依赖
     console.log('开始安装依赖...');
-    execSync('npm i', serverDir);
+    execSync('npm i --registry https://registry.npm.taobao.org', serverDir);
     execSync('npm update', serverDir);
     console.log('✅ 后端应用创建完成'.green);
 }
@@ -56,7 +56,7 @@ async function createBrowserClient(options: CreateOptions) {
     // TODO 改写文件 package.json
     // 安装依赖
     console.log('开始安装依赖...');
-    execSync('npm i', clientDir);
+    execSync('npm i --registry https://registry.npm.taobao.org', clientDir);
     execSync('npm update', clientDir);
     console.log('✅ 客户端应用创建完成'.green);
 }
