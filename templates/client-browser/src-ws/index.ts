@@ -11,7 +11,7 @@ const client = new WsClient(serviceProto, {
 // Connect to the server at startup
 client.connect().then(v => {
     if (!v.isSucc) {
-        alert('Connect failed: ' + v.errMsg);
+        alert('[ERROR] ' + v.errMsg);
     }
 });
 
@@ -25,6 +25,7 @@ client.flows.postDisconnectFlow.push(v => {
 $('button.btn-send').onclick = async function () {
     let input = $('input.name') as HTMLInputElement;
 
+    debugger;
     // ========== TSRPC Client -> callApi ==========
     let ret = await client.callApi('Hello', {
         name: input.value
@@ -33,7 +34,7 @@ $('button.btn-send').onclick = async function () {
     // Error
     if (!ret.isSucc) {
         $('.reply').style.display = 'none';
-        alert('= ERROR =\n' + ret.err.message);
+        alert('[ERROR] ' + ret.err.message);
         return;
     }
 

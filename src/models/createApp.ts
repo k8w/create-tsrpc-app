@@ -9,8 +9,8 @@ export async function createApp(options: CreateOptions) {
     console.log('createApp', options);
 
     await createServer(options);
-    if (options.client !== 'none') {
-        await createClient(options);
+    if (options.client === 'browser' || options.client === 'react' || options.client.startsWith('vue')) {
+        await createBrowserClient(options);
     }
 
     console.log('✅ TSRPC APP 创建完成'.green);
@@ -39,7 +39,7 @@ async function createServer(options: CreateOptions) {
     console.log('✅ 后端应用创建完成'.green);
 }
 
-async function createClient(options: CreateOptions) {
+async function createBrowserClient(options: CreateOptions) {
     // 开始创建前端应用
     const clientDirName = options.client === 'node' ? 'client' : 'frontend';
     const clientDir = path.resolve(options.projectDir, clientDirName);
@@ -49,6 +49,8 @@ async function createClient(options: CreateOptions) {
     console.log('复制文件...');
     copyRootFilesSync(path.join(tplDir, `client-${options.client}`), clientDir);
     fs.copySync(path.join(tplDir, `client-${options.client}`, `src-${options.server}`), path.join(clientDir, 'src'), { recursive: true });
+    fs.copySync(path.join(tplDir, `client-${options.client}`, 'public'), path.join(clientDir, 'public'), { recursive: true });
+
     // TODO 改写文件 package.json
     // 安装依赖
     console.log('开始安装依赖...');
@@ -59,7 +61,7 @@ async function createClient(options: CreateOptions) {
 
 function copyRootFilesSync(fromDir: string, toDir: string) {
     fs.readdirSync(fromDir).forEach(v => {
-        if (fs.statSync(path.join(fromDir, v)).isFile()) {
+        if (v !== 'package-lock.json' && fs.statSync(path.join(fromDir, v)).isFile()) {
             fs.copyFileSync(path.join(fromDir, v), path.join(toDir, v));
         }
     })

@@ -1,6 +1,7 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isProduction = process.argv.indexOf('--mode=production') > -1;
 
@@ -36,7 +37,19 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'src/index.html'
+            template: 'public/index.html'
+        }),
+        new CopyWebpackPlugin({
+            patterns: [{
+                from: 'public',
+                to: '.',
+                toType: 'dir',
+                globOptions: {
+                    gitignore: true,
+                    ignore: [path.resolve(__dirname, 'public/index.html').replace(/\\/g, '/')]
+                },
+                noErrorOnMissing: true
+            }]
         })
     ],
     devtool: isProduction ? false : 'inline-source-map'
