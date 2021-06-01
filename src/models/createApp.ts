@@ -31,6 +31,7 @@ async function createServer(options: CreateOptions) {
     // 复制文件
     copyRootFilesSync(path.join(tplDir, 'server'), serverDir);
     fs.copySync(path.join(tplDir, 'server', `src-${options.server}`), path.join(serverDir, 'src'), { recursive: true });
+    fs.copySync(path.join(tplDir, 'server', `test-${options.server}`), path.join(serverDir, 'test'), { recursive: true });
     // TODO 改写 package.json
     // 安装依赖
     console.log('开始安装依赖...');

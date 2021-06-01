@@ -10,12 +10,16 @@ if (type !== 'ws' && type !== 'http') {
 let dirs = fs.readdirSync('templates');
 dirs.forEach(dir => {
     try {
-        fse.unlinkSync(`templates/${dir}/src`)
+        fse.existsSync(`templates/${dir}/src`) && fse.unlinkSync(`templates/${dir}/src`)
         fse.ensureSymlinkSync(`templates/${dir}/src-${type}`, `templates/${dir}/src`);
     }
     catch (e) {
         console.error(`Error ${dir}: ${e.message}`)
     }
 })
+
+// Server Test Case
+fse.existsSync(`templates/server/test`) && fse.unlinkSync(`templates/server/test`)
+fse.ensureSymlinkSync(`templates/server/test-${type}`, `templates/server/test`);
 
 console.log('done');

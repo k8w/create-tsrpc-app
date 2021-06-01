@@ -9,10 +9,13 @@
     "sync": "shx rm -rf ../client-browser/src/shared && shx cp -rf src/shared ../client-browser/src/shared",
     "api": "tsrpc api -i src/shared/protocols/serviceProto.ts -o src/api",
     "dev": "onchange \"src/**/*.ts\" -i -k -- ts-node \"src/index.ts\"",
+    "test": "mocha test/**/*.test.ts",
     "build": "shx rm -rf dist && tsc && shx cp package.json package-lock.json dist/"
   },
   "devDependencies": {
+    "@types/mocha": "^8.2.2",
     "@types/node": "^15.6.1",
+    "mocha": "^8.4.0",
     "onchange": "^7.1.0",
     "shx": "^0.3.3",
     "ts-node": "^9.1.1",
@@ -20,6 +23,6 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "tsrpc": "^3.0.0-dev.10"
+    "tsrpc": "^3.0.0-dev.12"
   }
 }

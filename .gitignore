@@ -1,6 +1,7 @@
 node_modules
 dist
 templates/**/src
+templates/**/test
 templates/**/package-lock.json
 
 .DS_STORE
