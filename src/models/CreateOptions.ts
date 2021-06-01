@@ -13,8 +13,8 @@ export type ClientFeature = 'less' | 'webpackOptimization' | 'promisePolyfill'
 
 export const serverFeatures: { name: string, value: ServerFeature, checked?: boolean }[] = [
     // { name: '演示代码', value: 'demoCode', checked: true },
-    { name: '单元测试' + '（Mocha）'.yellow, value: 'unitTest' },
-    { name: '使用 Symlink 自动同步共享目录' + '（Windows 不推荐）'.yellow, value: 'symlink' }
+    // { name: '单元测试' + '（Mocha）'.yellow, value: 'unitTest' },
+    // { name: '使用 Symlink 自动同步共享目录' + '（Windows 不推荐）'.yellow, value: 'symlink' }
 ]
 
 export const clientFeatures: { name: string, value: ClientFeature, checked?: boolean, platforms: CreateOptions['client'][] }[] = [
