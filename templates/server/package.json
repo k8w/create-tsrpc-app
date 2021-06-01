@@ -1,7 +1,6 @@
 {
-  "name": "my-tsrpc-server",
+  "name": "tsrpc-server",
   "version": "0.1.0",
-  "description": "",
   "main": "index.js",
   "private": true,
   "scripts": {

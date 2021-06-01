@@ -1,14 +1,11 @@
 {
-  "name": "browser",
-  "version": "1.0.0",
-  "description": "TODO",
-  "private": "true",
+  "name": "tsrpc-client-react",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "webpack serve --mode=development --open",
     "build": "webpack --mode=production"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@types/react": "^17.0.8",
     "@types/react-dom": "^17.0.5",

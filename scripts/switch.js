@@ -22,4 +22,9 @@ dirs.forEach(dir => {
 fse.existsSync(`templates/server/test`) && fse.unlinkSync(`templates/server/test`)
 fse.ensureSymlinkSync(`templates/server/test-${type}`, `templates/server/test`);
 
+// Browser Public
+fse.existsSync(`templates/client-browser/public`) && fse.unlinkSync(`templates/client-browser/public`)
+fse.ensureSymlinkSync(`templates/client-browser/public-${type}`, `templates/client-browser/public`);
+
+
 console.log('done');

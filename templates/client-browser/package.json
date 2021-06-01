@@ -1,14 +1,11 @@
 {
-  "name": "browser",
-  "version": "1.0.0",
-  "description": "TODO",
-  "private": "true",
+  "name": "tsrpc-client-browser",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "webpack serve --mode=development --open",
     "build": "webpack --mode=production"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.0",
     "html-webpack-plugin": "^5.3.1",

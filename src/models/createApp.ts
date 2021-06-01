@@ -30,8 +30,9 @@ async function createServer(options: CreateOptions) {
     console.log('复制文件...');
     // 复制文件
     copyRootFilesSync(path.join(tplDir, 'server'), serverDir);
-    fs.copySync(path.join(tplDir, 'server', `src-${options.server}`), path.join(serverDir, 'src'), { recursive: true });
-    fs.copySync(path.join(tplDir, 'server', `test-${options.server}`), path.join(serverDir, 'test'), { recursive: true });
+    copyTypeFolderSync('src', options.server, path.join(tplDir, 'server'), serverDir);
+    copyTypeFolderSync('test', options.server, path.join(tplDir, 'server'), serverDir);
+
     // TODO 改写 package.json
     // 安装依赖
     console.log('开始安装依赖...');
@@ -49,8 +50,8 @@ async function createBrowserClient(options: CreateOptions) {
     fs.ensureDirSync(clientDir);
     console.log('复制文件...');
     copyRootFilesSync(path.join(tplDir, `client-${options.client}`), clientDir);
-    fs.copySync(path.join(tplDir, `client-${options.client}`, `src-${options.server}`), path.join(clientDir, 'src'), { recursive: true });
-    fs.copySync(path.join(tplDir, `client-${options.client}`, 'public'), path.join(clientDir, 'public'), { recursive: true });
+    copyTypeFolderSync('src', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
+    copyTypeFolderSync('public', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
 
     // TODO 改写文件 package.json
     // 安装依赖
@@ -66,6 +67,15 @@ function copyRootFilesSync(fromDir: string, toDir: string) {
             fs.copyFileSync(path.join(fromDir, v), path.join(toDir, v));
         }
     })
+}
+
+function copyTypeFolderSync(folderName: string, type: string, fromDir: string, toDir: string) {
+    if (fs.existsSync(path.join(fromDir, `${folderName}-${type}`))) {
+        fs.copySync(path.join(fromDir, `${folderName}-${type}`), path.join(toDir, folderName), { recursive: true });
+    }
+    else {
+        fs.copySync(path.join(fromDir, folderName), path.join(toDir, folderName), { recursive: true });
+    }
 }
 
 function execSync(cmd: string, cwd: string) {
