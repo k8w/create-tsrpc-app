@@ -6,10 +6,9 @@ import path from "path";
 import { CreateOptions } from "./CreateOptions";
 
 const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, '../templates') : path.resolve(__dirname, '../../templates');
-const spinner = ora('');
 
 export async function createApp(options: CreateOptions) {
-    console.log('✔ 开始创建项目'.green);
+    console.log('\n=============== 开始创建项目 ===============\n'.green);
     spinner.text = '';
     spinner.color = 'yellow';
 
@@ -23,15 +22,13 @@ export async function createApp(options: CreateOptions) {
     // 安装依赖
     let npmResServer = false;
     let npmResClient = !client;
-    spinner.text = '安装服务端项目依赖'.green;
-    spinner.start();
+    doing('安装服务端项目依赖')
     npmResServer = await npmInstall(server.serverDir);
-    npmResServer ? spinner.succeed() : spinner.fail()
+    done(npmResServer);
     if (client) {
-        spinner.text = '安装客户端项目依赖'.green;
-        spinner.start();
+        doing('安装客户端项目依赖')
         npmResClient = await npmInstall(client.clientDir);
-        npmResClient ? spinner.succeed() : spinner.fail()
+        done(npmResClient);
     }
 
     console.log('\n=================================================\n'.green);
@@ -39,9 +36,9 @@ export async function createApp(options: CreateOptions) {
     if (npmResServer && npmResClient) {
         console.log('✅ TSRPC APP 创建成功，运行以下命令启动本地开发：\n'.green);
         if (client) {
-            console.log(`  = ${server.serverDirName === 'server' ? '服务' : '后'}端 =\n`)
+            console.log(`    = ${server.serverDirName === 'server' ? '服务' : '后'}端 =\n`)
             console.log(`    cd ${server.serverDirName}\n    npm run dev\n`.cyan);
-            console.log(`  = ${client.clientDirName === 'client' ? '客户' : '前'}端 =\n`)
+            console.log(`    = ${client.clientDirName === 'client' ? '客户' : '前'}端 =\n`)
             console.log(`    cd ${client.clientDirName}\n    npm run dev\n`.cyan);
         }
         else {
@@ -76,32 +73,29 @@ async function createServer(options: CreateOptions) {
     console.log('✔ 开始创建服务端应用'.green);
 
     // 复制文件
-    spinner.text = '复制文件'.green;
-    spinner.start();
+    doing('复制文件')
     await fs.ensureDir(serverDir);
     await copyRootFiles(path.join(tplDir, 'server'), serverDir);
     await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
     await copyTypeFolder('test', options.server, path.join(tplDir, 'server'), serverDir);
-    spinner.succeed();
+    done();
 
     // 写入 package.json
-    spinner.text = '更新 package.json'.green
-    spinner.start();
+    doing('更新 package.json')
     let packageJson = JSON.parse(await fs.readFile(path.join(serverDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${serverDirName}`;
     packageJson.scripts.sync = packageJson.scripts.sync.replace(/client/g, clientDirName);
     await fs.writeFile(path.join(serverDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
-    spinner.succeed();
+    done();
 
     // 安装依赖
-    spinner.text = '更新依赖包版本信息'.green;
-    spinner.start();
+    doing('更新依赖包版本信息')
     await ncu.run({
         packageFile: path.join(serverDir, 'package.json'),
         upgrade: true,
         target: 'minor'
     });
-    spinner.succeed();
+    done();
     // console.log('开始安装依赖');
     // execSync('npm i --registry https://registry.npm.taobao.org', serverDir);
     console.log('✔ 后端应用创建完成'.green);
@@ -121,31 +115,28 @@ async function createBrowserClient(options: CreateOptions) {
     console.log('✔ 开始创建客户端应用'.green);
 
     // 复制文件
-    spinner.text = '复制文件'.green;
-    spinner.start();
+    doing('复制文件')
     await fs.ensureDir(clientDir);
     await copyRootFiles(path.join(tplDir, `client-${options.client}`), clientDir);
     await copyTypeFolder('src', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
     await copyTypeFolder('public', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
-    spinner.succeed();
+    done();
 
     // 写入 package.json
-    spinner.text = '更新 package.json'.green;
-    spinner.start();
+    doing('更新 package.json')
     let packageJson = JSON.parse(await fs.readFile(path.join(clientDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${clientDirName}`;
     await fs.writeFile(path.join(clientDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
-    spinner.succeed();
+    done();
 
     // 安装依赖
-    spinner.text = '更新依赖包版本信息'.green;
-    spinner.start();
+    doing('更新依赖包版本信息')
     await ncu.run({
         packageFile: path.join(clientDir, 'package.json'),
         upgrade: true,
         target: 'minor'
     });
-    spinner.succeed();
+    done();
     // console.log('开始安装依赖');
     // execSync('npm i --registry https://registry.npm.taobao.org', clientDir);
 
@@ -181,4 +172,21 @@ function npmInstall(dir: string): Promise<boolean> {
             rs(err ? false : true)
         })
     })
+}
+
+const spinner = ora('');
+let currentDoingText: string | undefined;
+function doing(text: string) {
+    if (currentDoingText) {
+        return;
+    }
+    currentDoingText = text;
+    spinner.text = (currentDoingText + '...').yellow;
+    spinner.start();
+}
+function done(succ: boolean = true) {
+    if (currentDoingText) {
+        succ ? spinner.succeed(currentDoingText.green) : spinner.fail(currentDoingText.red);
+        currentDoingText = undefined;
+    }
 }
