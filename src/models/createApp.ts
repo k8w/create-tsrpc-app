@@ -37,9 +37,11 @@ export async function createApp(options: CreateOptions) {
     console.log('\n=================================================\n'.green);
 
     if (npmResServer && npmResClient) {
-        console.log('✅ TSRPC APP 创建成功，运行以下命令启动：\n'.green);
+        console.log('✅ TSRPC APP 创建成功，运行以下命令启动本地开发：\n'.green);
         if (client) {
+            console.log(`  = ${server.serverDirName === 'server' ? '服务' : '后'}端 =\n`)
             console.log(`    cd ${server.serverDirName}\n    npm run dev\n`.cyan);
+            console.log(`  = ${client.clientDirName === 'client' ? '客户' : '前'}端 =\n`)
             console.log(`    cd ${client.clientDirName}\n    npm run dev\n`.cyan);
         }
         else {
