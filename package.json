@@ -8,6 +8,7 @@
     "switch:ws": "node scripts/switch.js ws",
     "switch:http": "node scripts/switch.js http",
     "sync": "node scripts/sync.js http && node scripts/sync.js ws",
+    "prebuild": "node scripts/checkTemplates.js",
     "build": "shx rm -rf dist && rollup -c && node scripts/copyTemplates.js && shx cp package.json LICENSE README.md dist/"
   },
   "repository": {
@@ -48,6 +49,7 @@
     "colors": "^1.4.0",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.0",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "npm-check-updates": "^11.6.0"
   }
 }

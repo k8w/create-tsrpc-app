@@ -5,11 +5,12 @@
   "private": true,
   "scripts": {
     "proto": "tsrpc proto -i src/shared/protocols -o src/shared/protocols/serviceProto.ts",
-    "sync": "shx rm -rf ../client-browser/src/shared && shx cp -rf src/shared ../client-browser/src/shared",
+    "sync": "shx rm -rf ../client/src/shared && shx cp -rf src/shared ../client/src/shared",
     "api": "tsrpc api -i src/shared/protocols/serviceProto.ts -o src/api",
     "dev": "onchange \"src/**/*.ts\" -i -k -- ts-node \"src/index.ts\"",
     "test": "mocha test/**/*.test.ts",
-    "build": "shx rm -rf dist && tsc && shx cp package.json package-lock.json dist/"
+    "build": "shx rm -rf dist && tsc && shx cp package.json package-lock.json dist/",
+    "start": "node index.js"
   },
   "devDependencies": {
     "@types/mocha": "^8.2.2",

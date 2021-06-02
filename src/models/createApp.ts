@@ -1,5 +1,6 @@
 import child_process from "child_process";
 import fs from "fs-extra";
+import ncu from "npm-check-updates";
 import path from "path";
 import { CreateOptions } from "./CreateOptions";
 
@@ -19,25 +20,36 @@ export async function createApp(options: CreateOptions) {
 async function createServer(options: CreateOptions) {
     // 配置
     const serverDirName = options.client === 'none' ? '.' : options.client === 'node' ? 'server' : 'backend';
+    const clientDirName = options.client === 'node' ? 'client' : 'frontend';
     const serverDir = path.resolve(options.projectDir, serverDirName);
+    const appName = path.basename(options.projectDir);
 
     // 创建项目目录
-    fs.ensureDirSync(options.projectDir);
+    await fs.ensureDir(options.projectDir);
 
     // 开始创建后端应用
     console.log('开始创建服务端应用...');
-    fs.ensureDirSync(serverDir);
+    await fs.ensureDir(serverDir);
     console.log('复制文件...');
     // 复制文件
-    copyRootFilesSync(path.join(tplDir, 'server'), serverDir);
-    copyTypeFolderSync('src', options.server, path.join(tplDir, 'server'), serverDir);
-    copyTypeFolderSync('test', options.server, path.join(tplDir, 'server'), serverDir);
-
-    // TODO 改写 package.json
+    await copyRootFiles(path.join(tplDir, 'server'), serverDir);
+    await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
+    await copyTypeFolder('test', options.server, path.join(tplDir, 'server'), serverDir);
+    // 写入 package.json
+    console.log('更新 package.json ...');
+    let packageJson = JSON.parse(await fs.readFile(path.join(serverDir, 'package.json'), 'utf-8'));
+    packageJson.name = `${appName}-${serverDirName}`;
+    packageJson.scripts.sync = packageJson.scripts.sync.replace(/client/g, clientDirName);
+    await fs.writeFile(path.join(serverDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     // 安装依赖
+    console.log('更新版本信息...');
+    await ncu.run({
+        packageFile: path.join(serverDir, 'package.json'),
+        upgrade: true,
+        target: 'minor'
+    });
     console.log('开始安装依赖...');
     execSync('npm i --registry https://registry.npm.taobao.org', serverDir);
-    execSync('npm update', serverDir);
     console.log('✅ 后端应用创建完成'.green);
 }
 
@@ -45,36 +57,46 @@ async function createBrowserClient(options: CreateOptions) {
     // 开始创建前端应用
     const clientDirName = options.client === 'node' ? 'client' : 'frontend';
     const clientDir = path.resolve(options.projectDir, clientDirName);
+    const appName = path.basename(options.projectDir);
 
     console.log('开始创建客户端应用...');
-    fs.ensureDirSync(clientDir);
+    await fs.ensureDir(clientDir);
     console.log('复制文件...');
-    copyRootFilesSync(path.join(tplDir, `client-${options.client}`), clientDir);
-    copyTypeFolderSync('src', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
-    copyTypeFolderSync('public', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
-
-    // TODO 改写文件 package.json
+    await copyRootFiles(path.join(tplDir, `client-${options.client}`), clientDir);
+    await copyTypeFolder('src', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
+    await copyTypeFolder('public', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
+    // 写入 package.json
+    console.log('更新 package.json ...');
+    let packageJson = JSON.parse(await fs.readFile(path.join(clientDir, 'package.json'), 'utf-8'));
+    packageJson.name = `${appName}-${clientDirName}`;
+    await fs.writeFile(path.join(clientDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     // 安装依赖
+    console.log('更新版本信息...');
+    await ncu.run({
+        packageFile: path.join(clientDir, 'package.json'),
+        upgrade: true,
+        target: 'minor'
+    });
     console.log('开始安装依赖...');
     execSync('npm i --registry https://registry.npm.taobao.org', clientDir);
-    execSync('npm update', clientDir);
     console.log('✅ 客户端应用创建完成'.green);
 }
 
-function copyRootFilesSync(fromDir: string, toDir: string) {
-    fs.readdirSync(fromDir).forEach(v => {
-        if (v !== 'package-lock.json' && fs.statSync(path.join(fromDir, v)).isFile()) {
-            fs.copyFileSync(path.join(fromDir, v), path.join(toDir, v));
+async function copyRootFiles(fromDir: string, toDir: string) {
+    let dirs = await fs.readdir(fromDir);
+    for (let v of dirs) {
+        if (v !== 'package-lock.json' && (await fs.stat(path.join(fromDir, v))).isFile()) {
+            await fs.copyFile(path.join(fromDir, v), path.join(toDir, v));
         }
-    })
+    }
 }
 
-function copyTypeFolderSync(folderName: string, type: string, fromDir: string, toDir: string) {
-    if (fs.existsSync(path.join(fromDir, `${folderName}-${type}`))) {
-        fs.copySync(path.join(fromDir, `${folderName}-${type}`), path.join(toDir, folderName), { recursive: true });
+async function copyTypeFolder(folderName: string, type: string, fromDir: string, toDir: string) {
+    if (await fs.pathExists(path.join(fromDir, `${folderName}-${type}`))) {
+        await fs.copy(path.join(fromDir, `${folderName}-${type}`), path.join(toDir, folderName), { recursive: true });
     }
     else {
-        fs.copySync(path.join(fromDir, folderName), path.join(toDir, folderName), { recursive: true });
+        await fs.copy(path.join(fromDir, folderName), path.join(toDir, folderName), { recursive: true });
     }
 }
 
