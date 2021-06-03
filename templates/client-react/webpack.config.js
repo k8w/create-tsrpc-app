@@ -22,6 +22,8 @@ module.exports = {
                 use: [{
                     loader: 'ts-loader',
                     options: {
+                        // Compile to ES5 in production mode for better compatibility
+                        // Compile to ES2018 in development for better debugging (like async/await)
                         compilerOptions: isProduction ? {
                             "lib": ["dom", "es5", "es2015.promise"],
                             "target": "es5",
@@ -102,9 +104,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: 'public/index.html'
-        }),
+        // Copy "public" to "dist"
         new CopyWebpackPlugin({
             patterns: [{
                 from: 'public',
@@ -116,7 +116,11 @@ module.exports = {
                 },
                 noErrorOnMissing: true
             }]
-        })
+        }),
+        // Auto add <script> to "index.html"
+        new HtmlWebpackPlugin({
+            template: 'public/index.html'
+        }),
     ],
     devtool: isProduction ? false : 'inline-source-map'
 }
