@@ -122,5 +122,23 @@ module.exports = {
             template: 'public/index.html'
         }),
     ],
-    devtool: isProduction ? false : 'inline-source-map'
+    devtool: isProduction ? false : 'inline-source-map',
+
+    optimization: {
+        minimize: isProduction,
+        splitChunks: {
+            chunks: "all",
+            minChunks: 1,
+            cacheGroups: {
+                default: {
+                    priority: -20,
+                    reuseExistingChunk: true,
+                },
+                vendors: {
+                    test: /node_modules/,
+                    priority: -10
+                }
+            }
+        }
+    },
 }
