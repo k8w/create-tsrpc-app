@@ -1,16 +1,22 @@
-import child_process from "child_process";
 import fs from "fs-extra";
 import ncu from "npm-check-updates";
 import ora from "ora";
 import path from "path";
 import { CreateOptions } from "./CreateOptions";
+import { getInstallCommand, npmInstall } from "./npmInstall";
 
 const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, '../templates') : path.resolve(__dirname, '../../templates');
+let totalStep = 0;
 
 export async function createApp(options: CreateOptions) {
-    console.log('\n=============== 开始创建项目 ===============\n'.green);
     spinner.text = '';
     spinner.color = 'yellow';
+
+    // 预先判断registry
+    getInstallCommand();
+
+    // 计算步骤数量 后端4 前端4 NPM1
+    totalStep = 5 + (options.client === 'none' ? 0 : 4);
 
     // 创建项目
     let server = await createServer(options);
@@ -20,13 +26,16 @@ export async function createApp(options: CreateOptions) {
     }
 
     // 安装依赖
+    doing('检测 NPM 环境和命令');
+    let cmd = await getInstallCommand();
+    done(true, '检测 NPM 环境和命令: ' + cmd.cyan);
     let npmResServer = false;
     let npmResClient = !client;
-    doing('安装服务端项目依赖')
+    doing(`安装服务端 NPM 依赖`, '（可能略久，请稍等）...')
     npmResServer = await npmInstall(server.serverDir);
     done(npmResServer);
     if (client) {
-        doing('安装客户端项目依赖')
+        doing(`安装客户端 NPM 依赖`, '（可能略久，请稍等）...')
         npmResClient = await npmInstall(client.clientDir);
         done(npmResClient);
     }
@@ -69,11 +78,8 @@ async function createServer(options: CreateOptions) {
     // 创建项目目录
     await fs.ensureDir(options.projectDir);
 
-    // 开始创建后端应用
-    console.log('✔ 开始创建服务端应用'.green);
-
     // 复制文件
-    doing('复制文件')
+    doing('复制服务端文件')
     await fs.ensureDir(serverDir);
     await copyRootFiles(path.join(tplDir, 'server'), serverDir);
     await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
@@ -81,7 +87,7 @@ async function createServer(options: CreateOptions) {
     done();
 
     // 写入 package.json
-    doing('更新 package.json')
+    doing('生成 package.json')
     let packageJson = JSON.parse(await fs.readFile(path.join(serverDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${serverDirName}`;
     packageJson.scripts.sync = packageJson.scripts.sync.replace(/client/g, clientDirName);
@@ -89,7 +95,7 @@ async function createServer(options: CreateOptions) {
     done();
 
     // 安装依赖
-    doing('更新依赖包版本信息')
+    doing('npm-check-update')
     await ncu.run({
         packageFile: path.join(serverDir, 'package.json'),
         upgrade: true,
@@ -98,7 +104,6 @@ async function createServer(options: CreateOptions) {
     done();
     // console.log('开始安装依赖');
     // execSync('npm i --registry https://registry.npm.taobao.org', serverDir);
-    console.log('✔ 后端应用创建完成'.green);
 
     return {
         serverDir: serverDir,
@@ -112,10 +117,8 @@ async function createBrowserClient(options: CreateOptions) {
     const clientDir = path.resolve(options.projectDir, clientDirName);
     const appName = path.basename(options.projectDir);
 
-    console.log('✔ 开始创建客户端应用'.green);
-
     // 复制文件
-    doing('复制文件')
+    doing('复制客户端文件')
     await fs.ensureDir(clientDir);
     await copyRootFiles(path.join(tplDir, `client-${options.client}`), clientDir);
     await copyTypeFolder('src', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
@@ -123,14 +126,14 @@ async function createBrowserClient(options: CreateOptions) {
     done();
 
     // 写入 package.json
-    doing('更新 package.json')
+    doing('生成 package.json')
     let packageJson = JSON.parse(await fs.readFile(path.join(clientDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${clientDirName}`;
     await fs.writeFile(path.join(clientDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     done();
 
     // 安装依赖
-    doing('更新依赖包版本信息')
+    doing('npm-check-update')
     await ncu.run({
         packageFile: path.join(clientDir, 'package.json'),
         upgrade: true,
@@ -139,8 +142,6 @@ async function createBrowserClient(options: CreateOptions) {
     done();
     // console.log('开始安装依赖');
     // execSync('npm i --registry https://registry.npm.taobao.org', clientDir);
-
-    console.log('✔ 客户端应用创建完成'.green);
 
     return {
         clientDir: clientDir,
@@ -166,27 +167,21 @@ async function copyTypeFolder(folderName: string, type: string, fromDir: string,
     }
 }
 
-function npmInstall(dir: string): Promise<boolean> {
-    return new Promise<boolean>(rs => {
-        child_process.exec('npm i', err => {
-            rs(err ? false : true)
-        })
-    })
-}
-
 const spinner = ora('');
 let currentDoingText: string | undefined;
-function doing(text: string) {
+let finishedStep = 0;
+function doing(text: string, doingPostFix: string = '...') {
     if (currentDoingText) {
         return;
     }
     currentDoingText = text;
-    spinner.text = (currentDoingText + '...').yellow;
+    spinner.text = `${++finishedStep}/${totalStep} ${text}${doingPostFix}`.yellow;
     spinner.start();
 }
-function done(succ: boolean = true) {
+function done(succ: boolean = true, text?: string) {
     if (currentDoingText) {
-        succ ? spinner.succeed(currentDoingText.green) : spinner.fail(currentDoingText.red);
+        text = `${finishedStep}/${totalStep} ${text ?? currentDoingText}`
+        succ ? spinner.succeed(text.green) : spinner.fail(text.red);
         currentDoingText = undefined;
     }
 }
