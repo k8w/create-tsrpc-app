@@ -36,9 +36,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: 'public/index.html'
-        }),
+        // Copy "public" to "dist"
         new CopyWebpackPlugin({
             patterns: [{
                 from: 'public',
@@ -50,7 +48,11 @@ module.exports = {
                 },
                 noErrorOnMissing: true
             }]
-        })
+        }),
+        // Auto add <script> to "index.html"
+        new HtmlWebpackPlugin({
+            template: 'public/index.html'
+        }),
     ],
     devtool: isProduction ? false : 'inline-source-map'
 }
