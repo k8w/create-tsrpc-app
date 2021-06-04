@@ -2,8 +2,7 @@ import { exec } from "child_process";
 import http from "http";
 import https from "https";
 
-export async function npmInstall(cwd: string): Promise<boolean> {
-    let cmd = await getInstallCommand();
+export async function npmInstall(cmd: string, cwd: string): Promise<boolean> {
     return new Promise<boolean>(rs => {
         exec(cmd, { cwd: cwd }, err => {
             rs(err ? false : true)
@@ -11,16 +10,16 @@ export async function npmInstall(cwd: string): Promise<boolean> {
     })
 }
 
-let promiseGetCmd: Promise<string> | undefined;
-export function getInstallCommand(): Promise<string> {
-    if (promiseGetCmd) {
-        return promiseGetCmd;
-    }
+export async function getInstallEnv(): Promise<{ cmd: string, pkgManager: 'npm' | 'yarn', registry?: string }> {
+    let pkgManager = await getPkgManager();
+    let cmd = pkgManager === 'npm' ? 'npm i' : 'yarn';
+    let registry = await getRegistry(pkgManager);
 
-    return promiseGetCmd = getPkgManager().then(pkg => {
-        let cmd = pkg === 'npm' ? 'npm i' : 'yarn';
-        return getRegistry(pkg).then(r => r ? `${cmd} --registry ${r}` : cmd);
-    })
+    return {
+        cmd: registry ? `${cmd} --registry ${registry}` : cmd,
+        pkgManager: pkgManager,
+        registry: registry
+    }
 }
 
 async function getPkgManager(): Promise<'npm' | 'yarn'> {
@@ -36,7 +35,7 @@ const registries = {
     yarn: 'https://registry.yarnpkg.com',
     taobao: 'https://registry.npm.taobao.org'
 }
-async function getRegistry(command: 'yarn' | 'npm'): Promise<string | null> {
+async function getRegistry(command: 'yarn' | 'npm'): Promise<string | undefined> {
     // User has configured custom registry, respect that
     const defaultRegistry = registries[command];
     let userCurrent: string | undefined;
@@ -54,7 +53,7 @@ async function getRegistry(command: 'yarn' | 'npm'): Promise<string | null> {
     }
     if (userCurrent.trim().replace(/\/$/, '') !== defaultRegistry) {
         console.log('default', userCurrent.replace(/\/$/, ''), defaultRegistry)
-        return null;
+        return undefined;
     }
 
     // Choose faster registry
@@ -62,7 +61,7 @@ async function getRegistry(command: 'yarn' | 'npm'): Promise<string | null> {
         ping(defaultRegistry),
         ping(registries.taobao)
     ]);
-    return pings[1] < pings[0] ? registries.taobao : null;
+    return pings[1] < pings[0] ? registries.taobao : undefined;
 }
 
 async function execa(cmd: string): Promise<string> {

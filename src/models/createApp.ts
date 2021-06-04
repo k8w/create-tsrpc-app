@@ -3,7 +3,7 @@ import ncu from "npm-check-updates";
 import ora from "ora";
 import path from "path";
 import { CreateOptions } from "./CreateOptions";
-import { getInstallCommand, npmInstall } from "./npmInstall";
+import { getInstallEnv, npmInstall } from "./npmInstall";
 
 const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, '../templates') : path.resolve(__dirname, '../../templates');
 let totalStep = 0;
@@ -12,31 +12,42 @@ export async function createApp(options: CreateOptions) {
     spinner.text = '';
     spinner.color = 'yellow';
 
-    // 预先判断registry
-    getInstallCommand();
+    // 计算步骤数量 后端4 前端5 NPM1
+    totalStep = 5 + (options.client === 'none' ? 0 : 5);
 
-    // 计算步骤数量 后端4 前端4 NPM1
-    totalStep = 5 + (options.client === 'none' ? 0 : 4);
+    // 判断安装环境
+    doing('检测 NPM 环境');
+    let installEnv = await getInstallEnv();
+    done(true, '检测 NPM 环境: ' + `${installEnv.pkgManager} ${installEnv.registry ?? `(registry=${installEnv.registry})`}`.cyan);
 
     // 创建项目
-    let server = await createServer(options);
+    let server = await createServer(options, installEnv.registry);
     let client: { clientDir: string, clientDirName: string } | undefined;
     if (options.client === 'browser' || options.client === 'react' || options.client.startsWith('vue')) {
-        client = await createBrowserClient(options);
+        client = await createBrowserClient(options, installEnv.registry);
+
+        // Sync 演示代码
+        if (options.features.indexOf('symlink') > -1) {
+            doing('Init symlink');
+            let target = path.relative(path.join(client.clientDir, 'src'), path.join(server.serverDir, 'src/shared'));
+            await fs.symlink(target, path.join(client.clientDir, 'src/shared'), 'junction');
+        }
+        else {
+            doing('First sync');
+            await fs.copy(path.join(server.serverDir, 'src/shared'), path.join(client.clientDir, 'src/shared'), { recursive: true })
+        }
+        done();
     }
 
     // 安装依赖
-    doing('检测 NPM 环境和命令');
-    let cmd = await getInstallCommand();
-    done(true, '检测 NPM 环境和命令: ' + cmd.cyan);
     let npmResServer = false;
     let npmResClient = !client;
     doing(`安装服务端 NPM 依赖`, '（可能略久，请稍等）...')
-    npmResServer = await npmInstall(server.serverDir);
+    npmResServer = await npmInstall(installEnv.cmd, server.serverDir);
     done(npmResServer);
     if (client) {
         doing(`安装客户端 NPM 依赖`, '（可能略久，请稍等）...')
-        npmResClient = await npmInstall(client.clientDir);
+        npmResClient = await npmInstall(installEnv.cmd, client.clientDir);
         done(npmResClient);
     }
 
@@ -68,7 +79,7 @@ export async function createApp(options: CreateOptions) {
     spinner.stop();
 }
 
-async function createServer(options: CreateOptions) {
+async function createServer(options: CreateOptions, registry: string | undefined) {
     // 配置
     const serverDirName = options.client === 'none' ? '.' : options.client === 'node' ? 'server' : 'backend';
     const clientDirName = options.client === 'node' ? 'client' : 'frontend';
@@ -83,7 +94,16 @@ async function createServer(options: CreateOptions) {
     await fs.ensureDir(serverDir);
     await copyRootFiles(path.join(tplDir, 'server'), serverDir);
     await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
-    await copyTypeFolder('test', options.server, path.join(tplDir, 'server'), serverDir);
+    // 单元测试
+    if (options.features.indexOf('unitTest') > -1) {
+        await copyTypeFolder('test', options.server, path.join(tplDir, 'server'), serverDir);
+    }
+    else {
+        let content = await fs.readFile(path.join(serverDir, 'README.md'), 'utf-8');
+        content = content.replace(/### Run unit test\s*```\s*npm run test\s*```/, '');
+        await fs.writeFile(path.join(serverDir, 'README.md'), content, 'utf-8');
+    }
+
     done();
 
     // 写入 package.json
@@ -91,6 +111,16 @@ async function createServer(options: CreateOptions) {
     let packageJson = JSON.parse(await fs.readFile(path.join(serverDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${serverDirName}`;
     packageJson.scripts.sync = packageJson.scripts.sync.replace(/client/g, clientDirName);
+    // 单元测试特性
+    if (options.features.indexOf('unitTest') === -1) {
+        delete packageJson.scripts.test;
+        delete packageJson.devDependencies.mocha;
+        delete packageJson.devDependencies['@types/mocha'];
+    }
+    // Symlink
+    if (options.features.indexOf('symlink') > -1) {
+        packageJson.scripts.sync = packageJson.scripts.sync.replace('tsrpc sync', 'tsrpc link');
+    }
     await fs.writeFile(path.join(serverDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     done();
 
@@ -99,7 +129,8 @@ async function createServer(options: CreateOptions) {
     await ncu.run({
         packageFile: path.join(serverDir, 'package.json'),
         upgrade: true,
-        target: 'minor'
+        target: 'minor',
+        registry: registry
     });
     done();
     // console.log('开始安装依赖');
@@ -111,7 +142,7 @@ async function createServer(options: CreateOptions) {
     };
 }
 
-async function createBrowserClient(options: CreateOptions) {
+async function createBrowserClient(options: CreateOptions, registry: string | undefined) {
     // 开始创建前端应用
     const clientDirName = options.client === 'node' ? 'client' : 'frontend';
     const clientDir = path.resolve(options.projectDir, clientDirName);
@@ -137,7 +168,8 @@ async function createBrowserClient(options: CreateOptions) {
     await ncu.run({
         packageFile: path.join(clientDir, 'package.json'),
         upgrade: true,
-        target: 'minor'
+        target: 'minor',
+        registry: registry
     });
     done();
     // console.log('开始安装依赖');

@@ -4,5 +4,8 @@ templates/**/src
 templates/**/test
 templates/client-browser/public
 templates/**/package-lock.json
+templates/client*/src-ws/shared
+templates/client*/src-http/shared
+
 
 .DS_STORE

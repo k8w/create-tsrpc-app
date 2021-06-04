@@ -65,16 +65,14 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
             choices: featureChoices,
             pageSize: 20
         }], { features: options.features })).features as CreateOptions['features'];
-        if (!options.features) {
-            if (!(await inquirer.prompt({
-                type: 'confirm',
-                name: 'res',
-                message: '确认？',
-                default: true
-            })).res) {
-                console.log('已取消'.gray);
-                process.exit(-1);
-            }
+        if (!(await inquirer.prompt({
+            type: 'confirm',
+            name: 'res',
+            message: '确认？',
+            default: true
+        })).res) {
+            console.log('已取消'.gray);
+            process.exit(-1);
         }
     }
 
