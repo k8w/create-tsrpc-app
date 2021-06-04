@@ -68,10 +68,10 @@ export async function createApp(options: CreateOptions) {
     else {
         console.log('🟨 TSRPC APP 创建完成，但存在以下问题：\n'.yellow);
         if (!npmResServer) {
-            console.log(`❌ 服务端 npm install 失败，可执行以下命令手动安装 `.red, `\n\n    cd ${server.serverDirName}\n    npm install\n`);
+            console.log(`❌ 服务端 npm install 失败，可执行以下命令手动安装 `.red, `\n\n    cd ${server.serverDirName}\n    npm install\n`.cyan);
         }
         if (!npmResClient) {
-            console.log(`❌ 客户端 npm install 失败，可执行以下命令手动安装 `.red, `\n\n    cd ${client!.clientDirName}\n    npm install\n`);
+            console.log(`❌ 客户端 npm install 失败，可执行以下命令手动安装 `.red, `\n\n    cd ${client!.clientDirName}\n    npm install\n`.cyan);
         }
     }
 
