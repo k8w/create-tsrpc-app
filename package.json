@@ -1,6 +1,6 @@
 {
   "name": "create-tsrpc-app",
-  "version": "0.1.0",
+  "version": "0.2.0-dev.0",
   "description": "Quickly create TSRPC full-stack applications",
   "main": "index.js",
   "scripts": {
@@ -8,8 +8,7 @@
     "switch:ws": "node scripts/switch.js ws",
     "switch:http": "node scripts/switch.js http",
     "sync": "node scripts/sync.js http && node scripts/sync.js ws",
-    "prebuild": "node scripts/checkTemplates.js",
-    "build": "shx rm -rf dist && rollup -c && node scripts/copyTemplates.js && shx cp package.json LICENSE README.md dist/"
+    "build": "shx rm -rf dist && rollup -c && node scripts/copyTemplates.js && node scripts/copyPackageJSON.js && shx cp LICENSE README.md dist/"
   },
   "repository": {
     "type": "git",

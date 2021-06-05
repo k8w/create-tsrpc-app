@@ -1,1 +1,3 @@
-export const i18n = {} as any;
+import { i18nZhCn } from "./zh-cn";
+
+export const i18nEnUs = i18nZhCn;

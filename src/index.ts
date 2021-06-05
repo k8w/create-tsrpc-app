@@ -1,6 +1,7 @@
 import 'colors';
 import fs from 'fs';
 import minimist from 'minimist';
+import { i18n } from './i18n/i18n';
 import { createApp } from './models/createApp';
 import { CreateOptions } from './models/CreateOptions';
 import { inputCreateOptions } from './models/inputCreateOptions';
@@ -37,7 +38,7 @@ async function main() {
     if (args.presets) {
         let presetsOptions = presets[args.presets];
         if (!presetsOptions) {
-            throw new Error(`Presets 不存在：${args.presets.yellow}`)
+            throw new Error(i18n.presetsNotExist(args.presets))
         }
         initOptions = {
             ...presetsOptions,
@@ -52,6 +53,6 @@ async function main() {
 };
 
 function exitWithError(e: Error) {
-    console.error(' ERROR '.bgRed.white, e.message.red);
+    console.error(i18n.flagError, e.message.red);
     process.exit(-1);
 }

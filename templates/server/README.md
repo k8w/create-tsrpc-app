@@ -1,10 +1,15 @@
 # TSRPC Server
 
-## NPM Scripts
-
-### Launch local dev server
+## Run
+### Local Dev Server
 ```
 npm run dev
+```
+
+### Unit Test
+Execute `npm run dev` first, then execute:
+```
+npm run test
 ```
 
 ### Build
@@ -12,22 +17,23 @@ npm run dev
 npm run build
 ```
 
+---
+
+## Files
 ### Generate ServiceProto
 ```
 npm run proto
 ```
 
-### Sync shared code to client
-```
-npm run sync
-```
-
-### Auto generate API files
+### Generate API templates
 ```
 npm run api
 ```
 
-### Run unit test
+### Sync shared code to client
+
 ```
-npm run test
+npm run sync
 ```
+
+> If you chose symlink when using `create-tsrpc-app`, it would re-create the symlink instead of copy files.
