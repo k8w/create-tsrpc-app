@@ -1,6 +1,11 @@
 import { CreateOptions } from "./CreateOptions";
 
 export const presets: { [key: string]: Omit<CreateOptions, 'projectDir'> } = {
+    ['server-only']: {
+        server: 'http',
+        client: 'none',
+        features: ['unitTest']
+    },
     browser: {
         server: 'http',
         client: 'browser',
@@ -11,7 +16,7 @@ export const presets: { [key: string]: Omit<CreateOptions, 'projectDir'> } = {
         client: 'react',
         features: []
     },
-    vue: {
+    vue2: {
         server: 'http',
         client: 'vue2',
         features: []

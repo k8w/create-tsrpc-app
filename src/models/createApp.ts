@@ -106,7 +106,7 @@ async function createServer(options: CreateOptions, registry: string | undefined
     }
     else {
         let content = await fs.readFile(path.join(serverDir, 'README.md'), 'utf-8');
-        content = content.replace(/### Run unit test[\s\S]+npm run test\s*```/, '');
+        content = content.replace(/### Unit Test[\s\S]+npm run test\s*```/, '');
         await fs.writeFile(path.join(serverDir, 'README.md'), content, 'utf-8');
     }
 

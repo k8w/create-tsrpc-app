@@ -1,5 +1,15 @@
+import { VERSION } from "../models/version";
+
 export const i18nZhCn = {
-    help: `create-tsrpc-app <app-name> [options]`.trim(),
+    help: `
+${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
+
+选项：
+    -h, --help     查看帮助信息
+    -v, --version  查看版本号
+    -p, --presets  使用预设配置（跳过交互式配置）
+                   可选 ${'browser, react, vue2, vue3, server-only'.cyan}
+`,
     errCmd: '命令格式有误，键入 npx create-tsrpc-app -h 以查看帮助。',
     server: '服务端',
     client: '客户端',
@@ -14,7 +24,7 @@ export const i18nZhCn = {
     presetsNotExist: (presets: string) => `Presets 不存在：${presets.yellow}`,
 
     // Input Create Options
-    inputProjectDir: '请输入项目目录名：',
+    inputProjectDir: '请输入要创建的项目目录名：',
     dirNotEmpty: '目标文件夹不为空，请先清空或删除目标文件夹再创建。',
     selectServerType: '请选择服务端项目类型：',
     httpShortService: 'HTTP 短连接服务',
@@ -38,9 +48,9 @@ export const i18nZhCn = {
     npmInstall: (endName: string) => `安装${endName} NPM 依赖`,
     mayLongPleaseWait: '（可能略久，请稍等）...',
     createApp: (appName: string) => `创建 TSRPC 应用: ${appName.green}`,
-    createAppSucc: '✅ TSRPC APP 创建成功，运行以下命令启动本地开发：\n',
+    createAppSucc: '✅ TSRPC APP 创建成功，在项目目录执行以下命令启动本地开发：\n',
     createAppSuccWithProblems: '🟨 TSRPC APP 创建完成，但存在以下问题：\n',
-    npmInstallFailed: (endName: string, dirName: string) => `❌ ${endName} "npm install" 失败，可执行以下命令手动安装 `.red +
+    npmInstallFailed: (endName: string, dirName: string) => `❌ ${endName} "npm install" 失败，可在项目目录执行以下命令手动安装 `.red +
         `\n\n    cd ${dirName}\n    npm install\n`.cyan,
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,
     genPackageJson: (dirName: string) => `生成 "${dirName}/package.json"`,

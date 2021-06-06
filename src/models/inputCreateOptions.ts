@@ -40,7 +40,7 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     ], options.client);
     let clientName = client === 'browser' ? i18n.browser : client === 'wxapp' ? i18n.wxApp : i18n.client;
 
-    if (client === 'browser') {
+    if (client === 'browser' && !options.client) {
         client = await select(i18n.selectFrontFramework, [
             { name: i18n.ffBrowser, value: 'browser' },
             { name: i18n.ffReact, value: 'react' },
@@ -66,7 +66,7 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
             choices: featureChoices,
             pageSize: 20
         }], { features: options.features })).features as CreateOptions['features'];
-        if (!features.length && !(await inquirer.prompt({
+        if (!features.length && !options.features && !(await inquirer.prompt({
             type: 'confirm',
             name: 'res',
             message: i18n['confirm?'],

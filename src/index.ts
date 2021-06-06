@@ -1,13 +1,17 @@
 import 'colors';
 import fs from 'fs';
 import minimist from 'minimist';
+import { cmdHelp } from './commands/help';
 import { i18n } from './i18n/i18n';
 import { createApp } from './models/createApp';
 import { CreateOptions } from './models/CreateOptions';
 import { inputCreateOptions } from './models/inputCreateOptions';
 import { presets } from './models/presets';
+import { VERSION } from './models/version';
 
-main().catch(e => {
+main().then(() => {
+    process.exit(0);
+}).catch(e => {
     exitWithError(e);
 });
 
@@ -18,9 +22,21 @@ process.on('unhandledRejection', (e: Error) => {
 async function main() {
     const args = minimist(process.argv.slice(2), {
         alias: {
-            p: 'presets'
+            p: 'presets',
+            h: 'help',
+            v: 'version'
         }
     });
+
+    if (args.version) {
+        console.log(VERSION);
+        return;
+    }
+
+    if (args.help) {
+        cmdHelp();
+        return;
+    }
 
     // Check project-dir
     let projectDir = args._[0];
