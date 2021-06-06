@@ -1,16 +1,14 @@
-import { VERSION } from "../models/version";
 
 export const i18nZhCn = {
     help: `
 ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
 
 选项：
-    -h, --help     查看帮助信息
-    -v, --version  查看版本号
-    -p, --presets  使用预设配置（跳过交互式配置）
-                   可选 ${'browser, react, vue2, vue3, server-only'.cyan}
+    -h, --help             查看帮助信息
+    -v, --version          查看版本号
+    -p, --presets <预设名>  使用预设配置（跳过交互式配置）
+                           可选 ${'browser, react, vue2, vue3, server-only'.cyan}
 `,
-    errCmd: '命令格式有误，键入 npx create-tsrpc-app -h 以查看帮助。',
     server: '服务端',
     client: '客户端',
     frontend: '前端',
@@ -41,15 +39,15 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     ffVue3: 'Vue 3.x',
     selectFeatures: '请按勾选需要的特性：',
     featureUnitTest: '单元测试' + '（Mocha）'.yellow,
-    featureSymlink: '使用 Symlink 自动同步共享目录',
+    featureSymlink: '使用 Symlink 同步共享代码',
 
     // CreateApp
     checkNpmEnv: '检测 NPM 环境',
-    npmInstall: (endName: string) => `安装${endName} NPM 依赖`,
+    npmInstall: (endName: string) => `安装 "${endName}" 下的 NPM 依赖`,
     mayLongPleaseWait: '（可能略久，请稍等）...',
     createApp: (appName: string) => `创建 TSRPC 应用: ${appName.green}`,
-    createAppSucc: '✅ TSRPC APP 创建成功，在项目目录执行以下命令启动本地开发：\n',
-    createAppSuccWithProblems: '🟨 TSRPC APP 创建完成，但存在以下问题：\n',
+    createAppSucc: '✅ TSRPC APP 创建成功，进入项目目录，执行以下命令启动本地开发：\n'.green,
+    createAppSuccWithProblems: '🟨 TSRPC APP 创建完成，但存在以下问题：\n'.yellow,
     npmInstallFailed: (endName: string, dirName: string) => `❌ ${endName} "npm install" 失败，可在项目目录执行以下命令手动安装 `.red +
         `\n\n    cd ${dirName}\n    npm install\n`.cyan,
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,

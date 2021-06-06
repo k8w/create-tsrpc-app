@@ -34,10 +34,12 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
 
     let client = await select(i18n.selectClientType, [
         { name: i18n.browser, value: 'browser' },
-        { name: i18n.wxApp, value: 'wxapp' },
-        { name: i18n.nodeJs, value: 'node' },
+        new inquirer.Separator((i18n.wxApp + ' (comming soon)').gray),
+        new inquirer.Separator((i18n.nodeJs + ' (comming soon)').gray),
+        // { name: i18n.wxApp, value: 'wxapp' },
+        // { name: i18n.nodeJs, value: 'node' },
         { name: i18n.noClient, value: 'none' },
-    ], options.client);
+    ] as any, options.client);
     let clientName = client === 'browser' ? i18n.browser : client === 'wxapp' ? i18n.wxApp : i18n.client;
 
     if (client === 'browser' && !options.client) {

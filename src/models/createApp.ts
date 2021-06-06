@@ -9,7 +9,7 @@ import { getInstallEnv, npmInstall } from "./npmInstall";
 const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, '../templates') : path.resolve(__dirname, '../../templates');
 let totalStep = 0;
 
-const SCREEN_WIDTH = 24;
+const SCREEN_WIDTH = 40;
 
 export async function createApp(options: CreateOptions) {
     spinner.text = '';
@@ -21,7 +21,7 @@ export async function createApp(options: CreateOptions) {
     // 判断安装环境
     doing(i18n.checkNpmEnv);
     let installEnv = await getInstallEnv();
-    done(true, `${i18n.checkNpmEnv}: ` + `Command: ${installEnv.pkgManager}` + (installEnv.registry ? `, Registry: ${installEnv.registry}`.cyan : ''));
+    done(true, `${i18n.checkNpmEnv}: ` + (`Command: ${installEnv.pkgManager.bold}` + (installEnv.registry ? `, Registry: ${installEnv.registry}` : '')).cyan);
 
     // 创建项目
     let server = await createServer(options, installEnv.registry);
@@ -45,11 +45,11 @@ export async function createApp(options: CreateOptions) {
     // 安装依赖
     let npmResServer = false;
     let npmResClient = !client;
-    doing(i18n.npmInstall(i18n.server), i18n.mayLongPleaseWait),
+    doing(i18n.npmInstall(server.serverDirName), i18n.mayLongPleaseWait),
         npmResServer = await npmInstall(installEnv.cmd, server.serverDir);
     done(npmResServer);
     if (client) {
-        doing(i18n.npmInstall(i18n.client), i18n.mayLongPleaseWait)
+        doing(i18n.npmInstall(client.clientDirName), i18n.mayLongPleaseWait)
         npmResClient = await npmInstall(installEnv.cmd, client.clientDir);
         done(npmResClient);
     }
@@ -60,7 +60,7 @@ export async function createApp(options: CreateOptions) {
     const clientEnd = client?.clientDirName === 'client' ? i18n.client : i18n.frontend;
 
     if (npmResServer && npmResClient) {
-        console.log(i18n.createAppSucc.green);
+        console.log(i18n.createAppSucc);
         if (client) {
             console.log(`    = ${serverEnd} =\n`)
             console.log(`    cd ${server.serverDirName}\n    npm run dev\n`.cyan);
@@ -72,7 +72,7 @@ export async function createApp(options: CreateOptions) {
         }
     }
     else {
-        console.log(i18n.createAppSuccWithProblems.yellow);
+        console.log(i18n.createAppSuccWithProblems);
         if (!npmResServer) {
             console.log(i18n.npmInstallFailed(serverEnd, server.serverDirName));
         }
@@ -131,7 +131,7 @@ async function createServer(options: CreateOptions, registry: string | undefined
     done();
 
     // 安装依赖
-    doing('npm-check-update')
+    doing(`npm-check-update`)
     await ncu.run({
         packageFile: path.join(serverDir, 'package.json'),
         upgrade: true,

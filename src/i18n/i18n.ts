@@ -5,4 +5,4 @@ import { i18nZhCn } from "./zh-cn";
 // 根据系统语言判断中英文
 export const i18n = osLocale.sync() === 'zh-CN' ? i18nZhCn : i18nEnUs
 // TODO en-us
-// export const i18n = zhCN;
+// export const i18n = i18nEnUs;
