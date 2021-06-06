@@ -1,6 +1,6 @@
 import { ApiCall } from "tsrpc";
+import { AllData } from "../models/AllData";
 import { ReqAddData, ResAddData } from "../shared/protocols/PtlAddData";
-import { AllData } from "./AllData";
 
 export async function ApiAddData(call: ApiCall<ReqAddData, ResAddData>) {
     // Error
