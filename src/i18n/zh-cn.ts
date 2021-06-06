@@ -22,6 +22,7 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     presetsNotExist: (presets: string) => `Presets 不存在：${presets.yellow}`,
 
     // Input Create Options
+    welcome: '=== 欢迎创建 TSRPC 应用 ==='.green.bold,
     inputProjectDir: '请输入要创建的项目目录名：',
     dirNotEmpty: '目标文件夹不为空，请先清空或删除目标文件夹再创建。',
     selectServerType: '请选择服务端项目类型：',
@@ -45,7 +46,7 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     checkNpmEnv: '检测 NPM 环境',
     npmInstall: (endName: string) => `安装 "${endName}" 下的 NPM 依赖`,
     mayLongPleaseWait: '（可能略久，请稍等）...',
-    createApp: (appName: string) => `创建 TSRPC 应用: ${appName.green}`,
+    createApp: (appName: string) => `创建 TSRPC 应用: ${appName.green.bold}`,
     createAppSucc: '✅ TSRPC APP 创建成功，进入项目目录，执行以下命令启动本地开发：\n'.green,
     createAppSuccWithProblems: '🟨 TSRPC APP 创建完成，但存在以下问题：\n'.yellow,
     npmInstallFailed: (endName: string, dirName: string) => `❌ ${endName} "npm install" 失败，可在项目目录执行以下命令手动安装 `.red +

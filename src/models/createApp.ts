@@ -21,7 +21,10 @@ export async function createApp(options: CreateOptions) {
     // 判断安装环境
     doing(i18n.checkNpmEnv);
     let installEnv = await getInstallEnv();
-    done(true, `${i18n.checkNpmEnv}: ` + (`Command: ${installEnv.pkgManager.bold}` + (installEnv.registry ? `, Registry: ${installEnv.registry}` : '')).cyan);
+    done(true, `${i18n.checkNpmEnv}: `
+        + 'Command: '.cyan
+        + (installEnv.pkgManager.yellow.bold)
+        + (installEnv.registry ? (', Registry: '.cyan + installEnv.registry.yellow) : ''));
 
     // 创建项目
     let server = await createServer(options, installEnv.registry);

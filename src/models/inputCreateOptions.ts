@@ -12,6 +12,7 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
         console.log(i18n.createApp(path.basename(path.resolve(projectDir))));
     }
     else {
+        console.log(i18n.welcome);
         projectDir = (await inquirer.prompt([{
             type: 'input',
             name: 'projectDir',

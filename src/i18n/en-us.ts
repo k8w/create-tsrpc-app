@@ -22,6 +22,7 @@ Options：
     presetsNotExist: (presets: string) => `Presets not exists：${presets.yellow}`,
 
     // Input Create Options
+    welcome: '=== Welcome to create TSRPC APP ==='.green.bold,
     inputProjectDir: 'Input project directory name: ',
     dirNotEmpty: 'The target directory is not empty, clear it and try again.',
     selectServerType: 'Select server project type: ',
