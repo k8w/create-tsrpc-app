@@ -1,11 +1,16 @@
 import { ServiceProto } from 'tsrpc-proto';
-import { ReqHello, ResHello } from './PtlHello'
+import { ReqAddData, ResAddData } from '../../../src-http/shared/protocols/PtlAddData'
+import { ReqGetData, ResGetData } from '../../../src-http/shared/protocols/PtlGetData'
 
 export interface ServiceType {
     api: {
-        "Hello": {
-            req: ReqHello,
-            res: ResHello
+        "AddData": {
+            req: ReqAddData,
+            res: ResAddData
+        },
+        "GetData": {
+            req: ReqGetData,
+            res: ResGetData
         }
     },
     msg: {
@@ -14,34 +19,74 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
+    "version": 1,
     "services": [
         {
             "id": 0,
-            "name": "Hello",
+            "name": "AddData",
+            "type": "api"
+        },
+        {
+            "id": 1,
+            "name": "GetData",
             "type": "api"
         }
     ],
     "types": {
-        "PtlHello/ReqHello": {
+        "PtlAddData/ReqAddData": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "name",
+                    "name": "content",
                     "type": {
                         "type": "String"
                     }
                 }
             ]
         },
-        "PtlHello/ResHello": {
+        "PtlAddData/ResAddData": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "reply",
+                    "name": "time",
                     "type": {
-                        "type": "String"
+                        "type": "Date"
+                    }
+                }
+            ]
+        },
+        "PtlGetData/ReqGetData": {
+            "type": "Interface"
+        },
+        "PtlGetData/ResGetData": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "data",
+                    "type": {
+                        "type": "Array",
+                        "elementType": {
+                            "type": "Interface",
+                            "properties": [
+                                {
+                                    "id": 0,
+                                    "name": "content",
+                                    "type": {
+                                        "type": "String"
+                                    }
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "time",
+                                    "type": {
+                                        "type": "Date"
+                                    }
+                                }
+                            ]
+                        }
                     }
                 }
             ]

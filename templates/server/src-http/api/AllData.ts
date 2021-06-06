@@ -1,0 +1,1 @@
+export const AllData: { content: string, time: Date }[] = [];
