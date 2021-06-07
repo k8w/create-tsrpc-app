@@ -6,7 +6,7 @@ import { i18n } from "../i18n/i18n";
 import { CreateOptions } from "./CreateOptions";
 import { getInstallEnv, npmInstall } from "./npmInstall";
 
-const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, '../templates') : path.resolve(__dirname, '../../templates');
+const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './templates') : path.resolve(__dirname, '../../templates');
 let totalStep = 0;
 
 const SCREEN_WIDTH = 40;
