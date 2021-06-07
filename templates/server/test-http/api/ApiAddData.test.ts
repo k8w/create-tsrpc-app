@@ -7,7 +7,8 @@ import { serviceProto } from '../../src/shared/protocols/serviceProto';
 
 describe('ApiAddData', function () {
     let client = new HttpClient(serviceProto, {
-        server: 'http://127.0.0.1:3000'
+        server: 'http://127.0.0.1:3000',
+        logger: console
     });
 
     it('Success', async function () {

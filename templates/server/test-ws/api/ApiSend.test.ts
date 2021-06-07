@@ -5,9 +5,10 @@ import { serviceProto } from '../../src/shared/protocols/serviceProto';
 // 1. EXECUTE `npm run dev` TO START A LOCAL DEV SERVER
 // 2. EXECUTE `npm test` TO START UNIT TEST
 
-describe('ApiHello', function () {
+describe('ApiSend', function () {
     let client = new WsClient(serviceProto, {
-        server: 'http://127.0.0.1:3000'
+        server: 'ws://127.0.0.1:3000',
+        logger: console
     });
 
     before(async function () {
@@ -16,22 +17,19 @@ describe('ApiHello', function () {
     })
 
     it('Success', async function () {
-        let ret = await client.callApi('Hello', {
-            name: 'World'
+        let ret = await client.callApi('Send', {
+            content: 'Test'
         });
-        assert.deepStrictEqual(ret, {
-            isSucc: true,
-            res: {
-                reply: 'Hello, World'
-            }
-        })
+        assert.ok(ret.isSucc)
     });
 
     it('Error', async function () {
-        let ret = await client.callApi('Hello', {
-            name: ''
+        let ret = await client.callApi('Send', {
+            content: ''
         });
-        assert.strictEqual(ret.isSucc, false);
-        assert.strictEqual(ret.err?.type, TsrpcError.Type.ApiError);
+        assert.deepStrictEqual(ret, {
+            isSucc: false,
+            err: new TsrpcError('Content is empty')
+        });
     })
 })
