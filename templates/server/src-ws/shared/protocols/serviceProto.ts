@@ -1,6 +1,6 @@
 import { ServiceProto } from 'tsrpc-proto';
-import { MsgChat } from '../../../src-ws/shared/protocols/MsgChat'
-import { ReqSend, ResSend } from '../../../src-ws/shared/protocols/PtlSend'
+import { MsgChat } from './MsgChat';
+import { ReqSend, ResSend } from './PtlSend';
 
 export interface ServiceType {
     api: {
