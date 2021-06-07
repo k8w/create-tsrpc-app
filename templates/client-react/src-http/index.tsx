@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { HttpClient } from 'tsrpc-browser';
+import { ResGetData } from '../src-http/shared/protocols/PtlGetData';
 import './index.less';
 import { serviceProto } from './shared/protocols/serviceProto';
 
@@ -11,45 +12,60 @@ const client = new HttpClient(serviceProto, {
 
 const App = () => {
     // States
-    const [name, setName] = useState('');
-    const [reply, setReply] = useState<string>('');
+    const [input, setInput] = useState('');
+    const [list, setList] = useState<ResGetData['data']>([]);
 
-    async function onBtnSendClick() {
-        setReply('');
-
-        // ========== TSRPC Client -> callApi ==========
-        let ret = await client.callApi('Hello', {
-            name: name
-        });
+    // Reload message list
+    async function loadList() {
+        let ret = await client.callApi('GetData', {});
 
         // Error
         if (!ret.isSucc) {
-            alert('= ERROR =\n' + ret.err.message);
+            alert(ret.err.message);
             return;
         }
 
         // Success
-        setName('');
-        setReply(ret.res.reply);
+        setList(ret.res.data);
     }
 
-    return <div className="App">
-        <h1>Hello, TSRPC</h1>
+    // Send Message
+    async function send() {
+        let ret = await client.callApi('AddData', {
+            content: input
+        });
 
-        <div className="say-hello">
-            <div className="say">
-                <input type="text" className="name" placeholder="Input your name..."
-                    value={name} onChange={e => { setName(e.target.value) }}
-                />
-                <button className="btn-send" onClick={onBtnSendClick}>Say Hello</button>
-            </div>
+        // Error
+        if (!ret.isSucc) {
+            alert(ret.err.message);
+            return;
+        }
 
-            <div className="reply" style={{ display: reply ? 'block' : 'none' }}>
-                <div className="title">Server Reply</div>
-                <div className="content">{reply}</div>
-            </div>
+        // Success
+        setInput('');
+        loadList();
+    }
+
+    // Load list at first
+    useEffect(() => { loadList() }, [0]);
+
+    return <>
+        <h1>TSRPC Guestbook</h1>
+
+        <div className="send">
+            <textarea placeholder="Say something..." value={input} onChange={e => { setInput(e.target.value) }} />
+            <button onClick={send}>Send</button>
         </div>
-    </div>
+
+        <ul className="list">
+            {list.map((v, i) =>
+                <li key={i}>
+                    <div className="content">{v.content}</div>
+                    <div className="time">{v.time.toLocaleTimeString()}</div>
+                </li>
+            )}
+        </ul>
+    </>
 }
 
 ReactDOM.render(<App />, document.getElementById('app'));
