@@ -10,7 +10,7 @@ export async function ApiAddData(call: ApiCall<ReqAddData, ResAddData>) {
     }
 
     let time = new Date();
-    AllData.push({
+    AllData.unshift({
         content: call.req.content,
         time: time
     })
