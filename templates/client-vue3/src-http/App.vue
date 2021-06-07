@@ -1,63 +1,79 @@
 <template>
   <div class="App">
-    <h1>Hello, TSRPC</h1>
+    <h1>TSRPC Guestbook</h1>
 
-    <div class="say-hello">
-      <div class="say">
-        <input
-          type="text"
-          class="name"
-          v-model="name"
-          placeholder="Input your name..."
-        />
-        <button class="btn-send" v-on:click="onBtnSendClick">Say Hello</button>
-      </div>
-
-      <div class="reply" v-if="reply">
-        <div class="title">Server Reply</div>
-        <div class="content">{{ reply }}</div>
-      </div>
+    <div class="send">
+      <textarea placeholder="Say something..." v-model="input" />
+      <button v-on:click="send">Send</button>
     </div>
+
+    <ul class="list">
+      <li v-for="(v, i) in list" v-bind:key="i">
+        <div class="content">{{ v.content }}</div>
+        <div class="time">{{ v.time.toLocaleTimeString() }}</div>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { client } from "./main";
+import { HttpClient } from "tsrpc-browser";
+import { ResGetData } from "./shared/protocols/PtlGetData";
+import { serviceProto } from "./shared/protocols/serviceProto";
+
+// Create Client
+export const client = new HttpClient(serviceProto, {
+  server: "http://127.0.0.1:3000",
+});
 
 export interface AppData {
-  name: string;
-  reply: string;
+  input: string;
+  list: ResGetData["data"];
 }
 
 export default defineComponent({
   name: "App",
   data() {
     return {
-      name: "",
-      reply: "",
-    };
+      input: "",
+      list: [],
+    } as AppData;
   },
 
   methods: {
-    async onBtnSendClick() {
-      this.reply = "";
-
-      // ========== TSRPC Client -> callApi ==========
-      let ret = await client.callApi("Hello", {
-        name: this.name,
-      });
+    async loadList() {
+      let ret = await client.callApi("GetData", {});
 
       // Error
       if (!ret.isSucc) {
-        alert("= ERROR =\n" + ret.err.message);
+        alert(ret.err.message);
         return;
       }
 
       // Success
-      this.reply = ret.res.reply;
-      this.name = "";
+      this.list = ret.res.data;
     },
+
+    async send() {
+      let ret = await client.callApi("AddData", {
+        content: this.input,
+      });
+
+      // Error
+      if (!ret.isSucc) {
+        alert(ret.err.message);
+        return;
+      }
+
+      // Success
+      this.input = "";
+      this.loadList();
+    },
+  },
+
+  mounted() {
+    this.loadList();
   },
 });
 </script>
