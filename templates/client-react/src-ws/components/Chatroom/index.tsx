@@ -12,6 +12,7 @@ export const Chatroom = (props: { title: string }) => {
         logger: console
     }));
 
+    // Send input message
     async function send() {
         let ret = await client.callApi('Send', {
             content: input
