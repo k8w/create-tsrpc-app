@@ -20,11 +20,11 @@
 
 <script lang="ts">
 import { WsClient } from "tsrpc-browser";
-import Vue from "vue";
+import { defineComponent, nextTick } from "vue";
 import { MsgChat } from "../shared/protocols/MsgChat";
 import { serviceProto } from "../shared/protocols/serviceProto";
 
-export default Vue.extend({
+export default defineComponent({
   name: "Chatroom",
   data() {
     return {
@@ -48,12 +48,12 @@ export default Vue.extend({
     // Listen Msg
     this.client.listenMsg("Chat", (v) => {
       this.list.push(v);
-      
+
       // Scroll the list to the bottom
-      Vue.nextTick(()=>{
+      nextTick(() => {
         const ul = this.$refs.ul as HTMLElement;
         ul.scrollTo(0, ul.scrollHeight);
-      })
+      });
     });
 
     // When disconnected

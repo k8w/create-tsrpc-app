@@ -58,7 +58,6 @@ export class Chatroom {
 
         // Success
         this.input.value = '';
-        console.log('time', ret.res.time)
     }
 
     onChatMsg(msg: MsgChat) {

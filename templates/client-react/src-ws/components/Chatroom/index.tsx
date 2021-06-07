@@ -26,7 +26,6 @@ export const Chatroom = (props: { title: string }) => {
 
         // Success
         setInput('');
-        console.log('time', ret.res.time)
     }
 
     // on mounted

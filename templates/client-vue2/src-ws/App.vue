@@ -1,6 +1,6 @@
 <template>
   <div class="App">
-    <h1>Hello, TSRPC</h1>
+    <h1>TSRPC Chatroom</h1>
 
     <div>
       <Chatroom />
@@ -10,11 +10,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
 import Chatroom from "./components/Chatroom.vue";
 
-@Component
-export default class App extends Vue {}
+export default {
+  name: "App",
+  components: {
+    Chatroom,
+  },
+};
 </script>
 
 <style lang="less">
