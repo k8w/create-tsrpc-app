@@ -7,7 +7,7 @@
     "build": "webpack --mode=production"
   },
   "devDependencies": {
-    "@types/react": "^17.0.9",
+    "@types/react": "*",
     "@types/react-dom": "^17.0.6",
     "copy-webpack-plugin": "^9.0.0",
     "css-loader": "^5.2.6",
@@ -27,6 +27,6 @@
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "tsrpc-browser": "^3.0.0-dev.13"
+    "tsrpc-browser": "^3.0.0-dev.15"
   }
 }

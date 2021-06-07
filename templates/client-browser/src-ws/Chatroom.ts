@@ -1,7 +1,7 @@
 import { WsClient } from "tsrpc-browser";
 import { MsgChat } from "../src-ws/shared/protocols/MsgChat";
+import './index.less';
 import { serviceProto } from './shared/protocols/serviceProto';
-
 
 export class Chatroom {
 
@@ -37,6 +37,12 @@ export class Chatroom {
                 this.send();
             }
         }
+
+        // When disconnected
+        this.client.flows.postDisconnectFlow.push(v => {
+            alert('Server disconnected');
+            return v;
+        })
     }
 
     async send() {
@@ -52,7 +58,7 @@ export class Chatroom {
 
         // Success
         this.input.value = '';
-        console.log('Send successfully, time=', ret.res.time)
+        console.log('time', ret.res.time)
     }
 
     onChatMsg(msg: MsgChat) {
