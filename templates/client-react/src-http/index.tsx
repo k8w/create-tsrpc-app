@@ -49,7 +49,7 @@ const App = () => {
     // Load list at first
     useEffect(() => { loadList() }, [0]);
 
-    return <>
+    return <div className='App'>
         <h1>TSRPC Guestbook</h1>
 
         <div className="send">
@@ -65,7 +65,7 @@ const App = () => {
                 </li>
             )}
         </ul>
-    </>
+    </div>
 }
 
 ReactDOM.render(<App />, document.getElementById('app'));

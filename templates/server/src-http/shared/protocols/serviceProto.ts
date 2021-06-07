@@ -1,6 +1,6 @@
 import { ServiceProto } from 'tsrpc-proto';
-import { ReqAddData, ResAddData } from '../../../src-http/shared/protocols/PtlAddData'
-import { ReqGetData, ResGetData } from '../../../src-http/shared/protocols/PtlGetData'
+import { ReqAddData, ResAddData } from './PtlAddData';
+import { ReqGetData, ResGetData } from './PtlGetData';
 
 export interface ServiceType {
     api: {
