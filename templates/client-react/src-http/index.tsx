@@ -7,7 +7,8 @@ import { serviceProto } from './shared/protocols/serviceProto';
 
 // Create Client
 const client = new HttpClient(serviceProto, {
-    server: 'http://127.0.0.1:3000'
+    server: 'http://127.0.0.1:3000',
+    logger: console
 });
 
 const App = () => {

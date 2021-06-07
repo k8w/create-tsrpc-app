@@ -11,7 +11,8 @@ export class Chatroom {
     list: HTMLUListElement;
 
     client = new WsClient(serviceProto, {
-        server: 'ws://127.0.0.1:3000'
+        server: 'ws://127.0.0.1:3000',
+        logger: console
     })
 
     constructor(elem: HTMLDivElement) {

@@ -9,8 +9,8 @@
 
     <ul class="list">
       <li v-for="(v, i) in list" v-bind:key="i">
-        <div class="content">{{v.content}}</div>
-        <div class="time">{{v.time.toLocaleTimeString()}}</div>
+        <div class="content">{{ v.content }}</div>
+        <div class="time">{{ v.time.toLocaleTimeString() }}</div>
       </li>
     </ul>
   </div>
@@ -25,6 +25,7 @@ import { serviceProto } from "./shared/protocols/serviceProto";
 // Create Client
 export const client = new HttpClient(serviceProto, {
   server: "http://127.0.0.1:3000",
+  logger: console,
 });
 
 @Component
