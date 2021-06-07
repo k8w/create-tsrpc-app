@@ -11,7 +11,9 @@ let files = glob.sync('templates/**/*', {
         'templates/**/package-lock.json',
         'templates/**/src/**',
         'templates/**/test/**',
-        'templates/client-browser/public/**'
+        'templates/client-browser/public/**',
+        'templates/client*/src*/shared/**',
+
     ],
     nocase: true
 }).concat(glob.sync('templates/*/.gitignore'));
