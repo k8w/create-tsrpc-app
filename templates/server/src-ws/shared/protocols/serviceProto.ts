@@ -1,16 +1,16 @@
 import { ServiceProto } from 'tsrpc-proto';
-import { MsgHello } from './MsgHello'
-import { ReqHello, ResHello } from './PtlHello'
+import { MsgChat } from '../../../src-ws/shared/protocols/MsgChat'
+import { ReqSend, ResSend } from '../../../src-ws/shared/protocols/PtlSend'
 
 export interface ServiceType {
     api: {
-        "Hello": {
-            req: ReqHello,
-            res: ResHello
+        "Send": {
+            req: ReqSend,
+            res: ResSend
         }
     },
     msg: {
-        "Hello": MsgHello
+        "Chat": MsgChat
     }
 }
 
@@ -18,22 +18,22 @@ export const serviceProto: ServiceProto<ServiceType> = {
     "services": [
         {
             "id": 0,
-            "name": "Hello",
+            "name": "Chat",
             "type": "msg"
         },
         {
             "id": 1,
-            "name": "Hello",
+            "name": "Send",
             "type": "api"
         }
     ],
     "types": {
-        "MsgHello/MsgHello": {
+        "MsgChat/MsgChat": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "name",
+                    "name": "content",
                     "type": {
                         "type": "String"
                     }
@@ -47,26 +47,26 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "PtlHello/ReqHello": {
+        "PtlSend/ReqSend": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "name",
+                    "name": "content",
                     "type": {
                         "type": "String"
                     }
                 }
             ]
         },
-        "PtlHello/ResHello": {
+        "PtlSend/ResSend": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "reply",
+                    "name": "time",
                     "type": {
-                        "type": "String"
+                        "type": "Date"
                     }
                 }
             ]

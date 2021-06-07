@@ -10,30 +10,32 @@
 </head>
 
 <body>
-    <h1>Hello, TSRPC</h1>
+    <h1>TSRPC Chatroom</h1>
 
-    <div class="say-hello">
-        <div class="say">
-            <input type="text" class="name" placeholder="Input your name..." />
-            <button class="btn-send">Say Hello</button>
+    <div class="app">
+        <div class="chat-room">
+            <header>Client #1</header>
+
+            <ul class="list">
+                <!-- <li>
+                    <div class="content">Hello, World</div>
+                    <div class="time">11:23:23</div>
+                </li> -->
+            </ul>
+            <div class="send">
+                <input placeholder="Say something..." />
+                <button>Send</button>
+            </div>
         </div>
 
-        <div class="reply" style="display: none;">
-            <div class="title">Server Reply</div>
-            <div class="content"></div>
+        <div class="chat-room">
+            <header>Client #2</header>
+            <ul class="list"></ul>
+            <div class="send">
+                <input placeholder="Say something..." />
+                <button>Send</button>
+            </div>
         </div>
-    </div>
-
-    <div class="server-pushed-msg">
-        <div style="font-size: 20px; font-weight: bold;">Server Pushed Messages</div>
-        <p style="font-size: 12px; color: #999;">You can open multiple pages to see the effects</p>
-
-        <ul>
-            <!-- <li>
-                Welcome <b class="name">King</b>
-                <p class="time">11:23:23</p>
-            </li> -->
-        </ul>
     </div>
 </body>
 
