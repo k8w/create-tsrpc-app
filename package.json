@@ -1,6 +1,6 @@
 {
   "name": "create-tsrpc-app",
-  "version": "0.2.0-dev.1",
+  "version": "0.2.0-dev.2",
   "description": "Quickly create TSRPC projects",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,9 @@
     "switch:http": "node scripts/switch.js http",
     "sync": "node scripts/sync.js http && node scripts/sync.js ws",
     "build": "shx rm -rf dist && rollup -c && node scripts/copyTemplates.js && shx cp LICENSE README.md dist/ && node scripts/postBuild.js"
+  },
+  "bin": {
+    "create-tsrpc-app": "./index.js"
   },
   "repository": {
     "type": "git",
