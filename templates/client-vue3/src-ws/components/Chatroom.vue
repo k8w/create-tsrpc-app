@@ -152,7 +152,7 @@ export default defineComponent({
         font-size: 14px;
         text-align: left;
         white-space: pre-wrap;
-        word-break: break-word;
+        word-wrap: break-word;
       }
 
       > .time {
