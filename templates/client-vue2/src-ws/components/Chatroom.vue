@@ -48,12 +48,12 @@ export default Vue.extend({
     // Listen Msg
     this.client.listenMsg("Chat", (v) => {
       this.list.push(v);
-      
+
       // Scroll the list to the bottom
-      Vue.nextTick(()=>{
+      Vue.nextTick(() => {
         const ul = this.$refs.ul as HTMLElement;
         ul.scrollTo(0, ul.scrollHeight);
-      })
+      });
     });
 
     // When disconnected
@@ -152,6 +152,7 @@ export default Vue.extend({
         font-size: 14px;
         text-align: left;
         white-space: pre-wrap;
+        overflow: auto;
       }
 
       > .time {

@@ -152,6 +152,7 @@ export default defineComponent({
         font-size: 14px;
         text-align: left;
         white-space: pre-wrap;
+        overflow: auto;
       }
 
       > .time {
