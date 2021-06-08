@@ -1,6 +1,6 @@
 {
   "name": "create-tsrpc-app",
-  "version": "0.2.0-dev.4",
+  "version": "0.2.0",
   "description": "Quickly create TSRPC projects",
   "main": "index.js",
   "scripts": {
