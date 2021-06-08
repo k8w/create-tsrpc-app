@@ -66,11 +66,15 @@ export async function createApp(options: CreateOptions) {
         console.log(i18n.createAppSucc);
         if (client) {
             console.log(`    = ${serverEnd} =\n`)
-            console.log(`    cd ${server.serverDirName}\n    npm run dev\n`.cyan);
+            console.log(`    cd ${path.relative('.', server.serverDir)}\n    npm run dev\n`.cyan);
             console.log(`    = ${clientEnd} =\n`)
-            console.log(`    cd ${client.clientDirName}\n    npm run dev\n`.cyan);
+            console.log(`    cd ${path.relative('.', client.clientDir)}\n    npm run dev\n`.cyan);
         }
         else {
+            let cdPath = path.relative('.', server.serverDir);
+            if (cdPath) {
+                console.log(`    cd ${cdPath}`.cyan);
+            }
             console.log(`    npm run dev\n`.cyan);
         }
     }

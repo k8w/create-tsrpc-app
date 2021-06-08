@@ -152,7 +152,7 @@ export default Vue.extend({
         font-size: 14px;
         text-align: left;
         white-space: pre-wrap;
-        overflow: auto;
+        word-break: break-word;
       }
 
       > .time {
