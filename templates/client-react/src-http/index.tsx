@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { HttpClient } from 'tsrpc-browser';
-import { ResGetData } from '../src-http/shared/protocols/PtlGetData';
+import { ResGetData } from './shared/protocols/PtlGetData';
 import './index.less';
 import { serviceProto } from './shared/protocols/serviceProto';
 

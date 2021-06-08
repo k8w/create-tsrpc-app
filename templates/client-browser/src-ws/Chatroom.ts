@@ -1,5 +1,5 @@
 import { WsClient } from "tsrpc-browser";
-import { MsgChat } from "../src-ws/shared/protocols/MsgChat";
+import { MsgChat } from "./shared/protocols/MsgChat";
 import './index.less';
 import { serviceProto } from './shared/protocols/serviceProto';
 
