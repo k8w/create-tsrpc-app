@@ -57,9 +57,9 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     if (serverFeatures.length || clientFeatures.length) {
         let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
         let featureChoices = platformClientFeatures.length ? [
-            new inquirer.Separator(` ===== ${i18n.server} ===== `),
+            // new inquirer.Separator(` ===== ${i18n.server} ===== `),
             ...serverFeatures,
-            new inquirer.Separator(` ===== ${clientName} ===== `),
+            // new inquirer.Separator(` ===== ${clientName} ===== `),
             ...platformClientFeatures
         ] : serverFeatures;
         features = (await inquirer.prompt([{

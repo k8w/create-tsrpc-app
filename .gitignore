@@ -6,6 +6,6 @@ templates/client-browser/public
 templates/**/package-lock.json
 templates/client*/src-ws/shared
 templates/client*/src-http/shared
-
+projects
 
 .DS_STORE

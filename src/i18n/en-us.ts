@@ -1,4 +1,3 @@
-
 export const i18nEnUs = {
     help: `
 ${('create-tsrpc-app '.green + '<project-dir>'.yellow).bold + ' [options]'}
@@ -39,7 +38,7 @@ Options：
     ffVue2: 'Vue 2.x',
     ffVue3: 'Vue 3.x',
     selectFeatures: 'Check needed features: ',
-    featureUnitTest: 'Unit Test' + '（Mocha）'.yellow,
+    featureUnitTest: 'Server Unit Test' + '（Mocha）'.yellow,
     featureSymlink: 'Use Symlink to sync shared codes',
 
     // CreateApp
