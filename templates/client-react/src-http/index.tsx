@@ -5,7 +5,6 @@ import { ResGetData } from './shared/protocols/PtlGetData';
 import './index.less';
 import { serviceProto } from './shared/protocols/serviceProto';
 
-// Create Client
 const client = new HttpClient(serviceProto, {
     server: 'http://127.0.0.1:3000',
     logger: console
@@ -52,12 +51,10 @@ const App = () => {
 
     return <div className='App'>
         <h1>TSRPC Guestbook</h1>
-
         <div className="send">
             <textarea placeholder="Say something..." value={input} onChange={e => { setInput(e.target.value) }} />
             <button onClick={send}>Send</button>
         </div>
-
         <ul className="list">
             {list.map((v, i) =>
                 <li key={i}>
