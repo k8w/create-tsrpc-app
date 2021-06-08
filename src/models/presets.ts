@@ -1,7 +1,7 @@
 import { CreateOptions } from "./CreateOptions";
 
 export const presets: { [key: string]: Omit<CreateOptions, 'projectDir'> } = {
-    ['server-only']: {
+    server: {
         server: 'http',
         client: 'none',
         features: ['unitTest']

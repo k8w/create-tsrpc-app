@@ -7,7 +7,7 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     -h, --help              查看帮助信息
     -v, --version           查看版本号
     -p, --presets <预设名>  使用预设配置（跳过交互式配置）
-                            可选 ${'browser, react, vue2, vue3, server-only'.cyan}
+                            可选 ${'browser, react, vue2, vue3, server'.cyan}
 `,
     server: '服务端',
     client: '客户端',

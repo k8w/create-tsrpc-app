@@ -6,7 +6,7 @@ Options：
     -h, --help                  Output help information
     -v, --version               Output version number
     -p, --presets <presetName>  Use preset（skip interactive configuration）
-                                Presets: ${'browser, react, vue2, vue3, server-only'.cyan}
+                                Presets: ${'browser, react, vue2, vue3, server'.cyan}
 `,
     server: 'server',
     client: 'client',
