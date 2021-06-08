@@ -12,7 +12,7 @@ export async function npmInstall(cmd: string, cwd: string): Promise<boolean> {
 
 export async function getInstallEnv(): Promise<{ cmd: string, pkgManager: 'npm' | 'yarn', registry?: string }> {
     let pkgManager = await getPkgManager();
-    let cmd = pkgManager === 'npm' ? 'npm i' : 'yarn';
+    let cmd = pkgManager === 'npm' ? 'npm i --force' : 'yarn';
     let registry = await getRegistry(pkgManager);
 
     return {
