@@ -23,7 +23,7 @@ Options：
     // Input Create Options
     welcome: '=== Welcome to create TSRPC APP ==='.green.bold,
     inputProjectDir: 'Input project directory name: ',
-    dirNotEmpty: 'The target directory is not empty, clear it and try again.',
+    dirNotEmpty: 'The target directory is not empty, please clear or delete it and try again.',
     selectServerType: 'Select server project type: ',
     httpShortService: 'HTTP short connection',
     wsLongService: 'WebSocket long connection',
