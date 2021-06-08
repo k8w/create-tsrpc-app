@@ -151,7 +151,7 @@ export default defineComponent({
       > .content {
         font-size: 14px;
         text-align: left;
-        white-space: pre;
+        white-space: pre-wrap;
       }
 
       > .time {
