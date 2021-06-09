@@ -17,8 +17,8 @@
 </template>
 
 <script lang="ts">
+import Vue from "vue";
 import { HttpClient } from "tsrpc-browser";
-import { Component, Vue } from "vue-property-decorator";
 import { ResGetData } from "./shared/protocols/PtlGetData";
 import { serviceProto } from "./shared/protocols/serviceProto";
 
@@ -28,44 +28,93 @@ export const client = new HttpClient(serviceProto, {
   logger: console,
 });
 
-@Component
-export default class App extends Vue {
-  input = "";
-  list: ResGetData["data"] = [];
-
-  async loadList(): Promise<void> {
-    let ret = await client.callApi("GetData", {});
-
-    // Error
-    if (!ret.isSucc) {
-      alert(ret.err.message);
-      return;
-    }
-
-    // Success
-    this.list = ret.res.data;
-  }
-
-  async send(): Promise<void> {
-    let ret = await client.callApi("AddData", {
-      content: this.input,
-    });
-
-    // Error
-    if (!ret.isSucc) {
-      alert(ret.err.message);
-      return;
-    }
-
-    // Success
-    this.input = "";
-    this.loadList();
-  }
-
-  mounted(): void {
-    this.loadList();
-  }
+export interface AppData {
+  input: string;
+  list: ResGetData["data"];
 }
+
+export default Vue.extend({
+  name: "App",
+  data() {
+    return {
+      input: "",
+      list: [],
+    } as AppData;
+  },
+
+  methods: {
+    async loadList() {
+      let ret = await client.callApi("GetData", {});
+
+      // Error
+      if (!ret.isSucc) {
+        alert(ret.err.message);
+        return;
+      }
+
+      // Success
+      this.list = ret.res.data;
+    },
+
+    async send() {
+      let ret = await client.callApi("AddData", {
+        content: this.input,
+      });
+
+      // Error
+      if (!ret.isSucc) {
+        alert(ret.err.message);
+        return;
+      }
+
+      // Success
+      this.input = "";
+      this.loadList();
+    },
+  },
+
+  mounted() {
+    this.loadList();
+  },
+});
+// @Component
+// export default class App extends Vue {
+//   input = "";
+//   list: ResGetData["data"] = [];
+
+//   async loadList(): Promise<void> {
+//     let ret = await client.callApi("GetData", {});
+
+//     // Error
+//     if (!ret.isSucc) {
+//       alert(ret.err.message);
+//       return;
+//     }
+
+//     // Success
+//     this.list = ret.res.data;
+//   }
+
+//   async send(): Promise<void> {
+//     let ret = await client.callApi("AddData", {
+//       content: this.input,
+//     });
+
+//     // Error
+//     if (!ret.isSucc) {
+//       alert(ret.err.message);
+//       return;
+//     }
+
+//     // Success
+//     this.input = "";
+//     this.loadList();
+//   }
+
+//   mounted(): void {
+//     this.loadList();
+//   }
+// }
 </script>
 
 <style lang="less">
