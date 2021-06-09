@@ -6,7 +6,7 @@ import { i18n } from "../i18n/i18n";
 import { CreateOptions } from "./CreateOptions";
 import { getInstallEnv, npmInstall } from "./npmInstall";
 
-const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './templates') : path.resolve(__dirname, '../../templates');
+const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './templates') : path.resolve(__dirname, '../../dist/templates');
 let totalStep = 0;
 
 const SCREEN_WIDTH = 40;
@@ -105,8 +105,9 @@ async function createServer(options: CreateOptions, registry: string | undefined
     // 复制文件
     doing(i18n.copyFiles(serverDirName))
     await fs.ensureDir(serverDir);
-    await copyRootFiles(path.join(tplDir, 'server'), serverDir);
+    await copyRootFiles(path.join(tplDir, 'server'), serverDir, options.features.indexOf('unitTest') === -1 ? ['.mocharc.js'] : undefined);
     await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
+    await fs.copy(path.join(tplDir, 'server', '.vscode'), path.join(serverDir, '.vscode'), { recursive: true });
     // 单元测试
     if (options.features.indexOf('unitTest') > -1) {
         await copyTypeFolder('test', options.server, path.join(tplDir, 'server'), serverDir);
@@ -190,10 +191,14 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     }
 }
 
-async function copyRootFiles(fromDir: string, toDir: string) {
+async function copyRootFiles(fromDir: string, toDir: string, ignores?: string[]) {
     let dirs = await fs.readdir(fromDir);
     for (let v of dirs) {
-        if (v !== 'package-lock.json' && (await fs.stat(path.join(fromDir, v))).isFile()) {
+        // ignores
+        if (ignores?.includes(v)) {
+            continue;
+        }
+        if ((await fs.stat(path.join(fromDir, v))).isFile()) {
             await fs.copyFile(path.join(fromDir, v), path.join(toDir, v));
         }
     }

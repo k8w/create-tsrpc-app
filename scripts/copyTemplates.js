@@ -3,20 +3,22 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
 
+fs.rmSync('dist/templates', { force: true, recursive: true });
+
 let files = glob.sync('templates/**/*', {
     ignore: [
         'templates/**/node_modules/**',
         'templates/**/dist/**',
-        'templates/**/.DS_STORE',
+        '**/.DS_Store',
         'templates/**/package-lock.json',
         'templates/**/src/**',
         'templates/**/test/**',
         'templates/client-browser/public/**',
         'templates/client*/src*/shared/**',
-
     ],
-    nocase: true
-}).concat(glob.sync('templates/*/.gitignore'));
+    nocase: true,
+    dot: true
+});
 
 let count = 0;
 files.forEach(v => {
