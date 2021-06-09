@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { HttpClient } from 'tsrpc';
+import { HttpClient, TsrpcError } from 'tsrpc';
 import { serviceProto } from '../../src/shared/protocols/serviceProto';
 
 // 1. EXECUTE `npm run dev` TO START A LOCAL DEV SERVER
@@ -22,6 +22,9 @@ describe('ApiAddData', function () {
         let ret = await client.callApi('AddData', {
             content: ''
         });
-        assert.strictEqual(ret.isSucc, false);
+        assert.deepStrictEqual(ret, {
+            isSucc: false,
+            err: new TsrpcError('Content is empty')
+        });
     })
 })
