@@ -3,8 +3,8 @@
     <h1>TSRPC Chatroom</h1>
 
     <div>
-      <Chatroom />
-      <Chatroom />
+      <Chatroom title="Client #1" />
+      <Chatroom title="Client #2" />
     </div>
   </div>
 </template>

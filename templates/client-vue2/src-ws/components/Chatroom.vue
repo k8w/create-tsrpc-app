@@ -1,6 +1,6 @@
 <template>
   <div class="Chatroom">
-    <header>Client</header>
+    <header>{{ title }}</header>
     <ul class="list" ref="ul">
       <li v-for="(v, i) in list" :key="i">
         <div class="content">{{ v.content }}</div>
@@ -26,6 +26,9 @@ import { serviceProto } from "../shared/protocols/serviceProto";
 
 export default Vue.extend({
   name: "Chatroom",
+  props: {
+    title: String,
+  },
   data() {
     return {
       input: "",
