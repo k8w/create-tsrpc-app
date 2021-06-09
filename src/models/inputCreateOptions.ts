@@ -3,9 +3,11 @@ import inquirer from "inquirer";
 import path from "path";
 import { i18n } from "../i18n/i18n";
 import { clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
+import { VERSION } from "./version";
 
 export async function inputCreateOptions(options: Partial<CreateOptions>): Promise<CreateOptions> {
     console.clear();
+    console.log(`create-tsrpc-app ${i18n.version} ${VERSION}\n`.green.bold)
 
     let projectDir = options.projectDir;
     if (projectDir) {

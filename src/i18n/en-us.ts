@@ -8,6 +8,7 @@ Options：
     -p, --presets <presetName>  Use preset（skip interactive configuration）
                                 Presets: ${'browser, react, vue2, vue3, server'.cyan}
 `,
+    version: 'version',
     server: 'server',
     client: 'client',
     frontend: 'frontend',
@@ -46,10 +47,11 @@ Options：
     npmInstall: (endName: string) => `Install NPM dependencies of "${endName}"`,
     mayLongPleaseWait: '(May take a while, please wait)...',
     createApp: (appName: string) => `Create TSRPC APP: ${appName.green}`,
-    createAppSucc: '✅ TSRPC APP created successfully.'.green + '\n\nTo run local dev server, enter project directory and execute:\n'.white,
+    createAppSucc: '✅ TSRPC APP created successfully.\n'.green,
     createAppSuccWithProblems: '🟨 TSRPC APP created, but with problems：\n'.yellow,
     npmInstallFailed: (endName: string, dirName: string) => `❌ "npm install" failed at ${endName}, you can re-execute it mannually. `.red +
-        `\n\n    cd ${dirName}\n    npm install\n`.cyan,
+        `\n\n    cd ${dirName}\n    npm install\n`.red,
+    runLocalServer: 'Run local dev server:\n',
     copyFiles: (dirName: string) => `Copy files to "${dirName}"`,
     genPackageJson: (dirName: string) => `Generate "${dirName}/package.json"`,
 }

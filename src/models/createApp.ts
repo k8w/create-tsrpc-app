@@ -48,7 +48,7 @@ export async function createApp(options: CreateOptions) {
     // 安装依赖
     let npmResServer = false;
     let npmResClient = !client;
-    doing(i18n.npmInstall(server.serverDirName === '.' ? server.serverDirName : path.dirname(server.serverDir)), i18n.mayLongPleaseWait),
+    doing(i18n.npmInstall(server.serverDirName === '.' ? path.basename(server.serverDir) : server.serverDirName), i18n.mayLongPleaseWait),
         npmResServer = await npmInstall(installEnv.cmd, server.serverDir);
     done(npmResServer);
     if (client) {
@@ -64,19 +64,6 @@ export async function createApp(options: CreateOptions) {
 
     if (npmResServer && npmResClient) {
         console.log(i18n.createAppSucc);
-        if (client) {
-            console.log(`    = ${serverEnd} =\n`)
-            console.log(`    cd ${path.relative('.', server.serverDir)}\n    npm run dev\n`.cyan);
-            console.log(`    = ${clientEnd} =\n`)
-            console.log(`    cd ${path.relative('.', client.clientDir)}\n    npm run dev\n`.cyan);
-        }
-        else {
-            let cdPath = path.relative('.', server.serverDir);
-            if (cdPath) {
-                console.log(`    cd ${cdPath}`.cyan);
-            }
-            console.log(`    npm run dev\n`.cyan);
-        }
     }
     else {
         console.log(i18n.createAppSuccWithProblems);
@@ -86,6 +73,22 @@ export async function createApp(options: CreateOptions) {
         if (!npmResClient && client) {
             console.log(i18n.npmInstallFailed(clientEnd, path.relative('.', client.clientDir)));
         }
+    }
+
+    // Run local dev server:
+    console.log(i18n.runLocalServer);
+    if (client) {
+        console.log(`= ${serverEnd} =\n`)
+        console.log(`    cd ${path.relative('.', server.serverDir)}\n    npm run dev\n`.cyan);
+        console.log(`= ${clientEnd} =\n`)
+        console.log(`    cd ${path.relative('.', client.clientDir)}\n    npm run dev\n`.cyan);
+    }
+    else {
+        let cdPath = path.relative('.', server.serverDir);
+        if (cdPath) {
+            console.log(`    cd ${cdPath}`.cyan);
+        }
+        console.log(`    npm run dev\n`.cyan);
     }
 
     spinner.text = '';

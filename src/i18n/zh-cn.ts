@@ -9,6 +9,7 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     -p, --presets <预设名>  使用预设配置（跳过交互式配置）
                             可选 ${'browser, react, vue2, vue3, server'.cyan}
 `,
+    version: '版本',
     server: '服务端',
     client: '客户端',
     frontend: '前端',
@@ -47,10 +48,11 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     npmInstall: (endName: string) => `安装 "${endName}" 下的 NPM 依赖`,
     mayLongPleaseWait: '（可能略久，请稍等）...',
     createApp: (appName: string) => `创建 TSRPC 应用: ${appName.green.bold}`,
-    createAppSucc: '✅ TSRPC APP 创建成功，进入项目目录，执行以下命令启动本地开发：\n'.green,
+    createAppSucc: '✅ TSRPC APP 创建成功。\n'.green,
     createAppSuccWithProblems: '🟨 TSRPC APP 创建完成，但存在以下问题：\n'.yellow,
+    runLocalServer: '运行本地开发服务器：\n',
     npmInstallFailed: (endName: string, dirName: string) => `❌ ${endName} "npm install" 失败，可在项目目录执行以下命令手动安装 `.red +
-        `\n\n    cd ${dirName}\n    npm install\n`.cyan,
+        `\n\n    cd ${dirName}\n    npm install\n`.red,
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,
     genPackageJson: (dirName: string) => `生成 "${dirName}/package.json"`,
 }
