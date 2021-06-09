@@ -7,14 +7,13 @@ import { VERSION } from "./version";
 
 export async function inputCreateOptions(options: Partial<CreateOptions>): Promise<CreateOptions> {
     console.clear();
-    console.log(`create-tsrpc-app ${i18n.version} ${VERSION}\n`.green.bold)
+    console.log(i18n.welcome(VERSION));
 
     let projectDir = options.projectDir;
     if (projectDir) {
         console.log(i18n.createApp(path.basename(path.resolve(projectDir))));
     }
     else {
-        console.log(i18n.welcome);
         projectDir = (await inquirer.prompt([{
             type: 'input',
             name: 'projectDir',

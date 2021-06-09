@@ -8,7 +8,7 @@ Options：
     -p, --presets <presetName>  Use preset（skip interactive configuration）
                                 Presets: ${'browser, react, vue2, vue3, server'.cyan}
 `,
-    version: 'version',
+    welcome: (version: string) => `=== Welcome to ${'create-tsrpc-app'.bold} version ${version} ===\n`.cyan,
     server: 'server',
     client: 'client',
     frontend: 'frontend',
@@ -22,7 +22,6 @@ Options：
     presetsNotExist: (presets: string) => `Presets not exists：${presets.yellow}`,
 
     // Input Create Options
-    welcome: '=== Welcome to create TSRPC APP ==='.green.bold,
     inputProjectDir: 'Input project directory name: ',
     dirNotEmpty: 'The target directory is not empty, please clear or delete it and try again.',
     selectServerType: 'Select server project type: ',

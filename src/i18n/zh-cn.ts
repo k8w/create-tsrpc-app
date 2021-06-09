@@ -9,7 +9,7 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     -p, --presets <预设名>  使用预设配置（跳过交互式配置）
                             可选 ${'browser, react, vue2, vue3, server'.cyan}
 `,
-    version: '版本',
+    welcome: (version: string) => `=== 欢迎使用 ${'create-tsrpc-app'.bold} 版本 ${version} ===\n`.cyan,
     server: '服务端',
     client: '客户端',
     frontend: '前端',
@@ -23,7 +23,6 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     presetsNotExist: (presets: string) => `Presets 不存在：${presets.yellow}`,
 
     // Input Create Options
-    welcome: '=== 欢迎创建 TSRPC 应用 ==='.green.bold,
     inputProjectDir: '请输入要创建的项目目录名：',
     dirNotEmpty: '目标文件夹不为空，请先清空或删除目标文件夹再创建。',
     selectServerType: '请选择服务端项目类型：',
