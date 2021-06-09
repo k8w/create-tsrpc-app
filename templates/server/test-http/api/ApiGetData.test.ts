@@ -21,6 +21,6 @@ describe('ApiGetData', function () {
         let ret3 = await client.callApi('GetData', {});
         assert.strictEqual(ret3.isSucc, true);
         assert.strictEqual(ret3.res!.data.length, ret1.res!.data.length + 1);
-        assert.strictEqual(ret3.res!.data[ret3.res!.data.length - 1].content, 'AABBCC');
+        assert.strictEqual(ret3.res!.data[0].content, 'AABBCC');
     });
 })
