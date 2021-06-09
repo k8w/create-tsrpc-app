@@ -48,7 +48,7 @@ export async function createApp(options: CreateOptions) {
     // 安装依赖
     let npmResServer = false;
     let npmResClient = !client;
-    doing(i18n.npmInstall(server.serverDirName), i18n.mayLongPleaseWait),
+    doing(i18n.npmInstall(server.serverDirName === '.' ? server.serverDirName : path.dirname(server.serverDir)), i18n.mayLongPleaseWait),
         npmResServer = await npmInstall(installEnv.cmd, server.serverDir);
     done(npmResServer);
     if (client) {

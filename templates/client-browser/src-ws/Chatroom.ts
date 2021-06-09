@@ -1,6 +1,5 @@
 import { WsClient } from "tsrpc-browser";
 import { MsgChat } from "./shared/protocols/MsgChat";
-import './index.less';
 import { serviceProto } from './shared/protocols/serviceProto';
 
 export class Chatroom {
