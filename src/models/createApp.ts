@@ -202,7 +202,7 @@ async function copyRootFiles(fromDir: string, toDir: string, ignores?: string[])
             continue;
         }
         if ((await fs.stat(path.join(fromDir, v))).isFile()) {
-            await fs.copyFile(path.join(fromDir, v), path.join(toDir, v));
+            await fs.copyFile(path.join(fromDir, v), path.join(toDir, v.endsWith('__CTA') ? v.substr(0, v.length - 5) : v));
         }
     }
 }

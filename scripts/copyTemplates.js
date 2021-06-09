@@ -31,4 +31,7 @@ files.forEach(v => {
         fs.ensureDirSync(path.join('dist', v))
     }
 })
+glob.sync('dist/templates/*/.gitignore').forEach(v => {
+    fs.moveSync(v, v + '__CTA');
+})
 console.log(`${count} template files copied.`)
