@@ -14,13 +14,13 @@
   "devDependencies": {
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.12.2",
-    "mocha": "^8.4.0",
+    "mocha": "^9.0.0",
     "onchange": "^7.1.0",
-    "ts-node": "^9.1.1",
-    "tsrpc-cli": "^2.0.1-dev.11",
-    "typescript": "^4.3.2"
+    "ts-node": "^10.0.0",
+    "tsrpc-cli": "^2.0.2",
+    "typescript": "^4.3.3"
   },
   "dependencies": {
-    "tsrpc": "^3.0.0-dev.17"
+    "tsrpc": "^3.0.2"
   }
 }
