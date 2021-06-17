@@ -28,5 +28,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tsrpc-browser": "^3.0.3"
-  }
+  },
+  "browserslist": [
+    "defaults"
+  ]
 }

@@ -17,5 +17,8 @@
   },
   "dependencies": {
     "tsrpc-browser": "^3.0.3"
-  }
+  },
+  "browserslist": [
+    "defaults"
+  ]
 }
