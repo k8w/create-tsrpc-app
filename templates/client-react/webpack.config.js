@@ -13,36 +13,57 @@ module.exports = {
         clean: true
     },
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.cjs', '.mjs']
     },
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: [{
-                    loader: 'ts-loader',
-                    options: {
-                        // Compile to ES5 in production mode for better compatibility
-                        // Compile to ES2018 in development for better debugging (like async/await)
-                        compilerOptions: isProduction ? {
-                            "lib": ["dom", "es5", "es2015.promise"],
-                            "target": "es5",
-                        } : undefined
+                use: [
+                    // Use babel for production
+                    ...(isProduction ? [{ loader: 'babel-loader' }] : []),
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            // Compile to ES5 in production mode for better compatibility
+                            // Compile to ES2018 in development for better debugging (like async/await)
+                            compilerOptions: !isProduction ? {
+                                "target": "es2018",
+                            } : undefined
+                        }
                     }
-                }],
+                ],
                 exclude: /node_modules/
             },
+            // Use babel for production
+            ...(isProduction ? [{
+                test: /\.[cm]?js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
+                }
+            }] : []),
             {
                 test: /\.less$/,
                 exclude: /\.module\.less$/,
-                use: ['style-loader', 'css-loader', {
-                    loader: "less-loader",
-                    options: {
-                        lessOptions: {
-                            javascriptEnabled: true,
+                use: ['style-loader', 'css-loader',
+                    {
+                        loader: "postcss-loader",
+                        options: {
+                            postcssOptions: {
+                                plugins: [["postcss-preset-env"]],
+                            },
+                        },
+                    },
+                    {
+                        loader: "less-loader",
+                        options: {
+                            lessOptions: {
+                                javascriptEnabled: true,
+                            }
                         }
                     }
-                }]
+                ]
             },
             {
                 test: /\.module\.less$/,
@@ -52,6 +73,14 @@ module.exports = {
                         options: {
                             modules: true
                         }
+                    },
+                    {
+                        loader: "postcss-loader",
+                        options: {
+                            postcssOptions: {
+                                plugins: [["postcss-preset-env"]],
+                            },
+                        },
                     },
                     {
                         loader: "less-loader",
@@ -66,16 +95,32 @@ module.exports = {
             {
                 test: /\.css$/,
                 exclude: /\.module\.css$/,
-                use: ['style-loader', 'css-loader']
+                use: ['style-loader', 'css-loader', {
+                    loader: "postcss-loader",
+                    options: {
+                        postcssOptions: {
+                            plugins: [["postcss-preset-env"]],
+                        },
+                    },
+                },]
             },
             {
                 test: /\.module\.css$/,
-                use: ['style-loader', {
-                    loader: 'css-loader',
-                    options: {
-                        modules: true
+                use: ['style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true
+                        }
+                    }, {
+                        loader: "postcss-loader",
+                        options: {
+                            postcssOptions: {
+                                plugins: [["postcss-preset-env"]],
+                            },
+                        },
                     }
-                }]
+                ]
             },
             {
                 test: /\.(png|jpe?g|gif)$/,

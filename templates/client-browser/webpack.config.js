@@ -13,7 +13,7 @@ module.exports = {
         clean: true
     },
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.ts', '.tsx', '.js', '.mjs', '.cjs']
     },
     module: {
         rules: [
@@ -22,12 +22,10 @@ module.exports = {
                 use: [{
                     loader: 'ts-loader',
                     options: {
-                        compilerOptions: isProduction ? {
-                            "lib": [
-                                "dom",
-                                "es2015.promise"
-                            ],
-                            "target": "es5",
+                        // Compile to ES5 in production mode for better compatibility
+                        // Compile to ES2018 in development for better debugging (like async/await)
+                        compilerOptions: !isProduction ? {
+                            "target": "es2018",
                         } : undefined
                     }
                 }],
