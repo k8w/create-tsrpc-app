@@ -100,7 +100,7 @@ async function createServer(options: CreateOptions, registry: string | undefined
     const serverDirName = options.client === 'none' ? '.' : options.client === 'node' ? 'server' : 'backend';
     const clientDirName = options.client === 'node' ? 'client' : 'frontend';
     const serverDir = path.resolve(options.projectDir, serverDirName);
-    const appName = path.basename(options.projectDir);
+    const appName = path.basename(path.resolve(options.projectDir));
 
     // 创建项目目录
     await fs.ensureDir(options.projectDir);
@@ -161,7 +161,7 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     // 开始创建前端应用
     const clientDirName = options.client === 'node' ? 'client' : 'frontend';
     const clientDir = path.resolve(options.projectDir, clientDirName);
-    const appName = path.basename(options.projectDir);
+    const appName = path.basename(path.resolve(options.projectDir));
 
     // 复制文件
     doing(i18n.copyFiles(clientDirName))
