@@ -1,8 +1,11 @@
 {
   "name": "create-tsrpc-app",
-  "version": "1.0.2-dev.0",
+  "version": "1.0.2-dev.1",
   "description": "Quickly create TSRPC projects",
   "main": "index.js",
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "switch:ws": "node scripts/switch.js ws",
