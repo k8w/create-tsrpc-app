@@ -2,6 +2,9 @@ import { ServiceProto } from 'tsrpc-proto';
 import { ReqAddData, ResAddData } from './PtlAddData';
 import { ReqGetData, ResGetData } from './PtlGetData';
 
+// This is a demo service proto file (auto generated)
+// Feel free to delete it
+
 export interface ServiceType {
     api: {
         "AddData": {

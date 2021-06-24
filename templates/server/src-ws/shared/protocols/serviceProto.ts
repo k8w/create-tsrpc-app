@@ -2,6 +2,9 @@ import { ServiceProto } from 'tsrpc-proto';
 import { MsgChat } from './MsgChat';
 import { ReqSend, ResSend } from './PtlSend';
 
+// This is a demo service proto file (auto generated)
+// Feel free to delete it
+
 export interface ServiceType {
     api: {
         "Send": {
