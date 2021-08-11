@@ -38,7 +38,7 @@ ${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
     ffReact: 'React',
     ffVue2: 'Vue 2.x',
     ffVue3: 'Vue 3.x',
-    selectFeatures: '请按勾选需要的特性：',
+    selectFeatures: '请勾选需要的特性（按空格键勾选）：',
     featureUnitTest: '服务端单元测试' + '（Mocha）'.yellow,
     featureSymlink: '使用 Symlink 同步共享代码',
 
