@@ -19,7 +19,7 @@ export const serverFeatures: { name: string, value: ServerFeature, checked?: boo
 ]
 
 export const clientFeatures: { name: string, value: ClientFeature, checked?: boolean, platforms: CreateOptions['client'][] }[] = [
-    { name: i18n.featureSymlink, value: 'symlink', platforms: ['browser', 'react', 'wxapp'] }
+    { name: i18n.featureSymlink, value: 'symlink', platforms: ['browser', 'react', 'wxapp', 'vue2', 'vue3'] }
     // {
     //     name: 'WebPack 优化配置（压缩图片、分包等）',
     //     value: 'webpackOptimization',
