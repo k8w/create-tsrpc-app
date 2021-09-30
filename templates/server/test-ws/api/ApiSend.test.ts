@@ -23,7 +23,7 @@ describe('ApiSend', function () {
         assert.ok(ret.isSucc)
     });
 
-    it('Error', async function () {
+    it('Check content is empty', async function () {
         let ret = await client.callApi('Send', {
             content: ''
         });
@@ -31,5 +31,9 @@ describe('ApiSend', function () {
             isSucc: false,
             err: new TsrpcError('Content is empty')
         });
+    })
+
+    after(async function () {
+        await client.disconnect();
     })
 })
