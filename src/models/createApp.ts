@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import fs from "fs-extra";
 import ncu from "npm-check-updates";
 import ora from "ora";
@@ -22,14 +23,14 @@ export async function createApp(options: CreateOptions) {
     doing(i18n.checkNpmEnv);
     let installEnv = await getInstallEnv();
     done(true, `${i18n.checkNpmEnv}: `
-        + 'Command: '.cyan
-        + (installEnv.pkgManager.yellow.bold)
-        + (installEnv.registry ? (', Registry: '.cyan + installEnv.registry.yellow) : ''));
+        + chalk.cyan('Command: ')
+        + chalk.yellow.bold(installEnv.pkgManager)
+        + (installEnv.registry ? (chalk.cyan(', Registry: ') + chalk.yellow(installEnv.registry)) : ''));
 
     // 创建项目
     let server = await createServer(options, installEnv.registry);
     let client: { clientDir: string, clientDirName: string } | undefined;
-    if (options.client === 'browser' || options.client === 'react' || options.client.startsWith('vue')) {
+    if (options.client !== 'none') {
         client = await createBrowserClient(options, installEnv.registry);
 
         // Sync 演示代码
@@ -57,7 +58,7 @@ export async function createApp(options: CreateOptions) {
         done(npmResClient);
     }
 
-    console.log(`\n${'='.repeat(SCREEN_WIDTH)}\n`.green);
+    console.log(chalk.green(`\n${'='.repeat(SCREEN_WIDTH)}\n`));
 
     const serverEnd = server.serverDirName === 'server' ? i18n.server : i18n.backend;
     const clientEnd = client?.clientDirName === 'client' ? i18n.client : i18n.frontend;
@@ -79,16 +80,16 @@ export async function createApp(options: CreateOptions) {
     console.log(i18n.runLocalServer);
     if (client) {
         console.log(`= ${serverEnd} =\n`)
-        console.log(`    cd ${path.relative('.', server.serverDir)}\n    npm run dev\n`.cyan);
+        console.log(chalk.cyan(`    cd ${path.relative('.', server.serverDir)}\n    npm run dev\n`));
         console.log(`= ${clientEnd} =\n`)
-        console.log(`    cd ${path.relative('.', client.clientDir)}\n    npm run dev\n`.cyan);
+        console.log(chalk.cyan(`    cd ${path.relative('.', client.clientDir)}\n    npm run dev\n`));
     }
     else {
         let cdPath = path.relative('.', server.serverDir);
         if (cdPath) {
-            console.log(`    cd ${cdPath}`.cyan);
+            console.log(chalk.cyan(`    cd ${cdPath}`));
         }
-        console.log(`    npm run dev\n`.cyan);
+        console.log(chalk.cyan(`    npm run dev\n`));
     }
 
     spinner.text = '';
@@ -111,6 +112,16 @@ async function createServer(options: CreateOptions, registry: string | undefined
     await copyRootFiles(path.join(tplDir, 'server'), serverDir, options.features.indexOf('unitTest') === -1 ? ['.mocharc.js'] : undefined);
     await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
     await fs.copy(path.join(tplDir, 'server', '.vscode'), path.join(serverDir, '.vscode'), { recursive: true });
+    
+    // 纯后端 注释 sync 部分
+    if (options.client === 'none') {
+        let configContent = await fs.readFile(path.join(serverDir, 'tsrpc.config.ts'), 'utf-8');
+        configContent = configContent.replace(/(sync:\s+\[\n)([\s\S]+)(\],)/, (_, p1: string, p2: string, p3: string) => {
+            return p1 + p2.split('\n').map(v => v.replace(/^\s{8}/, '        // ')).join('\n') + p3;
+        });
+        await fs.writeFile(path.join(serverDir, 'tsrpc.config.ts'), configContent, 'utf-8');
+    }
+
     // 单元测试
     if (options.features.indexOf('unitTest') > -1) {
         await copyTypeFolder('test', options.server, path.join(tplDir, 'server'), serverDir);
@@ -224,13 +235,13 @@ function doing(text: string, doingPostFix: string = '...') {
         return;
     }
     currentDoingText = text;
-    spinner.text = `${++finishedStep}/${totalStep} ${text}${doingPostFix}`.yellow;
+    spinner.text = chalk.yellow(`${++finishedStep}/${totalStep} ${text}${doingPostFix}`);
     spinner.start();
 }
 function done(succ: boolean = true, text?: string) {
     if (currentDoingText) {
         text = `${finishedStep}/${totalStep} ${text ?? currentDoingText}`
-        succ ? spinner.succeed(text.green) : spinner.fail(text.red);
+        succ ? spinner.succeed(chalk.green(text)) : spinner.fail(chalk.red(text));
         currentDoingText = undefined;
     }
 }

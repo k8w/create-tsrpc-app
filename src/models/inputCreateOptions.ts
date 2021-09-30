@@ -1,8 +1,9 @@
+import chalk from "chalk";
 import fs from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import { i18n } from "../i18n/i18n";
-import { clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
+import { CreateOptions } from "./CreateOptions";
 import { VERSION } from "./version";
 
 export async function inputCreateOptions(options: Partial<CreateOptions>): Promise<CreateOptions> {
@@ -13,6 +14,7 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     if (projectDir) {
         console.log(i18n.createApp(path.basename(path.resolve(projectDir))));
     }
+    // 请输入要创建的项目目录名
     else {
         projectDir = (await inquirer.prompt([{
             type: 'input',
@@ -22,11 +24,25 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
         }], { projectDir: projectDir })).projectDir as string;
     }
 
+    // 目标文件夹不为空，请先清空或删除目标文件夹再创建。
     let dir = fs.existsSync(projectDir) && fs.statSync(projectDir).isDirectory() && fs.readdirSync(projectDir);
     if (dir && dir.length) {
-        console.log(`${path.resolve(projectDir).green}\n${dir.map(v => ('  |- ' + v).yellow).join('\n')}\n`);
+        console.log(`${chalk.green(path.resolve(projectDir))}\n${dir.map(v => chalk.yellow('  |- ' + v)).join('\n')}\n`);
         throw new Error(i18n.dirNotEmpty)
     }
+
+    // client
+    // 请选择要创建的项目类型
+    let client = await select(i18n.selectProjectType, [
+        new inquirer.Separator(chalk.gray(i18n.projectCategory.browser)),
+        { name: i18n.projectType.react, value: 'react' },
+        { name: i18n.projectType.vue2, value: 'vue2' },
+        { name: i18n.projectType.vue3, value: 'vue3' },
+        { name: i18n.projectType.nativeBrowser, value: 'browser' },
+
+        new inquirer.Separator(chalk.gray(i18n.projectCategory.server)),
+        { name: i18n.projectType.server, value: 'none' }
+    ] as any, options.client);
 
     // server
     let server = await select(i18n.selectServerType, [
@@ -34,58 +50,39 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
         { name: i18n.wsLongService, value: 'ws' }
     ], options.server);
 
-    let client = await select(i18n.selectClientType, [
-        { name: i18n.browser, value: 'browser' },
-        new inquirer.Separator((i18n.wxApp + ' (comming soon)').gray),
-        new inquirer.Separator((i18n.nodeJs + ' (comming soon)').gray),
-        // { name: i18n.wxApp, value: 'wxapp' },
-        // { name: i18n.nodeJs, value: 'node' },
-        { name: i18n.noClient, value: 'none' },
-    ] as any, options.client);
-    let clientName = client === 'browser' ? i18n.browser : client === 'wxapp' ? i18n.wxApp : i18n.client;
-
-    if (client === 'browser' && !options.client) {
-        client = await select(i18n.selectFrontFramework, [
-            { name: i18n.ffBrowser, value: 'browser' },
-            { name: i18n.ffReact, value: 'react' },
-            { name: i18n.ffVue2, value: 'vue2' },
-            { name: i18n.ffVue3, value: 'vue3' },
-        ]);
-    }
-
     // features
-    let features: CreateOptions['features'] = options.features || [];
-    if (serverFeatures.length || clientFeatures.length) {
-        let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
-        let featureChoices = platformClientFeatures.length ? [
-            // new inquirer.Separator(` ===== ${i18n.server} ===== `),
-            ...serverFeatures,
-            // new inquirer.Separator(` ===== ${clientName} ===== `),
-            ...platformClientFeatures
-        ] : serverFeatures;
-        features = (await inquirer.prompt([{
-            type: 'checkbox',
-            message: i18n.selectFeatures,
-            name: 'features',
-            choices: featureChoices,
-            pageSize: 20
-        }], { features: options.features })).features as CreateOptions['features'];
-        if (!features.length && !options.features && !(await inquirer.prompt({
-            type: 'confirm',
-            name: 'res',
-            message: i18n['confirm?'],
-            default: true
-        })).res) {
-            console.log(i18n.canceled);
-            process.exit(-1);
-        }
-    }
+    // let features: CreateOptions['features'] = options.features || [];
+    // if (serverFeatures.length || clientFeatures.length) {
+    //     let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
+    //     let featureChoices = platformClientFeatures.length ? [
+    //         // new inquirer.Separator(` ===== ${i18n.server} ===== `),
+    //         ...serverFeatures,
+    //         // new inquirer.Separator(` ===== ${clientName} ===== `),
+    //         ...platformClientFeatures
+    //     ] : serverFeatures;
+    //     features = (await inquirer.prompt([{
+    //         type: 'checkbox',
+    //         message: i18n.selectFeatures,
+    //         name: 'features',
+    //         choices: featureChoices,
+    //         pageSize: 20
+    //     }], { features: options.features })).features as CreateOptions['features'];
+    //     if (!features.length && !options.features && !(await inquirer.prompt({
+    //         type: 'confirm',
+    //         name: 'res',
+    //         message: i18n['confirm?'],
+    //         default: true
+    //     })).res) {
+    //         console.log(i18n.canceled);
+    //         process.exit(-1);
+    //     }
+    // }
 
     return {
         projectDir: projectDir,
         server: server,
         client: client,
-        features: features
+        features: ['symlink', 'unitTest']
     };
 }
 

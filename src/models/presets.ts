@@ -9,21 +9,21 @@ export const presets: { [key: string]: Omit<CreateOptions, 'projectDir'> } = {
     browser: {
         server: 'http',
         client: 'browser',
-        features: []
+        features: ['symlink', 'unitTest']
     },
     react: {
         server: 'http',
         client: 'react',
-        features: []
+        features: ['symlink', 'unitTest']
     },
     vue2: {
         server: 'http',
         client: 'vue2',
-        features: []
+        features: ['symlink', 'unitTest']
     },
     vue3: {
         server: 'http',
         client: 'vue3',
-        features: []
+        features: ['symlink', 'unitTest']
     },
 }

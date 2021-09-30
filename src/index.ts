@@ -1,4 +1,4 @@
-import 'colors';
+import chalk from "chalk";
 import fs from 'fs';
 import minimist from 'minimist';
 import { cmdHelp } from './commands/help';
@@ -69,6 +69,6 @@ async function main() {
 };
 
 function exitWithError(e: Error) {
-    console.error(i18n.flagError, e.message.red);
+    console.error(i18n.flagError, chalk.red(e.message));
     process.exit(-1);
 }

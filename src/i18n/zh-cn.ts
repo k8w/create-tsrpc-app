@@ -1,57 +1,59 @@
+import chalk from "chalk";
 
 export const i18nZhCn = {
     help: `
-${('create-tsrpc-app '.green + '<项目目录>'.yellow).bold + ' [选项]'}
+${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) + ' [选项]'}
 
 选项：
     -h, --help              查看帮助信息
     -v, --version           查看版本号
     -p, --presets <预设名>  使用预设配置（跳过交互式配置）
-                            可选 ${'browser, react, vue2, vue3, server'.cyan}
+                            可选 ${chalk.cyan('browser, react, vue2, vue3, server')}
 `,
-    welcome: (version: string) => `=== 欢迎使用 ${'create-tsrpc-app'.bold} 版本 ${version} ===\n`.cyan,
+    welcome: (version: string) => chalk.cyan(`=== 欢迎使用 ${chalk.bold('create-tsrpc-app')} 版本 ${version} ===\n`),
     server: '服务端',
     client: '客户端',
     frontend: '前端',
     backend: '后端',
-    flagError: ' 错误 '.bgRed.white,
-    flagSucc: ' ✅ 完成 '.green,
-    canceled: '已取消'.gray,
+    flagError: chalk.bgRed.white(' 错误 '),
+    flagSucc: chalk.green(' ✅ 完成 '),
+    canceled: chalk.gray('已取消'),
     'confirm?': '确认？',
 
     // Entry
-    presetsNotExist: (presets: string) => `Presets 不存在：${presets.yellow}`,
+    presetsNotExist: (presets: string) => `Presets 不存在：${chalk.yellow(presets)}`,
 
     // Input Create Options
     inputProjectDir: '请输入要创建的项目目录名：',
     dirNotEmpty: '目标文件夹不为空，请先清空或删除目标文件夹再创建。',
-    selectServerType: '请选择服务端项目类型：',
-    httpShortService: 'HTTP 短连接服务',
-    wsLongService: 'WebSocket 长连接服务',
-    selectClientType: '请选择客户端项目类型：',
-    browser: '浏览器',
-    wxApp: '微信小程序',
-    nodeJs: 'NodeJS',
-    noClient: '不创建客户端项目',
-    selectFrontFramework: '请选择前端使用的框架：',
-    ffBrowser: '不使用框架' + ' (仅含 webpack 基础配置)'.yellow,
-    ffReact: 'React',
-    ffVue2: 'Vue 2.x',
-    ffVue3: 'Vue 3.x',
-    selectFeatures: '请勾选需要的特性（按空格键勾选）：',
-    featureUnitTest: '服务端单元测试' + '（Mocha）'.yellow,
-    featureSymlink: '使用 Symlink 同步共享代码',
+
+    selectProjectType: '请选择要创建的项目类型：',
+    projectType: {
+        react: 'React + 后端',
+        vue2: 'Vue 2 + 后端',
+        vue3: 'Vue 3 + 后端',
+        nativeBrowser: '原生前端 + 后端',
+        server: '仅后端',
+    },
+    projectCategory: {
+        browser: ' = 浏览器全栈项目 = ',
+        server: ' = 其它 = ',
+    },
+
+    selectServerType: '请选择传输协议：',
+    httpShortService: 'HTTP 短连接',
+    wsLongService: 'WebSocket 长连接',
 
     // CreateApp
     checkNpmEnv: '检测 NPM 环境',
     npmInstall: (endName: string) => `安装 "${endName}" 下的 NPM 依赖`,
     mayLongPleaseWait: '（可能略久，请稍等）...',
-    createApp: (appName: string) => `创建 TSRPC 应用: ${appName.green.bold}`,
-    createAppSucc: '✅ TSRPC APP 创建成功。\n'.green,
-    createAppSuccWithProblems: '🟨 TSRPC APP 创建完成，但存在以下问题：\n'.yellow,
+    createApp: (appName: string) => `创建 TSRPC 应用: ${chalk.green.bold(appName)}`,
+    createAppSucc: chalk.green('✅ TSRPC APP 创建成功。\n'),
+    createAppSuccWithProblems: chalk.yellow('🟨 TSRPC APP 创建完成，但存在以下问题：\n'),
     runLocalServer: '运行本地开发服务器：\n',
-    npmInstallFailed: (endName: string, dirName: string) => `❌ ${endName} "npm install" 失败，可在项目目录执行以下命令手动安装 `.red +
-        `\n\n    cd ${dirName}\n    npm install\n`.red,
+    npmInstallFailed: (endName: string, dirName: string) => chalk.red(`❌ ${endName} "npm install" 失败，可在项目目录执行以下命令手动安装 ` +
+        `\n\n    cd ${dirName}\n    npm install\n`),
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,
     genPackageJson: (dirName: string) => `生成 "${dirName}/package.json"`,
 }
