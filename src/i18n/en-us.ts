@@ -46,7 +46,7 @@ Options：
 
     // CreateApp
     checkNpmEnv: 'Check NPM environment',
-    npmInstall: (endName: string) => `Install NPM dependencies of "${endName}"`,
+    npmInstall: `Install NPM dependencies`,
     mayLongPleaseWait: '(May take a while, please wait)...',
     createApp: (appName: string) => `Create TSRPC APP: ${chalk.green(appName)}`,
     createAppSucc: chalk.green('✅ TSRPC APP created successfully.\n'),

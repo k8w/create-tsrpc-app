@@ -1,22 +1,33 @@
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import http from "http";
 import https from "https";
 
-export async function npmInstall(cmd: string, cwd: string): Promise<boolean> {
+export async function npmInstall(cmd: string, args: string[], cwd: string): Promise<boolean> {
     return new Promise<boolean>(rs => {
-        exec(cmd, { cwd: cwd }, err => {
-            rs(err ? false : true)
+        let child = spawn(cmd, args, { cwd: cwd });
+        child.on('exit', code => {
+            rs(code ? false : true)
         })
     })
 }
 
-export async function getInstallEnv(): Promise<{ cmd: string, pkgManager: 'npm' | 'yarn', registry?: string }> {
+export async function getInstallEnv(): Promise<{ cmd: string, args: string[], pkgManager: 'npm' | 'yarn', registry?: string }> {
     let pkgManager = await getPkgManager();
     let registry = await getRegistry(pkgManager);
-    let cmd = pkgManager === 'npm' ? `npm i${registry ? ' --force' : ''}` : 'yarn';
+    let args: string[] = [];
+    if (pkgManager === 'npm') {
+        args.push('install')
+        if (registry) {
+            args.push('--force');
+        }
+    }
+    if (registry) {
+        args.push('--registry', registry);
+    }
 
     return {
-        cmd: registry ? `${cmd} --registry ${registry}` : cmd,
+        cmd: pkgManager + ' ' + args.join(' '),
+        args: args,
         pkgManager: pkgManager,
         registry: registry
     }

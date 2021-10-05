@@ -17,7 +17,7 @@ export async function createApp(options: CreateOptions) {
     spinner.color = 'yellow';
 
     // 计算步骤数量 后端4 前端5 NPM1
-    totalStep = 5 + (options.client === 'none' ? 0 : 5);
+    totalStep = 5 + (options.client === 'none' ? 0 : 4);
 
     // 判断安装环境
     doing(i18n.checkNpmEnv);
@@ -49,14 +49,12 @@ export async function createApp(options: CreateOptions) {
     // 安装依赖
     let npmResServer = false;
     let npmResClient = !client;
-    doing(i18n.npmInstall(server.serverDirName === '.' ? path.basename(server.serverDir) : server.serverDirName), i18n.mayLongPleaseWait),
-        npmResServer = await npmInstall(installEnv.cmd, server.serverDir);
-    done(npmResServer);
-    if (client) {
-        doing(i18n.npmInstall(client.clientDirName), i18n.mayLongPleaseWait)
-        npmResClient = await npmInstall(installEnv.cmd, client.clientDir);
-        done(npmResClient);
-    }
+    doing(i18n.npmInstall, i18n.mayLongPleaseWait);
+    [npmResServer, npmResClient] = await Promise.all([
+        npmInstall(installEnv.pkgManager, installEnv.args, server.serverDir),
+        client ? npmInstall(installEnv.pkgManager, installEnv.args, client.clientDir) : false
+    ])
+    done(npmResServer && npmResClient);
 
     console.log(chalk.green(`\n${'='.repeat(SCREEN_WIDTH)}\n`));
 
@@ -112,7 +110,7 @@ async function createServer(options: CreateOptions, registry: string | undefined
     await copyRootFiles(path.join(tplDir, 'server'), serverDir, options.features.indexOf('unitTest') === -1 ? ['.mocharc.js'] : undefined);
     await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
     await fs.copy(path.join(tplDir, 'server', '.vscode'), path.join(serverDir, '.vscode'), { recursive: true });
-    
+
     // 纯后端 注释 sync 部分
     if (options.client === 'none') {
         let configContent = await fs.readFile(path.join(serverDir, 'tsrpc.config.ts'), 'utf-8');
@@ -227,7 +225,7 @@ async function copyTypeFolder(folderName: string, type: string, fromDir: string,
     }
 }
 
-const spinner = ora('');
+const spinner = ora({ spinner: 'material', text: '' });
 let currentDoingText: string | undefined;
 let finishedStep = 0;
 function doing(text: string, doingPostFix: string = '...') {
@@ -235,10 +233,11 @@ function doing(text: string, doingPostFix: string = '...') {
         return;
     }
     currentDoingText = text;
-    spinner.text = chalk.yellow(`${++finishedStep}/${totalStep} ${text}${doingPostFix}`);
+    spinner.prefixText = chalk.yellow(` → ${++finishedStep}/${totalStep} ${text}${doingPostFix}`);
     spinner.start();
 }
 function done(succ: boolean = true, text?: string) {
+    spinner.prefixText = '';
     if (currentDoingText) {
         text = `${finishedStep}/${totalStep} ${text ?? currentDoingText}`
         succ ? spinner.succeed(chalk.green(text)) : spinner.fail(chalk.red(text));

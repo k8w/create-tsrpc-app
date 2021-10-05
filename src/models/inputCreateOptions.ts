@@ -27,7 +27,7 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     // 目标文件夹不为空，请先清空或删除目标文件夹再创建。
     let dir = fs.existsSync(projectDir) && fs.statSync(projectDir).isDirectory() && fs.readdirSync(projectDir);
     if (dir && dir.length) {
-        console.log(`${chalk.green(path.resolve(projectDir))}\n${dir.map(v => chalk.yellow('  |- ' + v)).join('\n')}\n`);
+        console.log(chalk.red(`\n${path.resolve(projectDir)}\n${dir.map(v => '  |- ' + v).join('\n')}\n`));
         throw new Error(i18n.dirNotEmpty)
     }
 

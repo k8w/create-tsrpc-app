@@ -46,7 +46,7 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
 
     // CreateApp
     checkNpmEnv: '检测 NPM 环境',
-    npmInstall: (endName: string) => `安装 "${endName}" 下的 NPM 依赖`,
+    npmInstall: `安装 NPM 依赖`,
     mayLongPleaseWait: '（可能略久，请稍等）...',
     createApp: (appName: string) => `创建 TSRPC 应用: ${chalk.green.bold(appName)}`,
     createAppSucc: chalk.green('✅ TSRPC APP 创建成功。\n'),
