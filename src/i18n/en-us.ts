@@ -32,12 +32,12 @@ Options：
         react: 'React + backend',
         vue2: 'Vue 2 + backend',
         vue3: 'Vue 3 + backend',
-        nativeBrowser: 'Native frontend + backend',
+        nativeBrowser: 'Frontend (no framework) + backend',
         server: 'Backend only',
     },
     projectCategory: {
-        browser: ' = Full-stack project = ',
-        server: ' = Other = ',
+        browser: ' ========== Full-stack project ========== ',
+        server: ' ================ Other ================= ',
     },
 
     selectServerType: 'Please select the transportation protocol: ',

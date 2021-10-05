@@ -32,12 +32,12 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
         react: 'React + 后端',
         vue2: 'Vue 2 + 后端',
         vue3: 'Vue 3 + 后端',
-        nativeBrowser: '原生前端 + 后端',
+        nativeBrowser: '前端（无框架） + 后端',
         server: '仅后端',
     },
     projectCategory: {
-        browser: ' = 浏览器全栈项目 = ',
-        server: ' = 其它 = ',
+        browser: ' ====== 浏览器全栈项目 ====== ',
+        server: ' ========== 其  它 ========== ',
     },
 
     selectServerType: '请选择传输协议：',

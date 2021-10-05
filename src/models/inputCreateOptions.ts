@@ -34,13 +34,13 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     // client
     // 请选择要创建的项目类型
     let client = await select(i18n.selectProjectType, [
-        new inquirer.Separator(chalk.gray(i18n.projectCategory.browser)),
+        new inquirer.Separator('\n' + i18n.projectCategory.browser + '\n'),
         { name: i18n.projectType.react, value: 'react' },
         { name: i18n.projectType.vue2, value: 'vue2' },
         { name: i18n.projectType.vue3, value: 'vue3' },
         { name: i18n.projectType.nativeBrowser, value: 'browser' },
 
-        new inquirer.Separator(chalk.gray(i18n.projectCategory.server)),
+        new inquirer.Separator('\n' + i18n.projectCategory.server + '\n'),
         { name: i18n.projectType.server, value: 'none' }
     ] as any, options.client);
 
@@ -95,7 +95,8 @@ export async function select<T extends string>(msg: string, options: { name: str
         type: 'list',
         name: 'res',
         message: msg,
-        choices: options
+        choices: options,
+        pageSize: 12
     }, { res: answer });
     return res.res;
 }
