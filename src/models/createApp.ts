@@ -178,6 +178,10 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     await copyRootFiles(path.join(tplDir, `client-${options.client}`), clientDir);
     await copyTypeFolder('src', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
     await copyTypeFolder('public', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
+    // Vue 额外复制 vutur.config.js
+    if (options.client.startsWith('vue')) {
+        await fs.copyFile(path.join(tplDir, 'vetur.config.js'), path.resolve(options.projectDir, 'vetur.config.js'));
+    }
     done();
 
     // 写入 package.json
