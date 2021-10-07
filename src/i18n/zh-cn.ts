@@ -25,7 +25,7 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
 
     // Input Create Options
     inputProjectDir: '请输入要创建的项目目录名：',
-    dirNotEmpty: '目标文件夹不为空，请先清空或删除目标文件夹再创建。',
+    dirNotEmpty: `目标文件夹不为空，以${chalk.yellow('覆盖方式')}继续？`,
 
     selectProjectType: '请选择要创建的项目类型：',
     projectType: {

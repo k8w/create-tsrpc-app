@@ -1,6 +1,10 @@
 # Change Log
 
-## [1.1.0] -2021-09-30
+## [1.1.1] - 2021-10-07
+### Added
+- 允许以覆盖方式在非空文件夹下安装
+
+## [1.1.0] - 2021-10-06
 ### Added
 - Add `tsrpc.config.ts`, update `npm run dev` and `npm run build`
 - Update `tsrpc-cli` version to `^2.0.8`

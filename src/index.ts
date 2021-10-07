@@ -42,7 +42,7 @@ async function main() {
     let projectDir = args._[0];
     if (!projectDir) {
         // 如果当前文件夹是空文件夹，则自动设置为 '.'
-        if (fs.readdirSync('.').length === 0) {
+        if (fs.readdirSync('.').filter(v => !v.startsWith('.')).length === 0) {
             projectDir = '.';
         }
     }

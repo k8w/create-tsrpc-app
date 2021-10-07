@@ -24,11 +24,19 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
         }], { projectDir: projectDir })).projectDir as string;
     }
 
-    // 目标文件夹不为空，请先清空或删除目标文件夹再创建。
+    // 目标文件夹不为空，要以覆盖模式继续吗？
     let dir = fs.existsSync(projectDir) && fs.statSync(projectDir).isDirectory() && fs.readdirSync(projectDir);
-    if (dir && dir.length) {
-        console.log(chalk.red(`\n${path.resolve(projectDir)}\n${dir.map(v => '  |- ' + v).join('\n')}\n`));
-        throw new Error(i18n.dirNotEmpty)
+    if (dir && dir.filter(v=>!v.startsWith('.')).length) {
+        console.log(chalk.cyan(`\n${path.resolve(projectDir)}\n${dir.map(v => chalk.yellow('  |- ' + v)).join('\n')}\n`));
+        if (!(await inquirer.prompt({
+            type: 'confirm',
+            message: i18n.dirNotEmpty,
+            name: 'res',
+            default: false
+        })).res) {
+            console.log(i18n.canceled);
+            process.exit();
+        }
     }
 
     // client

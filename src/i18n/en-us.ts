@@ -25,7 +25,7 @@ Options：
 
     // Input Create Options
     inputProjectDir: 'Input project directory name: ',
-    dirNotEmpty: 'The target directory is not empty, please clear or delete it and try again.',
+    dirNotEmpty: `The target directory is not empty, continue and ${chalk.yellow('overwrite')} it ?`,
 
     selectProjectType: 'Please select the project type: ',
     projectType: {
