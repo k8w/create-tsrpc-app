@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.1.2] - 2021-10-08
+### Added
+- `index.html` 中增加 `<meta name="renderer" content="webkit" />`
+
 ## [1.1.1] - 2021-10-07
 ### Added
 - 允许以覆盖方式在非空文件夹下安装
