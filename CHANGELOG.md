@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.3] - 2021-10-09
+### Fixed
+- 修复 Windows 平台 `npm install` 的错误
 ## [1.1.2] - 2021-10-08
 ### Added
 - `index.html` 中增加 `<meta name="renderer" content="webkit" />`

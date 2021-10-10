@@ -1,10 +1,10 @@
-import { exec, spawn } from "child_process";
+import { exec } from "child_process";
 import http from "http";
 import https from "https";
 
-export async function npmInstall(cmd: string, args: string[], cwd: string): Promise<boolean> {
+export async function npmInstall(cmd: string, cwd: string): Promise<boolean> {
     return new Promise<boolean>(rs => {
-        let child = spawn(cmd, args, { cwd: cwd });
+        let child = exec(cmd, { cwd: cwd });
         child.on('exit', code => {
             rs(code ? false : true)
         })

@@ -51,8 +51,8 @@ export async function createApp(options: CreateOptions) {
     let npmResClient = !client;
     doing(i18n.npmInstall, i18n.mayLongPleaseWait);
     [npmResServer, npmResClient] = await Promise.all([
-        npmInstall(installEnv.pkgManager, installEnv.args, server.serverDir),
-        client ? npmInstall(installEnv.pkgManager, installEnv.args, client.clientDir) : false
+        npmInstall(installEnv.cmd, server.serverDir),
+        client ? npmInstall(installEnv.cmd, client.clientDir) : false
     ])
     done(npmResServer && npmResClient);
 
