@@ -52,8 +52,8 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     createAppSucc: chalk.green('✅ TSRPC APP 创建成功。\n'),
     createAppSuccWithProblems: chalk.yellow('🟨 TSRPC APP 创建完成，但存在以下问题：\n'),
     runLocalServer: '运行本地开发服务器：\n',
-    npmInstallFailed: (endName: string, dirName: string) => chalk.red(`❌ ${endName} "npm install" 失败，可在项目目录执行以下命令手动安装 ` +
-        `\n\n    cd ${dirName}\n    npm install\n`),
+    npmInstallFailed: (endName: string, dirName: string, pureCmd: string) => chalk.red(`❌ ${endName} "${pureCmd}" 失败，可在项目目录执行以下命令手动安装 ` +
+        `\n\n    cd ${dirName}\n    ${pureCmd}\n`),
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,
     genPackageJson: (dirName: string) => `生成 "${dirName}/package.json"`,
 }

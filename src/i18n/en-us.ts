@@ -51,8 +51,8 @@ Options：
     createApp: (appName: string) => `Create TSRPC APP: ${chalk.green(appName)}`,
     createAppSucc: chalk.green('✅ TSRPC APP created successfully.\n'),
     createAppSuccWithProblems: chalk.yellow('🟨 TSRPC APP created, but with problems：\n'),
-    npmInstallFailed: (endName: string, dirName: string) => chalk.red(`❌ "npm install" failed at ${endName}, you can re-execute it mannually. ` +
-        `\n\n    cd ${dirName}\n    npm install\n`),
+    npmInstallFailed: (endName: string, dirName: string, pureCmd: string) => chalk.red(`❌ "${pureCmd}" failed at ${endName}, you can re-execute it mannually. ` +
+        `\n\n    cd ${dirName}\n    ${pureCmd}\n`),
     runLocalServer: 'Run local dev server:\n',
     copyFiles: (dirName: string) => `Copy files to "${dirName}"`,
     genPackageJson: (dirName: string) => `Generate "${dirName}/package.json"`,

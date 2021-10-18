@@ -67,10 +67,10 @@ export async function createApp(options: CreateOptions) {
     else {
         console.log(i18n.createAppSuccWithProblems);
         if (!npmResServer) {
-            console.log(i18n.npmInstallFailed(serverEnd, path.relative('.', server.serverDir)));
+            console.log(i18n.npmInstallFailed(serverEnd, path.relative('.', server.serverDir), installEnv.pureCmd));
         }
         if (!npmResClient && client) {
-            console.log(i18n.npmInstallFailed(clientEnd, path.relative('.', client.clientDir)));
+            console.log(i18n.npmInstallFailed(clientEnd, path.relative('.', client.clientDir), installEnv.pureCmd));
         }
     }
 

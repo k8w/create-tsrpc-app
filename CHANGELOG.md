@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.1.7-dev.0] - 2021-10-18
+### Added
+- Update `tsrpc` version, support `mongodb/ObjectId` by default.
+- Add `env.d.ts` for `mongodb/ObjectId` support.
+
 ## [1.1.3] - 2021-10-09
 ### Fixed
 - 修复 Windows 平台 `npm install` 的错误

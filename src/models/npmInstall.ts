@@ -11,22 +11,32 @@ export async function npmInstall(cmd: string, cwd: string): Promise<boolean> {
     })
 }
 
-export async function getInstallEnv(): Promise<{ cmd: string, args: string[], pkgManager: 'npm' | 'yarn', registry?: string }> {
+export async function getInstallEnv(): Promise<{ cmd: string, args: string[], pkgManager: 'npm' | 'yarn', registry?: string, pureCmd: string }> {
     let pkgManager = await getPkgManager();
     let registry = await getRegistry(pkgManager);
     let args: string[] = [];
+    let pureCmd: string = '';
+
     if (pkgManager === 'npm') {
         args.push('install')
         if (registry) {
             args.push('--force');
         }
+        pureCmd = 'npm install --force'
     }
+    else if (pkgManager === 'yarn') {
+        pureCmd = 'yarn';
+    }
+
     if (registry) {
         args.push('--registry', registry);
     }
 
+
+
     return {
         cmd: pkgManager + ' ' + args.join(' '),
+        pureCmd: pureCmd,
         args: args,
         pkgManager: pkgManager,
         registry: registry

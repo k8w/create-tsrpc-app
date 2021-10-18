@@ -17,10 +17,10 @@
     "mocha": "^9.1.2",
     "onchange": "^7.1.0",
     "ts-node": "^10.2.1",
-    "tsrpc-cli": "^2.0.9",
+    "tsrpc-cli": "^2.0.10",
     "typescript": "^4.4.3"
   },
   "dependencies": {
-    "tsrpc": "^3.0.10"
+    "tsrpc": "^3.0.11"
   }
 }

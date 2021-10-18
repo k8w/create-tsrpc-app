@@ -14,9 +14,17 @@ declare module '*.module.css' {
   export default classes;
 }
 
-// #region Features/LESS
 declare module '*.module.less' {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
-// #endregion
+
+// TSRPC would decode ObjectId as string in frontend.
+declare module 'mongodb' {
+  export type ObjectId = string;
+  export type ObjectID = string;
+}
+declare module 'bson' {
+  export type ObjectId = string;
+  export type ObjectID = string;
+}
