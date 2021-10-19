@@ -1,6 +1,10 @@
 # Change Log
 
-## [1.1.7] - 2021-10-18
+## [1.1.8] - 2021-10-19
+### Fixed
+- 修改英文文案
+
+## [1.1.7] - 2021-10-19
 ### Added
 - Update `tsrpc` version, support `mongodb/ObjectId` by default.
 - Add `env.d.ts` for `mongodb/ObjectId` support.

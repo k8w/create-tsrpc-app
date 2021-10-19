@@ -57,7 +57,7 @@ Options：
     copyFiles: (dirName: string) => `Copy files to "${dirName}"`,
     genPackageJson: (dirName: string) => `Generate "${dirName}/package.json"`,
 
-    linkFailed: '创建 Symlink 授权失败，请在授权弹框选择 “是” ：',
-    linkRetry: '重 试',
-    linkJunction: '改为创建 Junction（不推荐）'
+    linkFailed: 'Authorization to create Symlink failed. Please select "Yes" in the authorization dialog: ',
+    linkRetry: 'Retry',
+    linkJunction: 'Create Junction instead (Not recommended)'
 }
