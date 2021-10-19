@@ -1,9 +1,10 @@
 # Change Log
 
-## [1.1.7-dev.0] - 2021-10-18
+## [1.1.7] - 2021-10-18
 ### Added
 - Update `tsrpc` version, support `mongodb/ObjectId` by default.
 - Add `env.d.ts` for `mongodb/ObjectId` support.
+- Auto ask for elevating in Windows when creating symlink
 
 ## [1.1.3] - 2021-10-09
 ### Fixed

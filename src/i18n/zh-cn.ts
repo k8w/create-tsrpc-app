@@ -56,4 +56,8 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
         `\n\n    cd ${dirName}\n    ${pureCmd}\n`),
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,
     genPackageJson: (dirName: string) => `生成 "${dirName}/package.json"`,
+
+    linkFailed: '创建 Symlink 授权失败，请在授权弹框选择 “是” 以继续：',
+    linkRetry: '重 试',
+    linkJunction: '改为创建 Junction（不推荐）'
 }

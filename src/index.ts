@@ -3,8 +3,9 @@ import fs from 'fs';
 import minimist from 'minimist';
 import { cmdHelp } from './commands/help';
 import { i18n } from './i18n/i18n';
-import { createApp } from './models/createApp';
+import { createApp, done } from './models/createApp';
 import { CreateOptions } from './models/CreateOptions';
+import { ensureSymlinks } from "./models/ensureSymlinks";
 import { inputCreateOptions } from './models/inputCreateOptions';
 import { presets } from './models/presets';
 import { VERSION } from './models/version';
@@ -35,6 +36,12 @@ async function main() {
 
     if (args.help) {
         cmdHelp();
+        return;
+    }
+
+    if (args['link-elevate']) {
+        let confs = JSON.parse(decodeURIComponent(args['link-elevate']))
+        await ensureSymlinks(confs, true);
         return;
     }
 
@@ -69,6 +76,7 @@ async function main() {
 };
 
 function exitWithError(e: Error) {
+    done(false);
     console.error(i18n.flagError, chalk.red(e.message));
     process.exit(-1);
 }

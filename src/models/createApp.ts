@@ -5,6 +5,7 @@ import ora from "ora";
 import path from "path";
 import { i18n } from "../i18n/i18n";
 import { CreateOptions } from "./CreateOptions";
+import { ensureSymlinks } from "./ensureSymlinks";
 import { getInstallEnv, npmInstall } from "./npmInstall";
 
 const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './templates') : path.resolve(__dirname, '../../dist/templates');
@@ -36,8 +37,10 @@ export async function createApp(options: CreateOptions) {
         // Sync 演示代码
         if (options.features.indexOf('symlink') > -1) {
             doing('Initialize symlink');
-            let target = path.relative(path.join(client.clientDir, 'src'), path.join(server.serverDir, 'src/shared'));
-            await fs.symlink(target, path.join(client.clientDir, 'src/shared'), 'junction');
+            await ensureSymlinks([{
+                src: path.join(server.serverDir, 'src/shared'),
+                dst: path.join(client.clientDir, 'src/shared')
+            }])
         }
         else {
             doing('Sync shared directory');
@@ -229,10 +232,10 @@ async function copyTypeFolder(folderName: string, type: string, fromDir: string,
     }
 }
 
-const spinner = ora({ spinner: 'material', text: '' });
+export const spinner = ora({ spinner: 'material', text: '' });
 let currentDoingText: string | undefined;
 let finishedStep = 0;
-function doing(text: string, doingPostFix: string = '...') {
+export function doing(text: string, doingPostFix: string = '...') {
     if (currentDoingText) {
         return;
     }
@@ -240,7 +243,7 @@ function doing(text: string, doingPostFix: string = '...') {
     spinner.prefixText = chalk.yellow(` → ${++finishedStep}/${totalStep} ${text}${doingPostFix}`);
     spinner.start();
 }
-function done(succ: boolean = true, text?: string) {
+export function done(succ: boolean = true, text?: string) {
     spinner.prefixText = '';
     if (currentDoingText) {
         text = `${finishedStep}/${totalStep} ${text ?? currentDoingText}`
