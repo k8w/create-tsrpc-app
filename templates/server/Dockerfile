@@ -25,7 +25,7 @@ RUN rm -rf /app \
     && mv node_modules /app/ \
     && rm -rf /src
 
-# Env
+# ENV
 ENV NODE_ENV production
 # 运行的进程数量 max为最佳性能（进程数=CPU核心数）
 ENV INSTANCE_NUM max
