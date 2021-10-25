@@ -1,5 +1,8 @@
 FROM node
 
+# 使用淘宝 NPM 镜像（国内机器构建推荐启用）
+# RUN npm config set registry https://registry.npm.taobao.org/
+
 # Install PM2
 RUN npm install pm2 -g
 
