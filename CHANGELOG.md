@@ -1,8 +1,9 @@
 # Change Log
 
-## [1.1.9-dev.0] - 2021-10-25
+## [1.1.9-dev.1] - 2021-10-25
 ### Added
 - 增加 `Dockerfile`
+- `npm-check-update` 失败不会中断安装进程
 
 ## [1.1.8] - 2021-10-19
 ### Fixed

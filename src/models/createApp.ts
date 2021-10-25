@@ -155,13 +155,13 @@ async function createServer(options: CreateOptions, registry: string | undefined
 
     // 安装依赖
     doing(`npm-check-update`)
-    await ncu.run({
+    let resNcu = await ncu.run({
         packageFile: path.join(serverDir, 'package.json'),
         upgrade: true,
         target: 'minor',
         registry: registry
-    });
-    done();
+    }).then(() => true).catch(() => false);
+    done(resNcu);
 
     return {
         serverDir: serverDir,
@@ -196,13 +196,13 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
 
     // 安装依赖
     doing('npm-check-update')
-    await ncu.run({
+    let resNcu = await ncu.run({
         packageFile: path.join(clientDir, 'package.json'),
         upgrade: true,
         target: 'minor',
         registry: registry
-    });
-    done();
+    }).then(() => true).catch(() => false);
+    done(resNcu);
 
     return {
         clientDir: clientDir,
