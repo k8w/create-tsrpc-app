@@ -7,8 +7,7 @@ FROM node
 RUN npm install pm2 -g
 
 # npm install
-ADD package.json /src/package.json
-ADD package-lock.json /src/package-lock.json
+ADD package*.json /src/
 WORKDIR /src
 RUN npm i
 

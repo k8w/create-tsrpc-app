@@ -1,9 +1,11 @@
 # Change Log
 
-## [1.1.9-dev.1] - 2021-10-25
+## [1.1.9-dev.2] - 2021-10-25
 ### Added
 - 增加 `Dockerfile`
 - `npm-check-update` 失败不会中断安装进程
+### Fixed
+- 优化前端模板中 `index.html` 中 `<meta>` 标签的闭合
 
 ## [1.1.8] - 2021-10-19
 ### Fixed
