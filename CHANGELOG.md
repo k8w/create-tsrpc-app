@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.2.0-dev.0] - 2021-11-06
+### Added
+- Update to `tsrpc@3.1`
+### Changed
+- Remove `PM2` from `Dockerfile`
+
 ## [1.1.9] - 2021-11-06
 ### Added
 - 增加 `Dockerfile`

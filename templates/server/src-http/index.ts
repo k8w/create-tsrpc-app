@@ -5,7 +5,10 @@ import { serviceProto } from "./shared/protocols/serviceProto";
 // Create the Server
 const server = new HttpServer(serviceProto, {
     port: 3000,
-    cors: '*'
+    cors: '*',
+    // Set to false can switch to binary mode, which is more security and has lower network traffic.
+    // If this is set to false, the client should also remove `json` option.
+    jsonEnabled: true
 });
 
 // Entry function
