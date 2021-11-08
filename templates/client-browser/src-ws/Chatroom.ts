@@ -1,6 +1,5 @@
-import { WsClient } from "tsrpc-browser";
+import { getClient } from "./getClient";
 import { MsgChat } from "./shared/protocols/MsgChat";
-import { serviceProto } from './shared/protocols/serviceProto';
 
 export class Chatroom {
 
@@ -9,10 +8,7 @@ export class Chatroom {
     input: HTMLInputElement;
     list: HTMLUListElement;
 
-    client = new WsClient(serviceProto, {
-        server: 'ws://127.0.0.1:3000',
-        logger: console
-    })
+    client = getClient();
 
     constructor(elem: HTMLDivElement) {
         this.elem = elem;

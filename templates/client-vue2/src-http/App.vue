@@ -18,15 +18,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { HttpClient } from "tsrpc-browser";
+import { client } from "./client";
 import { ResGetData } from "./shared/protocols/PtlGetData";
-import { serviceProto } from "./shared/protocols/serviceProto";
-
-// Create Client
-export const client = new HttpClient(serviceProto, {
-  server: "http://127.0.0.1:3000",
-  logger: console,
-});
 
 export interface AppData {
   input: string;

@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { HttpClient } from 'tsrpc-browser';
+import { client } from './client';
 import { ResGetData } from './shared/protocols/PtlGetData';
 import './index.less';
-import { serviceProto } from './shared/protocols/serviceProto';
-
-const client = new HttpClient(serviceProto, {
-    server: 'http://127.0.0.1:3000',
-    logger: console
-});
 
 const App = () => {
     // States

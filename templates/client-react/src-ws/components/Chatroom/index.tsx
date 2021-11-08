@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { WsClient } from "tsrpc-browser";
+import { getClient } from "../../getClient";
 import { MsgChat } from "../../shared/protocols/MsgChat";
-import { serviceProto } from "../../shared/protocols/serviceProto";
 import './index.less';
 
 export const Chatroom = (props: { title: string }) => {
     const [input, setInput] = useState('');
     const [list, setList] = useState([] as MsgChat[]);
-    const [client] = useState(new WsClient(serviceProto, {
-        server: 'ws://127.0.0.1:3000',
-        logger: console
-    }));
+    const [client] = useState(getClient());
 
     // Send input message
     async function send() {

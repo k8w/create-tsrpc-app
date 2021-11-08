@@ -1,14 +1,7 @@
-import { HttpClient } from 'tsrpc-browser';
-import { serviceProto } from './shared/protocols/serviceProto';
+import { client } from './client';
 
 // This is a demo code file
 // Feel free to modify or clear it
-
-// Create Client
-let client = new HttpClient(serviceProto, {
-    server: 'http://127.0.0.1:3000',
-    logger: console
-});
 
 // Reload message list
 async function loadList() {

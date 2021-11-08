@@ -19,10 +19,9 @@
 </template>
 
 <script lang="ts">
-import { WsClient } from "tsrpc-browser";
 import Vue from "vue";
+import { getClient } from '../getClient';
 import { MsgChat } from "../shared/protocols/MsgChat";
-import { serviceProto } from "../shared/protocols/serviceProto";
 
 export default Vue.extend({
   name: "Chatroom",
@@ -33,10 +32,7 @@ export default Vue.extend({
     return {
       input: "",
       list: [] as MsgChat[],
-      client: new WsClient(serviceProto, {
-        server: "ws://127.0.0.1:3000",
-        logger: console,
-      }),
+      client: getClient(),
     };
   },
 
