@@ -1,6 +1,6 @@
 import { CreateOptions } from "./CreateOptions";
 
-export const presets: { [key: string]: Omit<CreateOptions, 'projectDir'> } = {
+export const preset: { [key: string]: Omit<CreateOptions, 'projectDir'> } = {
     server: {
         server: 'http',
         client: 'none',

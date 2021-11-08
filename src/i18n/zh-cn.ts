@@ -7,7 +7,7 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
 选项：
     -h, --help              查看帮助信息
     -v, --version           查看版本号
-    -p, --presets <预设名>  使用预设配置（跳过交互式配置）
+    -p, --preset <预设名>  使用预设配置（跳过交互式配置）
                             可选 ${chalk.cyan('browser, react, vue2, vue3, server')}
 `,
     welcome: (version: string) => chalk.cyan(`=== 欢迎使用 ${chalk.bold('create-tsrpc-app')} 版本 ${version} ===\n`),
@@ -21,7 +21,7 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     'confirm?': '确认？',
 
     // Entry
-    presetsNotExist: (presets: string) => `Presets 不存在：${chalk.yellow(presets)}`,
+    presetNotExist: (preset: string) => `Preset 不存在：${chalk.yellow(preset)}`,
 
     // Input Create Options
     inputProjectDir: '请输入要创建的项目目录名：',

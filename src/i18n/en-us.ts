@@ -7,8 +7,8 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<project-dir>')) +
 Options：
     -h, --help                  Output help information
     -v, --version               Output version number
-    -p, --presets <presetName>  Use preset（skip interactive configuration）
-                                Presets: ${chalk.cyan('browser, react, vue2, vue3, server')}
+    -p, --preset <presetName>  Use preset（skip interactive configuration）
+                                Preset: ${chalk.cyan('browser, react, vue2, vue3, server')}
 `,
     welcome: (version: string) => chalk.cyan(`=== Welcome to ${chalk.bold('create-tsrpc-app')} version ${version} ===\n`),
     server: 'server',
@@ -21,7 +21,7 @@ Options：
     'confirm?': 'CONFIRM?',
 
     // Entry
-    presetsNotExist: (presets: string) => `Presets not exists：${chalk.yellow(presets)}`,
+    presetNotExist: (preset: string) => `Preset not exists：${chalk.yellow(preset)}`,
 
     // Input Create Options
     inputProjectDir: 'Input project directory name: ',

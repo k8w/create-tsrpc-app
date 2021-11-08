@@ -7,7 +7,7 @@ import { createApp, done } from './models/createApp';
 import { CreateOptions } from './models/CreateOptions';
 import { ensureSymlinks } from "./models/ensureSymlinks";
 import { inputCreateOptions } from './models/inputCreateOptions';
-import { presets } from './models/presets';
+import { preset } from './models/preset';
 import { VERSION } from './models/version';
 
 main().then(() => {
@@ -23,7 +23,7 @@ process.on('unhandledRejection', (e: Error) => {
 async function main() {
     const args = minimist(process.argv.slice(2), {
         alias: {
-            p: 'presets',
+            p: 'preset',
             h: 'help',
             v: 'version'
         }
@@ -54,17 +54,17 @@ async function main() {
         }
     }
 
-    // Check Presets
+    // Check Preset
     let initOptions: Partial<CreateOptions> = {
         projectDir: projectDir
     };
-    if (args.presets) {
-        let presetsOptions = presets[args.presets];
-        if (!presetsOptions) {
-            throw new Error(i18n.presetsNotExist(args.presets))
+    if (args.preset) {
+        let presetOptions = preset[args.preset];
+        if (!presetOptions) {
+            throw new Error(i18n.presetNotExist(args.preset))
         }
         initOptions = {
-            ...presetsOptions,
+            ...presetOptions,
             ...initOptions
         }
     }
