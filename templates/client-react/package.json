@@ -35,7 +35,7 @@
     "core-js": "^3.19.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "tsrpc-browser": "^3.0.11"
+    "tsrpc-browser": "^3.1.0"
   },
   "browserslist": {
     "production": [
