@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.2.0-dev.0] - 2021-11-06
+## [1.2.0-dev.0] - 2021-11-08
 ### Added
 - Update to `tsrpc@3.1`
 ### Changed
