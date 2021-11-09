@@ -41,7 +41,7 @@ const App = () => {
     }
 
     // Load list at first
-    useEffect(() => { loadList() }, [0]);
+    useEffect(() => { loadList() }, []);
 
     return <div className='App'>
         <h1>TSRPC Guestbook</h1>

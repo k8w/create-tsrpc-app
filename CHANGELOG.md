@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.2.1-dev.0] - 2021-11-09
+## [1.2.1] - 2021-11-09
 ### Changed
 - Flaten directory structure of `templates/client*/src-ws`
 - `client-react` switched to official templates of `create-react-app`

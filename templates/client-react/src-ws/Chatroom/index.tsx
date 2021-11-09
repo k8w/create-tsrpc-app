@@ -41,7 +41,7 @@ export const Chatroom = (props: { title: string }) => {
             alert('Server disconnected');
             return v;
         })
-    }, [0]);
+    }, [client]);
 
     // Scroll to bottom when new message come
     const ul = useRef<HTMLUListElement>(null);
