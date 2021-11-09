@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Chatroom from "./components/Chatroom.vue";
+import Chatroom from "./Chatroom.vue";
 
 export default defineComponent({
   name: "App",

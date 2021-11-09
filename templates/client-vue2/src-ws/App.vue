@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import Chatroom from "./components/Chatroom.vue";
+import Chatroom from "./Chatroom.vue";
 
 export default {
   name: "App",

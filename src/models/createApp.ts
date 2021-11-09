@@ -7,6 +7,7 @@ import { i18n } from "../i18n/i18n";
 import { CreateOptions } from "./CreateOptions";
 import { ensureSymlinks } from "./ensureSymlinks";
 import { getInstallEnv, npmInstall } from "./npmInstall";
+import { spinner } from "./spinner";
 
 const tplDir = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './templates') : path.resolve(__dirname, '../../dist/templates');
 let totalStep = 0;
@@ -232,7 +233,6 @@ async function copyTypeFolder(folderName: string, type: string, fromDir: string,
     }
 }
 
-export const spinner = ora({ spinner: 'material', text: '' });
 let currentDoingText: string | undefined;
 let finishedStep = 0;
 export function doing(text: string, doingPostFix: string = '...') {

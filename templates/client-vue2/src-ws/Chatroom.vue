@@ -20,8 +20,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { getClient } from '../getClient';
-import { MsgChat } from "../shared/protocols/MsgChat";
+import { getClient } from './getClient';
+import { MsgChat } from "./shared/protocols/MsgChat";
 
 export default Vue.extend({
   name: "Chatroom",

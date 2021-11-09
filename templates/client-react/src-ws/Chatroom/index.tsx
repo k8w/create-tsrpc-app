@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { getClient } from "../../getClient";
-import { MsgChat } from "../../shared/protocols/MsgChat";
+import { getClient } from "../getClient";
+import { MsgChat } from "../shared/protocols/MsgChat";
 import './index.less';
 
 export const Chatroom = (props: { title: string }) => {

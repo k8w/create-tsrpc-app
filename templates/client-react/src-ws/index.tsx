@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { Chatroom } from './components/Chatroom';
+import { Chatroom } from './Chatroom';
 import './index.less';
 
 const App = () => <div className='App'>

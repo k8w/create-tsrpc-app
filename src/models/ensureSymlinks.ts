@@ -4,7 +4,7 @@ import fs from "fs-extra";
 import inquirer from "inquirer";
 import path from "path";
 import { i18n } from "../i18n/i18n";
-import { spinner } from "./createApp";
+import { spinner } from "./spinner";
 
 const resPath = process.env.NODE_ENV === 'production' ? path.resolve(__dirname, './res') : path.resolve(__dirname, '../../res');
 
