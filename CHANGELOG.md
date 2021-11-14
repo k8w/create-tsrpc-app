@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.2.2] - 2021-11-14
+### Added
+- Upgrade to `tsrpc-cli@2.2.0`, add `npm run doc` command
+- `server/src/index.ts` split to 2 function: `init` and `main`
+
 ## [1.2.1] - 2021-11-09
 ### Changed
 - Flaten directory structure of `templates/client*/src-ws`

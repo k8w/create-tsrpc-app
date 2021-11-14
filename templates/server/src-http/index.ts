@@ -9,19 +9,18 @@ const server = new HttpServer(serviceProto, {
     json: true
 });
 
-// Entry function
-async function main() {
+// Initialize before server start
+async function init() {
     // Auto implement APIs
     await server.autoImplementApi(path.resolve(__dirname, 'api'));
 
     // TODO
     // Prepare something... (e.g. connect the db)
-
-    await server.start();
 };
 
-// Exit if any error during the startup
-main().catch(e => {
-    server.logger.error(e);
-    process.exit(-1);
-});
+// Entry function
+async function main() {
+    await init();
+    await server.start();
+};
+main();

@@ -9,18 +9,17 @@ export const server = new WsServer(serviceProto, {
     json: true
 });
 
-// Entry function
-async function main() {
+// Initialize before server start
+async function init() {
     await server.autoImplementApi(path.resolve(__dirname, 'api'));
 
     // TODO
     // Prepare something... (e.g. connect the db)
-
-    await server.start();
 };
 
-main().catch(e => {
-    // Exit if any error during the startup
-    server.logger.error(e);
-    process.exit(-1);
-});
+// Entry function
+async function main() {
+    await init();
+    await server.start();
+}
+main();

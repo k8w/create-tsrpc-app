@@ -6,7 +6,8 @@ const tsrpcConf: TsrpcConfig = {
         {
             ptlDir: 'src/shared/protocols', // Protocol dir
             output: 'src/shared/protocols/serviceProto.ts', // Path for generated ServiceProto
-            apiDir: 'src/api'   // API dir
+            apiDir: 'src/api',   // API dir
+            docDir: 'docs',     // API documents dir
         }
     ],
     // Sync shared code
