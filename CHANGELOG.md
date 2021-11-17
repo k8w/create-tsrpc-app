@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.3] - 2021-11-17
+### Added
+- Add remark to default protocols, to preview api doc effects.
+
 ## [1.2.2] - 2021-11-14
 ### Added
 - Upgrade to `tsrpc-cli@2.2.0`, add `npm run doc` command

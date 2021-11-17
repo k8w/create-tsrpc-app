@@ -1,12 +1,15 @@
 # TSRPC Server
 
-## Run
-### Local Dev Server
+## Usage
+### Local dev server
+
+Dev server would restart automatically when code changed.
+
 ```
 npm run dev
 ```
 
-### Unit Test
+### Run unit Test
 Execute `npm run dev` first, then execute:
 ```
 npm run test
@@ -19,7 +22,16 @@ npm run build
 
 ---
 
-## Files
+## Additional Scripts
+
+### Generate API document
+
+Generate API document in swagger/openapi and markdown format.
+
+```shell
+npm run doc
+```
+
 ### Generate ServiceProto
 ```
 npm run proto
@@ -30,10 +42,8 @@ npm run proto
 npm run api
 ```
 
-### Sync shared code to client
+### Manually sync shared code
 
 ```
 npm run sync
 ```
-
-> If you chose symlink when using `create-tsrpc-app`, it would re-create the symlink instead of copy files.
