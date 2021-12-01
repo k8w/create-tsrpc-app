@@ -32,8 +32,6 @@ export async function getInstallEnv(): Promise<{ cmd: string, args: string[], pk
         args.push('--registry', registry);
     }
 
-
-
     return {
         cmd: pkgManager + ' ' + args.join(' '),
         pureCmd: pureCmd,
@@ -54,7 +52,7 @@ async function getPkgManager(): Promise<'npm' | 'yarn'> {
 const registries = {
     npm: 'https://registry.npmjs.org',
     yarn: 'https://registry.yarnpkg.com',
-    taobao: 'https://registry.npm.taobao.org'
+    taobao: 'https://registry.npmmirror.com'
 }
 async function getRegistry(command: 'yarn' | 'npm'): Promise<string | undefined> {
     // User has configured custom registry, respect that

@@ -1,4 +1,4 @@
-import { TsrpcConfig } from 'tsrpc-cli';
+import { CodeTemplate, TsrpcConfig } from 'tsrpc-cli';
 
 const tsrpcConf: TsrpcConfig = {
     // Generate ServiceProto
@@ -8,6 +8,8 @@ const tsrpcConf: TsrpcConfig = {
             output: 'src/shared/protocols/serviceProto.ts', // Path for generated ServiceProto
             apiDir: 'src/api',   // API dir
             docDir: 'docs',     // API documents dir
+            ptlTemplate: CodeTemplate.getExtendedPtl(),
+            // msgTemplate: CodeTemplate.getExtendedMsg(),
         }
     ],
     // Sync shared code

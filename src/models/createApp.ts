@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import fs from "fs-extra";
 import ncu from "npm-check-updates";
-import ora from "ora";
 import path from "path";
 import { i18n } from "../i18n/i18n";
 import { CreateOptions } from "./CreateOptions";
@@ -56,7 +55,7 @@ export async function createApp(options: CreateOptions) {
     doing(i18n.npmInstall, i18n.mayLongPleaseWait);
     [npmResServer, npmResClient] = await Promise.all([
         npmInstall(installEnv.cmd, server.serverDir),
-        client ? npmInstall(installEnv.cmd, client.clientDir) : false
+        client ? npmInstall(installEnv.cmd, client.clientDir) : true
     ])
     done(npmResServer && npmResClient);
 

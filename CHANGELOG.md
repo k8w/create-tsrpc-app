@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.2.4] - 2021-12-01
+### Added
+- `tsrpc.config.ts` add `ptlTemplate` and `msgTemplate`, extends from base by default
+### Fixed
+- `npm install` error issue when create server-only project
+
 ## [1.2.3] - 2021-11-17
 ### Added
 - Add remark to default protocols, to preview api doc effects.
