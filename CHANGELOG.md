@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.5] - 2021-12-04
+### Changed
+- Update `package.json` in server template
+
 ## [1.2.4] - 2021-12-01
 ### Added
 - `tsrpc.config.ts` add `ptlTemplate` and `msgTemplate`, extends from base by default
