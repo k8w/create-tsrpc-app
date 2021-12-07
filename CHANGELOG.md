@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.6] - 2021-12-07
+### Fixed
+- WebSocket server unit test bug
+
 ## [1.2.5] - 2021-12-04
 ### Changed
 - Update `package.json` in server template
