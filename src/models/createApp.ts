@@ -139,16 +139,11 @@ async function createServer(options: CreateOptions, registry: string | undefined
     doing(i18n.genPackageJson(serverDirName))
     let packageJson = JSON.parse(await fs.readFile(path.join(serverDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${serverDirName}`;
-    packageJson.scripts.sync = packageJson.scripts.sync.replace(/client/g, clientDirName);
     // 单元测试特性
     if (options.features.indexOf('unitTest') === -1) {
         delete packageJson.scripts.test;
         delete packageJson.devDependencies.mocha;
         delete packageJson.devDependencies['@types/mocha'];
-    }
-    // Symlink
-    if (options.features.indexOf('symlink') > -1) {
-        packageJson.scripts.sync = packageJson.scripts.sync.replace('tsrpc sync', 'tsrpc link');
     }
     await fs.writeFile(path.join(serverDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     done();

@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.2.7] - 2021-12-20
+## [1.2.8] - 2021-12-20
 ### Changed
 - Update dependencies
 - Rename CLI command `tsrpc` to `tsrpc-cli`
