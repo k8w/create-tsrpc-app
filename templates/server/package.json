@@ -7,7 +7,10 @@
     "dev": "tsrpc-cli dev",
     "build": "tsrpc-cli build",
     "doc": "tsrpc-cli doc",
-    "test": "mocha test/**/*.test.ts"
+    "test": "mocha test/**/*.test.ts",
+    "proto": "tsrpc-cli proto",
+    "sync": "tsrpc-cli sync",
+    "api": "tsrpc-cli api"
   },
   "devDependencies": {
     "@types/mocha": "^8.2.3",
