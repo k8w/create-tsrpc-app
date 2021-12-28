@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2.9] - 2021-12-28
+### Changed
+- Revert `proto` `sync` `api` command in server template `package.json`
+
 ## [1.2.8] - 2021-12-20
 ### Changed
 - Update dependencies
