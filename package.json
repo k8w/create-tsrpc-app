@@ -1,6 +1,6 @@
 {
   "name": "create-tsrpc-app",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "description": "Quickly create TSRPC projects",
   "main": "index.js",
   "engines": {
@@ -45,19 +45,19 @@
     "@types/minimist": "^1.2.2",
     "@types/ora": "^3.2.0",
     "glob": "^7.2.0",
-    "rollup": "^2.60.2",
+    "rollup": "^2.70.1",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.31.1",
-    "shx": "^0.3.3",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.2"
+    "rollup-plugin-typescript2": "^0.31.2",
+    "shx": "^0.3.4",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
   },
   "dependencies": {
     "ansi-escapes": "^5.0.0",
     "chalk": "^4.1.2",
-    "fs-extra": "^10.0.0",
-    "inquirer": "^8.2.0",
-    "minimist": "^1.2.5",
+    "fs-extra": "^10.0.1",
+    "inquirer": "^8.2.2",
+    "minimist": "^1.2.6",
     "npm-check-updates": "^11.8.5",
     "ora": "^5.4.1",
     "os-locale": "^5.0.0"

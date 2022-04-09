@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.3.0] - 2022-04-09
+### Fixed
+- `backend/test` cannot auto import code from `src`
+
 ## [1.2.9] - 2021-12-28
 ### Changed
 - Revert `proto` `sync` `api` command in server template `package.json`
