@@ -1,6 +1,6 @@
-import { CodeTemplate, TsrpcConfig } from 'tsrpc-cli';
+import type { TsrpcConfig } from 'tsrpc-cli';
 
-const tsrpcConf: TsrpcConfig = {
+export default <TsrpcConfig>{
     // Generate ServiceProto
     proto: [
         {
@@ -8,8 +8,8 @@ const tsrpcConf: TsrpcConfig = {
             output: 'src/shared/protocols/serviceProto.ts', // Path for generated ServiceProto
             apiDir: 'src/api',   // API dir
             docDir: 'docs',     // API documents dir
-            ptlTemplate: CodeTemplate.getExtendedPtl(),
-            // msgTemplate: CodeTemplate.getExtendedMsg(),
+            ptlTemplate: { baseFile: 'src/shared/protocols/base.ts' },
+            // msgTemplate: { baseFile: 'src/shared/protocols/base.ts' },
         }
     ],
     // Sync shared code
@@ -36,4 +36,3 @@ const tsrpcConf: TsrpcConfig = {
         outDir: 'dist',         // Clean this dir before build
     }
 }
-export default tsrpcConf;

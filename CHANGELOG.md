@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.3.1] - 2022-07-03
+### Changed
+- Update to `tsrpc-cli@2.4.5`
+- Update default format of `tsrpc.config.ts` and API files
+
 ## [1.3.0] - 2022-04-09
 ### Fixed
 - `backend/test` cannot auto import code from `src`
