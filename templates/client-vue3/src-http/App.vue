@@ -1,14 +1,52 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { client } from './client'
+import type { ResGetData } from './shared/protocols/PtlGetData'
+
+const input = ref('')
+const list = ref<ResGetData['data']>([])
+
+async function loadList() {
+  const ret = await client.callApi('GetData', {})
+
+  if (!ret.isSucc) {
+    alert(ret.err.message)
+    return
+  }
+
+  list.value = ret.res.data
+}
+
+async function send() {
+  const ret = await client.callApi('AddData', {
+    content: input.value,
+  })
+
+  if (!ret.isSucc) {
+    alert(ret.err.message)
+    return
+  }
+
+  input.value = ''
+  loadList()
+}
+
+onMounted(() => {
+  loadList()
+})
+</script>
+
 <template>
-  <div class="App">
+  <div class="app">
     <h1>TSRPC Guestbook</h1>
 
     <div class="send">
       <textarea placeholder="Say something..." v-model="input" />
-      <button v-on:click="send">Send</button>
+      <button @click="send">Send</button>
     </div>
 
     <ul class="list">
-      <li v-for="(v, i) in list" v-bind:key="i">
+      <li v-for="(v, i) in list" :key="i">
         <div class="content">{{ v.content }}</div>
         <div class="time">{{ v.time.toLocaleTimeString() }}</div>
       </li>
@@ -16,62 +54,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { client } from "./client";
-import { ResGetData } from "./shared/protocols/PtlGetData";
-
-export interface AppData {
-  input: string;
-  list: ResGetData["data"];
-}
-
-export default defineComponent({
-  name: "App",
-  data() {
-    return {
-      input: "",
-      list: [],
-    } as AppData;
-  },
-
-  methods: {
-    async loadList() {
-      let ret = await client.callApi("GetData", {});
-
-      // Error
-      if (!ret.isSucc) {
-        alert(ret.err.message);
-        return;
-      }
-
-      // Success
-      this.list = ret.res.data;
-    },
-
-    async send() {
-      let ret = await client.callApi("AddData", {
-        content: this.input,
-      });
-
-      // Error
-      if (!ret.isSucc) {
-        alert(ret.err.message);
-        return;
-      }
-
-      // Success
-      this.input = "";
-      this.loadList();
-    },
-  },
-
-  mounted() {
-    this.loadList();
-  },
-});
-</script>
-
-<style lang="less">
-@import "./App.less";
+<style>
+@import './index.css';
 </style>

@@ -8,7 +8,7 @@ Options：
     -h, --help                  Output help information
     -v, --version               Output version number
     -p, --preset <presetName>  Use preset（skip interactive configuration）
-                                Preset: ${chalk.cyan('browser, react, vue2, vue3, server')}
+                                Preset: ${chalk.cyan('browser, react, vue3, server')}
 `,
     welcome: (version: string) => chalk.cyan(`=== Welcome to ${chalk.bold('create-tsrpc-app')} version ${version} ===\n`),
     server: 'server',
@@ -30,7 +30,6 @@ Options：
     selectProjectType: 'Please select the project type: ',
     projectType: {
         react: 'React + backend',
-        vue2: 'Vue 2 + backend',
         vue3: 'Vue 3 + backend',
         nativeBrowser: 'Frontend (no framework) + backend',
         server: 'Backend only',
@@ -43,6 +42,8 @@ Options：
     selectServerType: 'Please select the transportation protocol: ',
     httpShortService: 'HTTP short connection',
     wsLongService: 'WebSocket long connection',
+
+    selectFeatures: 'Select additional features: ',
 
     // CreateApp
     checkNpmEnv: 'Check NPM environment',

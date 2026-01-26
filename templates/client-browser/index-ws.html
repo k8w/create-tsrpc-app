@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TSRPC Browser App</title>
+  </head>
+  <body>
+    <h1>TSRPC Chatroom</h1>
+
+    <div class="app">
+      <div class="chat-room">
+        <header>Client #1</header>
+        <ul class="list"></ul>
+        <div class="send">
+          <input placeholder="Say something..." />
+          <button>Send</button>
+        </div>
+      </div>
+
+      <div class="chat-room">
+        <header>Client #2</header>
+        <ul class="list"></ul>
+        <div class="send">
+          <input placeholder="Say something..." />
+          <button>Send</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>

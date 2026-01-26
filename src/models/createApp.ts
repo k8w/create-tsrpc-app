@@ -110,7 +110,9 @@ async function createServer(options: CreateOptions, registry: string | undefined
     // 复制文件
     doing(i18n.copyFiles(serverDirName))
     await fs.ensureDir(serverDir);
-    await copyRootFiles(path.join(tplDir, 'server'), serverDir, options.features.indexOf('unitTest') === -1 ? ['.mocharc.js'] : undefined);
+    // 如果不需要单元测试，忽略 vitest.config.ts
+    const ignoreFiles = options.features.indexOf('unitTest') === -1 ? ['vitest.config.ts'] : undefined;
+    await copyRootFiles(path.join(tplDir, 'server'), serverDir, ignoreFiles);
     await copyTypeFolder('src', options.server, path.join(tplDir, 'server'), serverDir);
     await fs.copy(path.join(tplDir, 'server', '.vscode'), path.join(serverDir, '.vscode'), { recursive: true });
 
@@ -142,8 +144,8 @@ async function createServer(options: CreateOptions, registry: string | undefined
     // 单元测试特性
     if (options.features.indexOf('unitTest') === -1) {
         delete packageJson.scripts.test;
-        delete packageJson.devDependencies.mocha;
-        delete packageJson.devDependencies['@types/mocha'];
+        delete packageJson.scripts['test:watch'];
+        delete packageJson.devDependencies.vitest;
     }
     await fs.writeFile(path.join(serverDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     done();
@@ -169,14 +171,30 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     const clientDirName = options.client === 'node' ? 'client' : 'frontend';
     const clientDir = path.resolve(options.projectDir, clientDirName);
     const appName = path.basename(path.resolve(options.projectDir));
+    const useTailwind = options.features.indexOf('tailwind') > -1;
+    const tplClientDir = path.join(tplDir, `client-${options.client}`);
 
     // 复制文件
     doing(i18n.copyFiles(clientDirName))
     await fs.ensureDir(clientDir);
-    await copyRootFiles(path.join(tplDir, `client-${options.client}`), clientDir);
-    await copyTypeFolder('src', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
-    await copyTypeFolder('public', options.server, path.join(tplDir, `client-${options.client}`), clientDir);
-    // Vue 额外复制 vutur.config.js
+    
+    // 复制根目录文件，忽略 index-http.html 和 index-ws.html
+    await copyRootFiles(tplClientDir, clientDir, ['index-http.html', 'index-ws.html']);
+    
+    // 处理 index.html（Vite 需要在根目录）
+    // 优先使用 index-{type}.html，否则使用通用的 index.html
+    const typedIndexPath = path.join(tplClientDir, `index-${options.server}.html`);
+    const genericIndexPath = path.join(tplClientDir, 'index.html');
+    if (await fs.pathExists(typedIndexPath)) {
+        await fs.copyFile(typedIndexPath, path.join(clientDir, 'index.html'));
+    } else if (await fs.pathExists(genericIndexPath)) {
+        await fs.copyFile(genericIndexPath, path.join(clientDir, 'index.html'));
+    }
+    
+    await copyTypeFolder('src', options.server, tplClientDir, clientDir);
+    await copyTypeFolder('public', options.server, tplClientDir, clientDir);
+    
+    // Vue 额外复制 vetur.config.js
     if (options.client.startsWith('vue')) {
         await fs.copyFile(path.join(tplDir, 'vetur.config.js'), path.resolve(options.projectDir, 'vetur.config.js'));
     }
@@ -186,8 +204,22 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     doing(i18n.genPackageJson(clientDirName))
     let packageJson = JSON.parse(await fs.readFile(path.join(clientDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${clientDirName}`;
+    
+    // Tailwind CSS
+    if (useTailwind) {
+        packageJson.devDependencies = packageJson.devDependencies || {};
+        packageJson.devDependencies['tailwindcss'] = '^3.4.0';
+        packageJson.devDependencies['postcss'] = '^8.4.0';
+        packageJson.devDependencies['autoprefixer'] = '^10.4.0';
+    }
+    
     await fs.writeFile(path.join(clientDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     done();
+
+    // Tailwind 配置文件
+    if (useTailwind) {
+        await setupTailwind(clientDir);
+    }
 
     // 安装依赖
     doing('npm-check-update')
@@ -202,6 +234,46 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     return {
         clientDir: clientDir,
         clientDirName: clientDirName
+    }
+}
+
+async function setupTailwind(clientDir: string) {
+    // tailwind.config.js
+    const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx,vue}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+    await fs.writeFile(path.join(clientDir, 'tailwind.config.js'), tailwindConfig, 'utf-8');
+
+    // postcss.config.js
+    const postcssConfig = `export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`;
+    await fs.writeFile(path.join(clientDir, 'postcss.config.js'), postcssConfig, 'utf-8');
+
+    // 更新 CSS 文件添加 Tailwind 指令
+    const cssPath = path.join(clientDir, 'src/index.css');
+    if (await fs.pathExists(cssPath)) {
+        let cssContent = await fs.readFile(cssPath, 'utf-8');
+        const tailwindDirectives = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+`;
+        cssContent = tailwindDirectives + cssContent;
+        await fs.writeFile(cssPath, cssContent, 'utf-8');
     }
 }
 
@@ -222,9 +294,10 @@ async function copyTypeFolder(folderName: string, type: string, fromDir: string,
     if (await fs.pathExists(path.join(fromDir, `${folderName}-${type}`))) {
         await fs.copy(path.join(fromDir, `${folderName}-${type}`), path.join(toDir, folderName), { recursive: true });
     }
-    else {
+    else if (await fs.pathExists(path.join(fromDir, folderName))) {
         await fs.copy(path.join(fromDir, folderName), path.join(toDir, folderName), { recursive: true });
     }
+    // 如果两者都不存在，则跳过（例如某些模板可能没有 public 目录）
 }
 
 let currentDoingText: string | undefined;

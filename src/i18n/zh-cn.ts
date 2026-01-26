@@ -8,7 +8,7 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     -h, --help              查看帮助信息
     -v, --version           查看版本号
     -p, --preset <预设名>  使用预设配置（跳过交互式配置）
-                            可选 ${chalk.cyan('browser, react, vue2, vue3, server')}
+                            可选 ${chalk.cyan('browser, react, vue3, server')}
 `,
     welcome: (version: string) => chalk.cyan(`=== 欢迎使用 ${chalk.bold('create-tsrpc-app')} 版本 ${version} ===\n`),
     server: '服务端',
@@ -30,7 +30,6 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     selectProjectType: '请选择要创建的项目类型：',
     projectType: {
         react: 'React + 后端',
-        vue2: 'Vue 2 + 后端',
         vue3: 'Vue 3 + 后端',
         nativeBrowser: '前端（无框架） + 后端',
         server: '仅后端',
@@ -43,6 +42,8 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     selectServerType: '请选择传输协议：',
     httpShortService: 'HTTP 短连接',
     wsLongService: 'WebSocket 长连接',
+
+    selectFeatures: '选择附加功能：',
 
     // CreateApp
     checkNpmEnv: '检测 NPM 环境',
@@ -57,7 +58,7 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,
     genPackageJson: (dirName: string) => `生成 "${dirName}/package.json"`,
 
-    linkFailed: '创建 Symlink 授权失败，请在授权弹框选择 “是” 以继续：',
+    linkFailed: '创建 Symlink 授权失败，请在授权弹框选择 "是" 以继续：',
     linkRetry: '重 试',
     linkJunction: '改为创建 Junction（不推荐）'
 }

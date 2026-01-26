@@ -3,7 +3,7 @@ import fs from "fs";
 import inquirer from "inquirer";
 import path from "path";
 import { i18n } from "../i18n/i18n";
-import { CreateOptions } from "./CreateOptions";
+import { clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
 import { VERSION } from "./version";
 
 export async function inputCreateOptions(options: Partial<CreateOptions>): Promise<CreateOptions> {
@@ -44,7 +44,6 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     let client = await select(i18n.selectProjectType, [
         new inquirer.Separator('\n' + i18n.projectCategory.browser + '\n'),
         { name: i18n.projectType.react, value: 'react' },
-        { name: i18n.projectType.vue2, value: 'vue2' },
         { name: i18n.projectType.vue3, value: 'vue3' },
         { name: i18n.projectType.nativeBrowser, value: 'browser' },
 
@@ -59,38 +58,33 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     ], options.server);
 
     // features
-    // let features: CreateOptions['features'] = options.features || [];
-    // if (serverFeatures.length || clientFeatures.length) {
-    //     let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
-    //     let featureChoices = platformClientFeatures.length ? [
-    //         // new inquirer.Separator(` ===== ${i18n.server} ===== `),
-    //         ...serverFeatures,
-    //         // new inquirer.Separator(` ===== ${clientName} ===== `),
-    //         ...platformClientFeatures
-    //     ] : serverFeatures;
-    //     features = (await inquirer.prompt([{
-    //         type: 'checkbox',
-    //         message: i18n.selectFeatures,
-    //         name: 'features',
-    //         choices: featureChoices,
-    //         pageSize: 20
-    //     }], { features: options.features })).features as CreateOptions['features'];
-    //     if (!features.length && !options.features && !(await inquirer.prompt({
-    //         type: 'confirm',
-    //         name: 'res',
-    //         message: i18n['confirm?'],
-    //         default: true
-    //     })).res) {
-    //         console.log(i18n.canceled);
-    //         process.exit(-1);
-    //     }
-    // }
+    let features: CreateOptions['features'] = options.features || [];
+    let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
+    let featureChoices = [...serverFeatures, ...platformClientFeatures];
+    
+    if (featureChoices.length) {
+        features = (await inquirer.prompt([{
+            type: 'checkbox',
+            message: i18n.selectFeatures,
+            name: 'features',
+            choices: featureChoices,
+            pageSize: 20
+        }], { features: options.features })).features as CreateOptions['features'];
+    }
+
+    // Always include symlink and unitTest
+    if (!features.includes('symlink')) {
+        features.push('symlink');
+    }
+    if (!features.includes('unitTest')) {
+        features.push('unitTest');
+    }
 
     return {
         projectDir: projectDir,
         server: server,
         client: client,
-        features: ['symlink', 'unitTest']
+        features: features
     };
 }
 
