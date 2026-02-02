@@ -8,10 +8,16 @@ export interface LocalizedString {
   'en-US': string
 }
 
+/** Server protocol type */
+export type ServerProtocol = 'http' | 'ws'
+
+/** Client platform type */
+export type ClientPlatform = 'react' | 'vue3' | 'browser' | 'none'
+
 /** Technology stack configuration */
 export interface ExampleStack {
-  server: 'http' | 'ws'
-  client: 'react' | 'vue3' | 'browser' | 'none'
+  server: ServerProtocol
+  client: ClientPlatform
 }
 
 /** Difficulty level */
@@ -140,6 +146,8 @@ export interface CommunityExample {
   author?: string
   stars?: number
   addedAt?: string
+  /** Whether this example has been verified by maintainers */
+  verified?: boolean
 }
 
 /**
@@ -157,6 +165,8 @@ export interface CommunityExamplesIndex {
 export interface CacheEntry {
   commitSha: string
   downloadedAt: string
+  /** Last access time for expiry tracking */
+  lastAccessedAt: string
   exampleName: string
   path: string
 }

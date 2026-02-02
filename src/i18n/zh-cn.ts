@@ -12,10 +12,11 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     -e, --example <名称>        从示例创建项目
                                 ${chalk.gray('官方示例：')} ${chalk.cyan('ecommerce-admin')}
                                 ${chalk.gray('GitHub：')} ${chalk.cyan('user/repo')} 或 ${chalk.cyan('user/repo#branch')}
-    --from-example              进入示例选择界面（交互式）
-    --no-example                跳过示例选择，直接进入模板选择
+    --from-example              进入示例选择界面 ${chalk.gray('(适用于 CI/脚本)')}
+    --no-example                跳过示例选择 ${chalk.gray('(适用于 CI/脚本)')}
     --list-examples             列出所有可用示例
     --refresh-registry          强制刷新示例注册表缓存
+    --clear-cache               清除所有缓存的示例和注册表
 `,
     welcome: (version: string) => chalk.cyan(`=== 欢迎使用 ${chalk.bold('create-tsrpc-app')} 版本 ${version} ===\n`),
     server: '服务端',
@@ -108,6 +109,25 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
 
         // Registry
         refreshingRegistry: '正在刷新示例注册表...',
-        registryRefreshed: '注册表刷新成功'
+        registryRefreshed: '注册表刷新成功',
+
+        // Cache
+        clearingCache: '正在清除所有缓存的示例...',
+        cacheCleared: '缓存清除成功',
+
+        // Security
+        communityWarning: chalk.yellow('⚠️  这是一个社区示例，尚未经过维护者验证。\n   请在生产环境使用前审查代码。'),
+        verifiedBadge: chalk.green('✓ 已验证'),
+
+        // Error messages
+        networkTimeout: '网络超时。请检查网络连接后重试。',
+        rateLimitExceeded: 'GitHub API 请求频率超限。请稍后重试。',
+        repoNotAccessible: (repo: string) => `无法访问仓库：${chalk.yellow(repo)}。可能是私有仓库或不存在。`,
+
+        // Success next steps
+        nextSteps: '下一步：',
+        cdIntoProject: (dir: string) => `  cd ${chalk.cyan(dir)}`,
+        installDeps: '  npm install',
+        startDev: '  npm run dev'
     }
 }

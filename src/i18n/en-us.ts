@@ -12,10 +12,11 @@ Options:
     -e, --example <name>        Create project from example
                                 ${chalk.gray('Official:')} ${chalk.cyan('ecommerce-admin')}
                                 ${chalk.gray('GitHub:')} ${chalk.cyan('user/repo')} or ${chalk.cyan('user/repo#branch')}
-    --from-example              Start with example selection (interactive)
-    --no-example                Skip example selection, go straight to template
+    --from-example              Start with example selection ${chalk.gray('(for CI/scripts)')}
+    --no-example                Skip example selection ${chalk.gray('(for CI/scripts)')}
     --list-examples             List all available examples
     --refresh-registry          Force refresh the examples registry cache
+    --clear-cache               Clear all cached examples and registry
 `,
     welcome: (version: string) => chalk.cyan(`=== Welcome to ${chalk.bold('create-tsrpc-app')} version ${version} ===\n`),
     server: 'server',
@@ -108,6 +109,25 @@ Options:
 
         // Registry
         refreshingRegistry: 'Refreshing examples registry...',
-        registryRefreshed: 'Registry refreshed successfully'
+        registryRefreshed: 'Registry refreshed successfully',
+
+        // Cache
+        clearingCache: 'Clearing all cached examples...',
+        cacheCleared: 'Cache cleared successfully',
+
+        // Security
+        communityWarning: chalk.yellow('⚠️  This is a community example and has not been verified by the maintainers.\n   Please review the code before running in production.'),
+        verifiedBadge: chalk.green('✓ Verified'),
+
+        // Error messages
+        networkTimeout: 'Network timeout. Please check your connection and try again.',
+        rateLimitExceeded: 'GitHub API rate limit exceeded. Please wait a moment and try again.',
+        repoNotAccessible: (repo: string) => `Repository not accessible: ${chalk.yellow(repo)}. It may be private or doesn't exist.`,
+
+        // Success next steps
+        nextSteps: 'Next steps:',
+        cdIntoProject: (dir: string) => `  cd ${chalk.cyan(dir)}`,
+        installDeps: '  npm install',
+        startDev: '  npm run dev'
     }
 }

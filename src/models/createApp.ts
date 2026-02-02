@@ -205,12 +205,11 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     let packageJson = JSON.parse(await fs.readFile(path.join(clientDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${clientDirName}`;
     
-    // Tailwind CSS
+    // Tailwind CSS v4
     if (useTailwind) {
         packageJson.devDependencies = packageJson.devDependencies || {};
-        packageJson.devDependencies['tailwindcss'] = '^3.4.0';
-        packageJson.devDependencies['postcss'] = '^8.4.0';
-        packageJson.devDependencies['autoprefixer'] = '^10.4.0';
+        packageJson.devDependencies['tailwindcss'] = '^4.0.0';
+        packageJson.devDependencies['@tailwindcss/vite'] = '^4.0.0';
     }
     
     await fs.writeFile(path.join(clientDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
@@ -238,41 +237,45 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
 }
 
 async function setupTailwind(clientDir: string) {
-    // tailwind.config.js
-    const tailwindConfig = `/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx,vue}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-`;
-    await fs.writeFile(path.join(clientDir, 'tailwind.config.js'), tailwindConfig, 'utf-8');
+    // Tailwind CSS v4 使用 Vite 插件，不需要 tailwind.config.js 和 postcss.config.js
 
-    // postcss.config.js
-    const postcssConfig = `export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-`;
-    await fs.writeFile(path.join(clientDir, 'postcss.config.js'), postcssConfig, 'utf-8');
+    // 更新 vite.config.ts 添加 @tailwindcss/vite 插件
+    const viteConfigPath = path.join(clientDir, 'vite.config.ts');
+    if (await fs.pathExists(viteConfigPath)) {
+        let viteConfig = await fs.readFile(viteConfigPath, 'utf-8');
 
-    // 更新 CSS 文件添加 Tailwind 指令
+        // 添加 tailwindcss import
+        if (!viteConfig.includes('@tailwindcss/vite')) {
+            // 在第一个 import 之前添加 tailwindcss import
+            viteConfig = `import tailwindcss from '@tailwindcss/vite'\n` + viteConfig;
+
+            // 检查是否已有 plugins 数组
+            if (viteConfig.includes('plugins:')) {
+                // 在 plugins 数组中添加 tailwindcss()
+                viteConfig = viteConfig.replace(
+                    /plugins:\s*\[/,
+                    'plugins: [\n    tailwindcss(),'
+                );
+            } else {
+                // 没有 plugins，在 defineConfig({ 后添加
+                viteConfig = viteConfig.replace(
+                    /defineConfig\(\{/,
+                    'defineConfig({\n  plugins: [tailwindcss()],'
+                );
+            }
+
+            await fs.writeFile(viteConfigPath, viteConfig, 'utf-8');
+        }
+    }
+
+    // 更新 CSS 文件使用 Tailwind v4 语法
     const cssPath = path.join(clientDir, 'src/index.css');
     if (await fs.pathExists(cssPath)) {
         let cssContent = await fs.readFile(cssPath, 'utf-8');
-        const tailwindDirectives = `@tailwind base;
-@tailwind components;
-@tailwind utilities;
+        const tailwindImport = `@import "tailwindcss";
 
 `;
-        cssContent = tailwindDirectives + cssContent;
+        cssContent = tailwindImport + cssContent;
         await fs.writeFile(cssPath, cssContent, 'utf-8');
     }
 }

@@ -12,6 +12,7 @@ const CACHE_DIR = path.join(os.homedir(), '.cta-cache')
 const CACHE_INDEX_FILE = 'cache-index.json'
 const REGISTRY_CACHE_FILE = 'registry.json'
 const REGISTRY_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
+const EXAMPLE_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 
 /**
  * Example cache manager
@@ -90,8 +91,25 @@ export class ExampleCache {
       return null
     }
 
+    // Check if cache has expired (7 days since last access)
+    const lastAccess = new Date(entry.lastAccessedAt || entry.downloadedAt).getTime()
+    if (Date.now() - lastAccess > EXAMPLE_CACHE_MAX_AGE_MS) {
+      // Cache expired, remove it
+      delete index.entries[key]
+      await this.saveIndex(index)
+      try {
+        await fs.remove(entry.path)
+      } catch {
+        // Ignore removal errors
+      }
+      return null
+    }
+
     // Check if cached path still exists
     if (await fs.pathExists(entry.path)) {
+      // Update last accessed time
+      entry.lastAccessedAt = new Date().toISOString()
+      await this.saveIndex(index)
       return entry.path
     }
 
@@ -125,9 +143,11 @@ export class ExampleCache {
     await fs.move(extractedPath, cachePath)
 
     // Update index
+    const now = new Date().toISOString()
     const entry: CacheEntry = {
       commitSha,
-      downloadedAt: new Date().toISOString(),
+      downloadedAt: now,
+      lastAccessedAt: now,
       exampleName: key,
       path: cachePath
     }

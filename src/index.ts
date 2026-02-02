@@ -4,6 +4,7 @@ import minimist from 'minimist';
 import { cmdHelp } from './commands/help';
 import { cmdListExamples } from './commands/listExamples';
 import { handleExampleCommand } from './example/createFromExample';
+import { exampleCache } from './example/ExampleCache';
 import { refreshRegistry } from './example/ExampleRegistry';
 import { i18n } from './i18n/i18n';
 import { createApp, done } from './models/createApp';
@@ -32,7 +33,7 @@ async function main() {
             e: 'example'
         },
         string: ['example', 'preset'],
-        boolean: ['list-examples', 'refresh-registry', 'from-example', 'no-example']
+        boolean: ['list-examples', 'refresh-registry', 'from-example', 'no-example', 'clear-cache']
     });
 
     if (args.version) {
@@ -56,6 +57,14 @@ async function main() {
         console.log(i18n.example.refreshingRegistry);
         await refreshRegistry();
         console.log(i18n.example.registryRefreshed);
+        return;
+    }
+
+    // Clear all cache
+    if (args['clear-cache']) {
+        console.log(i18n.example.clearingCache);
+        await exampleCache.clearAll();
+        console.log(i18n.example.cacheCleared);
         return;
     }
 

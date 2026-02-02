@@ -79,6 +79,12 @@ export async function createFromExample(
     exampleSource.name
   ))
 
+  // Show security warning for community/github examples
+  if (exampleSource.type === 'community' || exampleSource.type === 'github') {
+    console.log(i18n.example.communityWarning)
+    console.log()
+  }
+
   // Step 1: Download example
   doing(i18n.example.downloading)
   let downloadResult

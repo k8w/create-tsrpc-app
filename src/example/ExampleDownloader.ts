@@ -12,9 +12,11 @@ import { createGunzip } from 'zlib'
 import tar from 'tar'
 import { ExampleCache, exampleCache } from './ExampleCache'
 import { ExampleJson, ExampleSource } from './ExampleOptions'
+import { i18n } from '../i18n/i18n'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 const CODELOAD_BASE = 'https://codeload.github.com'
+const REQUEST_TIMEOUT_MS = 30000 // 30 seconds
 
 export interface DownloadResult {
   /** Path to extracted example */
@@ -35,21 +37,31 @@ async function getCommitSha(repo: string, ref: string = 'main'): Promise<string>
       headers: {
         'User-Agent': 'create-tsrpc-app',
         'Accept': 'application/vnd.github.v3+json'
-      }
+      },
+      timeout: REQUEST_TIMEOUT_MS
     }
 
-    https.get(url, options, (res) => {
+    const req = https.get(url, options, (res) => {
       // Handle redirects
       if (res.statusCode === 301 || res.statusCode === 302) {
         const location = res.headers.location
         if (location) {
-          https.get(location, options, handleResponse).on('error', reject)
+          https.get(location, options, handleResponse).on('error', handleError)
           return
         }
       }
       handleResponse(res)
 
       function handleResponse(response: http.IncomingMessage) {
+        // Provide specific error messages based on status code
+        if (response.statusCode === 404) {
+          reject(new Error(i18n.example.repoNotAccessible(repo)))
+          return
+        }
+        if (response.statusCode === 403) {
+          reject(new Error(i18n.example.rateLimitExceeded))
+          return
+        }
         if (response.statusCode !== 200) {
           reject(new Error(`GitHub API returned ${response.statusCode}`))
           return
@@ -66,7 +78,21 @@ async function getCommitSha(repo: string, ref: string = 'main'): Promise<string>
           }
         })
       }
-    }).on('error', reject)
+    })
+
+    req.on('error', handleError)
+    req.on('timeout', () => {
+      req.destroy()
+      reject(new Error(i18n.example.networkTimeout))
+    })
+
+    function handleError(error: Error) {
+      if (error.message.includes('ETIMEDOUT') || error.message.includes('ECONNRESET')) {
+        reject(new Error(i18n.example.networkTimeout))
+      } else {
+        reject(error)
+      }
+    }
   })
 }
 
@@ -83,20 +109,29 @@ async function downloadTarball(
   const url = `${CODELOAD_BASE}/${repo}/tar.gz/${ref}`
 
   return new Promise((resolve, reject) => {
-    https.get(url, {
-      headers: { 'User-Agent': 'create-tsrpc-app' }
+    const req = https.get(url, {
+      headers: { 'User-Agent': 'create-tsrpc-app' },
+      timeout: REQUEST_TIMEOUT_MS
     }, (res) => {
       if (res.statusCode === 301 || res.statusCode === 302) {
         const location = res.headers.location
         if (location) {
           https.get(location, { headers: { 'User-Agent': 'create-tsrpc-app' } }, handleResponse)
-            .on('error', reject)
+            .on('error', handleError)
           return
         }
       }
       handleResponse(res)
 
       function handleResponse(response: http.IncomingMessage) {
+        if (response.statusCode === 404) {
+          reject(new Error(i18n.example.repoNotAccessible(repo)))
+          return
+        }
+        if (response.statusCode === 403) {
+          reject(new Error(i18n.example.rateLimitExceeded))
+          return
+        }
         if (response.statusCode !== 200) {
           reject(new Error(`Failed to download: HTTP ${response.statusCode}`))
           return
@@ -107,7 +142,21 @@ async function downloadTarball(
           .then(resolve)
           .catch(reject)
       }
-    }).on('error', reject)
+    })
+
+    req.on('error', handleError)
+    req.on('timeout', () => {
+      req.destroy()
+      reject(new Error(i18n.example.networkTimeout))
+    })
+
+    function handleError(error: Error) {
+      if (error.message.includes('ETIMEDOUT') || error.message.includes('ECONNRESET')) {
+        reject(new Error(i18n.example.networkTimeout))
+      } else {
+        reject(error)
+      }
+    }
   })
 }
 
