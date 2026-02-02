@@ -4,11 +4,18 @@ export const i18nEnUs = {
     help: `
 ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<project-dir>')) + ' [options]'}
 
-Options：
+Options:
     -h, --help                  Output help information
     -v, --version               Output version number
-    -p, --preset <presetName>  Use preset（skip interactive configuration）
+    -p, --preset <presetName>   Use preset (skip interactive configuration)
                                 Preset: ${chalk.cyan('browser, react, vue3, server')}
+    -e, --example <name>        Create project from example
+                                ${chalk.gray('Official:')} ${chalk.cyan('ecommerce-admin')}
+                                ${chalk.gray('GitHub:')} ${chalk.cyan('user/repo')} or ${chalk.cyan('user/repo#branch')}
+    --from-example              Start with example selection (interactive)
+    --no-example                Skip example selection, go straight to template
+    --list-examples             List all available examples
+    --refresh-registry          Force refresh the examples registry cache
 `,
     welcome: (version: string) => chalk.cyan(`=== Welcome to ${chalk.bold('create-tsrpc-app')} version ${version} ===\n`),
     server: 'server',
@@ -60,5 +67,47 @@ Options：
 
     linkFailed: 'Authorization to create Symlink failed. Please select "Yes" in the authorization dialog: ',
     linkRetry: 'Retry',
-    linkJunction: 'Create Junction instead (Not recommended)'
+    linkJunction: 'Create Junction instead (Not recommended)',
+
+    // Example System
+    example: {
+        creatingFrom: (sourceType: string, name: string) => `Creating project from ${chalk.cyan(sourceType)}: ${chalk.green(name)}\n`,
+        downloading: 'Downloading example',
+        downloadFailed: (error: string) => `Failed to download example: ${error}`,
+        verifying: 'Verifying example structure',
+        verifyError: (error: string) => `Verification error: ${error}`,
+        copying: (dir: string) => `Copying files to "${dir}"`,
+        copyFailed: (error: string) => `Failed to copy files: ${error}`,
+        settingUpSymlink: 'Setting up symlink',
+        symlinkFailed: 'Failed to create symlink, you may need to set it up manually',
+        installFailed: 'Some npm packages failed to install',
+        createSuccess: chalk.green('✅ Project created from example successfully.\n'),
+        createSuccessWithProblems: chalk.yellow('🟨 Project created, but with some problems:\n'),
+        notFound: (name: string) => `Example not found: ${chalk.yellow(name)}`,
+        invalidExample: 'This is not a valid TSRPC example (missing example.json)',
+        missingMetadata: 'Warning: example.json not found, using default settings',
+
+        // List examples
+        listTitle: 'Available Examples\n',
+        officialSection: chalk.bold.green('📦 Official Examples'),
+        communitySection: chalk.bold.blue('🌍 Community Examples'),
+        noExamples: 'No examples available',
+        difficulty: {
+            beginner: 'Beginner',
+            intermediate: 'Intermediate',
+            advanced: 'Advanced'
+        },
+        tags: 'Tags',
+        usage: `\nUsage: ${chalk.cyan('npx create-tsrpc-app my-app --example <name>')}\n`,
+
+        // Interactive mode
+        askUseExample: 'Would you like to start from an example project?',
+        selectExample: 'Select an example:',
+        startFromExample: 'Start from an example',
+        startFromScratch: 'Start from scratch (empty template)',
+
+        // Registry
+        refreshingRegistry: 'Refreshing examples registry...',
+        registryRefreshed: 'Registry refreshed successfully'
+    }
 }

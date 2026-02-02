@@ -5,10 +5,17 @@ export const i18nZhCn = {
 ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) + ' [选项]'}
 
 选项：
-    -h, --help              查看帮助信息
-    -v, --version           查看版本号
-    -p, --preset <预设名>  使用预设配置（跳过交互式配置）
-                            可选 ${chalk.cyan('browser, react, vue3, server')}
+    -h, --help                  查看帮助信息
+    -v, --version               查看版本号
+    -p, --preset <预设名>       使用预设配置（跳过交互式配置）
+                                可选 ${chalk.cyan('browser, react, vue3, server')}
+    -e, --example <名称>        从示例创建项目
+                                ${chalk.gray('官方示例：')} ${chalk.cyan('ecommerce-admin')}
+                                ${chalk.gray('GitHub：')} ${chalk.cyan('user/repo')} 或 ${chalk.cyan('user/repo#branch')}
+    --from-example              进入示例选择界面（交互式）
+    --no-example                跳过示例选择，直接进入模板选择
+    --list-examples             列出所有可用示例
+    --refresh-registry          强制刷新示例注册表缓存
 `,
     welcome: (version: string) => chalk.cyan(`=== 欢迎使用 ${chalk.bold('create-tsrpc-app')} 版本 ${version} ===\n`),
     server: '服务端',
@@ -60,5 +67,47 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
 
     linkFailed: '创建 Symlink 授权失败，请在授权弹框选择 "是" 以继续：',
     linkRetry: '重 试',
-    linkJunction: '改为创建 Junction（不推荐）'
+    linkJunction: '改为创建 Junction（不推荐）',
+
+    // Example System
+    example: {
+        creatingFrom: (sourceType: string, name: string) => `正在从${chalk.cyan(sourceType)}创建项目：${chalk.green(name)}\n`,
+        downloading: '下载示例',
+        downloadFailed: (error: string) => `下载示例失败：${error}`,
+        verifying: '验证示例结构',
+        verifyError: (error: string) => `验证错误：${error}`,
+        copying: (dir: string) => `复制文件到 "${dir}"`,
+        copyFailed: (error: string) => `复制文件失败：${error}`,
+        settingUpSymlink: '设置符号链接',
+        symlinkFailed: '创建符号链接失败，您可能需要手动设置',
+        installFailed: '部分 npm 包安装失败',
+        createSuccess: chalk.green('✅ 从示例创建项目成功。\n'),
+        createSuccessWithProblems: chalk.yellow('🟨 项目已创建，但存在以下问题：\n'),
+        notFound: (name: string) => `未找到示例：${chalk.yellow(name)}`,
+        invalidExample: '这不是一个有效的 TSRPC 示例（缺少 example.json）',
+        missingMetadata: '警告：未找到 example.json，使用默认设置',
+
+        // List examples
+        listTitle: '可用示例\n',
+        officialSection: chalk.bold.green('📦 官方示例'),
+        communitySection: chalk.bold.blue('🌍 社区示例'),
+        noExamples: '暂无可用示例',
+        difficulty: {
+            beginner: '初级',
+            intermediate: '中级',
+            advanced: '高级'
+        },
+        tags: '标签',
+        usage: `\n使用方法：${chalk.cyan('npx create-tsrpc-app my-app --example <名称>')}\n`,
+
+        // Interactive mode
+        askUseExample: '是否要从示例项目开始？',
+        selectExample: '选择一个示例：',
+        startFromExample: '从示例开始',
+        startFromScratch: '从头开始（空白模板）',
+
+        // Registry
+        refreshingRegistry: '正在刷新示例注册表...',
+        registryRefreshed: '注册表刷新成功'
+    }
 }

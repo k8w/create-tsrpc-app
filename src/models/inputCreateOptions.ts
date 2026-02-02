@@ -2,11 +2,31 @@ import chalk from "chalk";
 import fs from "fs";
 import inquirer from "inquirer";
 import path from "path";
-import { i18n } from "../i18n/i18n";
+import { createFromExample } from "../example/createFromExample";
+import { getAllExamples } from "../example/ExampleRegistry";
+import { parseExampleArg } from "../example/ExampleResolver";
+import { LocalizedString, RegistryExample, CommunityExample } from "../example/ExampleOptions";
+import { i18n, isZhCN } from "../i18n/i18n";
 import { clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
 import { VERSION } from "./version";
 
-export async function inputCreateOptions(options: Partial<CreateOptions>): Promise<CreateOptions> {
+/**
+ * Get localized string value
+ */
+function getLocalizedValue(str: LocalizedString | string | undefined): string {
+    if (!str) return '';
+    if (typeof str === 'string') return str;
+    return isZhCN ? str['zh-CN'] : str['en-US'];
+}
+
+export interface InputCreateOptionsExt extends Partial<CreateOptions> {
+    /** Force show example selection (--from-example) */
+    fromExample?: boolean;
+    /** Skip example selection (--no-example) */
+    noExample?: boolean;
+}
+
+export async function inputCreateOptions(options: InputCreateOptionsExt): Promise<CreateOptions> {
     console.clear();
     console.log(i18n.welcome(VERSION));
 
@@ -37,6 +57,23 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
             console.log(i18n.canceled);
             process.exit();
         }
+    }
+
+    // Check if user wants to start from example
+    // --from-example: force show example selection
+    // --no-example: skip example selection
+    // default: show example selection only when no preset is used
+    const shouldShowExampleSelection = options.fromExample ||
+        (!options.noExample && !options.client && !options.server);
+
+    if (shouldShowExampleSelection) {
+        const selectedExample = await selectExampleOrScratch(projectDir, options.fromExample);
+        if (selectedExample) {
+            // User selected an example, create from it and exit
+            // This will throw if failed
+            return selectedExample as any; // Return special marker
+        }
+        // User chose "from scratch", continue with normal flow
     }
 
     // client
@@ -101,4 +138,104 @@ export async function select<T extends string>(msg: string, options: { name: str
         pageSize: 12
     }, { res: answer });
     return res.res;
+}
+
+/**
+ * Ask user whether to start from example, then show example selection if yes
+ * @param projectDir - Target project directory
+ * @param forceExample - If true, skip the yes/no question (--from-example flag)
+ * Returns CreateOptions marker if example was created, or null to continue with template
+ */
+async function selectExampleOrScratch(projectDir: string, forceExample?: boolean): Promise<CreateOptions | null> {
+    // Fetch available examples
+    const { official, community } = await getAllExamples();
+    const hasExamples = official.length > 0 || community.length > 0;
+
+    if (!hasExamples) {
+        if (forceExample) {
+            // --from-example was used but no examples available
+            console.log(chalk.yellow(i18n.example.noExamples));
+            process.exit(1);
+        }
+        // No examples available, skip this step
+        return null;
+    }
+
+    // Step 1: Ask if user wants to start from example (unless --from-example is used)
+    if (!forceExample) {
+        const { wantExample } = await inquirer.prompt({
+            type: 'list',
+            name: 'wantExample',
+            message: i18n.example.askUseExample,
+            choices: [
+                { name: i18n.example.startFromScratch, value: false },
+                { name: i18n.example.startFromExample, value: true }
+            ],
+            default: 0
+        });
+
+        if (!wantExample) {
+            // User chose not to use example, continue with template
+            return null;
+        }
+    }
+
+    // Step 2: Show example selection list
+    const choices: any[] = [];
+
+    // Add official examples
+    if (official.length > 0) {
+        choices.push(new inquirer.Separator(chalk.green('  ' + i18n.example.officialSection)));
+        for (const example of official) {
+            const displayName = getLocalizedValue(example.displayName);
+            choices.push({
+                name: `  ${chalk.cyan(example.name)} - ${displayName}`,
+                value: example.name
+            });
+        }
+    }
+
+    // Add community examples
+    if (community.length > 0) {
+        choices.push(new inquirer.Separator(''));
+        choices.push(new inquirer.Separator(chalk.blue('  ' + i18n.example.communitySection)));
+        for (const example of community) {
+            const displayName = example.description
+                ? getLocalizedValue(example.description)
+                : example.repo;
+            choices.push({
+                name: `  ${chalk.cyan(example.name)} - ${displayName}`,
+                value: example.name
+            });
+        }
+    }
+
+    // Prompt user to select example
+    const answer = await inquirer.prompt({
+        type: 'list',
+        name: 'choice',
+        message: i18n.example.selectExample,
+        choices: choices,
+        pageSize: 15
+    });
+
+    // User selected an example, create from it
+    const { official: officialExamples, community: communityExamples } = await getAllExamples();
+    const exampleSource = parseExampleArg(answer.choice,
+        { version: 1, repository: 'k8w/create-tsrpc-app', examples: officialExamples },
+        { version: 1, examples: communityExamples }
+    );
+
+    const result = await createFromExample({
+        projectDir,
+        exampleSource
+    });
+
+    if (!result.success) {
+        throw new Error(result.errors?.join('\n') || 'Failed to create from example');
+    }
+
+    // Return a special marker to indicate we're done
+    // The caller should check for this and exit early
+    return { __fromExample: true } as any;
 }
