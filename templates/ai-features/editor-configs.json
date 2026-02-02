@@ -1,0 +1,78 @@
+{
+  "claude": {
+    "outputDir": ".claude/skills",
+    "fileExtension": ".md",
+    "fileName": "SKILL",
+    "wrapInFolder": true,
+    "skills": {
+      "tsrpc-api": {
+        "content": "tsrpc-api",
+        "examples": ["api-example"],
+        "frontmatter": {
+          "name": "tsrpc-api",
+          "description": "Use when creating new TSRPC API endpoints, adding new functionality, or implementing request-response interfaces. Triggers on phrases like \"create API\", \"add endpoint\", \"implement interface\", \"new service\"",
+          "user-invocable": true,
+          "argument-hint": "[ApiName]"
+        }
+      },
+      "tsrpc-flow": {
+        "content": "tsrpc-flow",
+        "examples": ["flow-example"],
+        "frontmatter": {
+          "name": "tsrpc-flow",
+          "description": "Use when adding middleware, implementing authentication, encryption, logging, request interception, or response transformation. Triggers on phrases like \"add middleware\", \"authentication\", \"logging\", \"intercept request\", \"validate token\"",
+          "user-invocable": true,
+          "argument-hint": "[flow-type]"
+        }
+      },
+      "tsrpc-guide": {
+        "content": "tsrpc-guide",
+        "frontmatter": {
+          "name": "tsrpc-guide",
+          "description": "TSRPC framework core concepts, project structure, type system, and best practices. Auto-triggers when working with TSRPC projects, discussing RPC patterns, or TypeScript full-stack development",
+          "user-invocable": false,
+          "disable-model-invocation": false
+        }
+      }
+    }
+  },
+  "cursor": {
+    "outputDir": ".cursor/rules",
+    "fileExtension": ".mdc",
+    "fileName": "tsrpc",
+    "wrapInFolder": false,
+    "mergeContent": ["tsrpc-guide"],
+    "frontmatter": {
+      "description": "TSRPC framework guidelines for creating APIs, middleware, and type-safe full-stack TypeScript development",
+      "globs": ["**/*.ts", "**/*.tsx"],
+      "alwaysApply": false
+    }
+  },
+  "opencode": {
+    "outputDir": ".opencode/rules",
+    "fileExtension": ".md",
+    "fileName": "tsrpc",
+    "wrapInFolder": false,
+    "mergeContent": ["tsrpc-guide"],
+    "rootFile": {
+      "name": "AGENTS.md",
+      "outputDir": "."
+    },
+    "frontmatter": {
+      "globs": ["**/*.ts", "**/*.tsx"],
+      "keywords": ["api", "tsrpc", "protocol", "middleware", "flow"]
+    }
+  },
+  "trae": {
+    "outputDir": ".trae/rules",
+    "fileExtension": ".md",
+    "fileName": "tsrpc",
+    "wrapInFolder": false,
+    "mergeContent": ["tsrpc-guide"],
+    "frontmatter": {
+      "description": "TSRPC 框架开发指南，用于创建 API、中间件和类型安全的全栈 TypeScript 开发",
+      "globs": "**/*.ts,**/*.tsx",
+      "alwaysApply": false
+    }
+  }
+}

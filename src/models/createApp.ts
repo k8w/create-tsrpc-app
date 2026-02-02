@@ -17,8 +17,9 @@ export async function createApp(options: CreateOptions) {
     spinner.text = '';
     spinner.color = 'yellow';
 
-    // 计算步骤数量 后端4 前端5 NPM1
-    totalStep = 5 + (options.client === 'none' ? 0 : 4);
+    // 计算步骤数量 后端4 前端5 NPM1 AI Friendly1
+    const hasAIFriendly = options.features.indexOf('ai-friendly') > -1 && options.client !== 'none';
+    totalStep = 5 + (options.client === 'none' ? 0 : 4) + (hasAIFriendly ? 1 : 0);
 
     // 判断安装环境
     doing(i18n.checkNpmEnv);
@@ -47,6 +48,11 @@ export async function createApp(options: CreateOptions) {
             await fs.copy(path.join(server.serverDir, 'src/shared'), path.join(client.clientDir, 'src/shared'), { recursive: true })
         }
         done();
+
+        // AI Friendly (Claude Code Skills)
+        if (options.features.indexOf('ai-friendly') > -1) {
+            await setupAIFriendly(options.projectDir, options);
+        }
     }
 
     // 安装依赖
@@ -320,4 +326,227 @@ export function done(succ: boolean = true, text?: string) {
         succ ? spinner.succeed(chalk.green(text)) : spinner.fail(chalk.red(text));
         currentDoingText = undefined;
     }
+}
+
+interface EditorConfig {
+    outputDir: string;
+    fileExtension: string;
+    fileName?: string;
+    wrapInFolder?: boolean;
+    skills?: Record<string, {
+        content: string;
+        examples?: string[];
+        frontmatter: Record<string, any>;
+    }>;
+    mergeContent?: string[];
+    rootFile?: {
+        name: string;
+        outputDir: string;
+    };
+    frontmatter?: Record<string, any>;
+}
+
+async function setupAIFriendly(projectDir: string, options: CreateOptions) {
+    doing('Setup AI Friendly (Multi-Editor Rules)');
+
+    const aiFeaturesTplDir = path.join(tplDir, 'ai-features');
+    const contentDir = path.join(aiFeaturesTplDir, 'content');
+    const configPath = path.join(aiFeaturesTplDir, 'editor-configs.json');
+    const appName = path.basename(path.resolve(projectDir));
+
+    // Determine frontend type for placeholders
+    let frontendType = 'Vanilla JS';
+    if (options.client === 'react') frontendType = 'React';
+    else if (options.client === 'vue3') frontendType = 'Vue 3';
+
+    // Read editor configurations
+    const editorConfigs: Record<string, EditorConfig> = JSON.parse(
+        await fs.readFile(configPath, 'utf-8')
+    );
+
+    // Read core content files
+    const contents: Record<string, string> = {};
+    const contentFiles = await fs.readdir(contentDir);
+    for (const file of contentFiles) {
+        const filePath = path.join(contentDir, file);
+        const stat = await fs.stat(filePath);
+        if (stat.isFile() && file.endsWith('.md')) {
+            const name = file.replace('.md', '');
+            contents[name] = await fs.readFile(filePath, 'utf-8');
+        }
+    }
+
+    // Read example files
+    const examplesDir = path.join(contentDir, 'examples');
+    const examples: Record<string, string> = {};
+    if (await fs.pathExists(examplesDir)) {
+        const exampleFiles = await fs.readdir(examplesDir);
+        for (const file of exampleFiles) {
+            if (file.endsWith('.md')) {
+                const name = file.replace('.md', '');
+                examples[name] = await fs.readFile(path.join(examplesDir, file), 'utf-8');
+            }
+        }
+    }
+
+    // Generate rules for each editor
+    for (const [editor, config] of Object.entries(editorConfigs)) {
+        await generateEditorRules(projectDir, editor, config, contents, examples);
+    }
+
+    // Copy and customize CLAUDE.md (for Claude Code)
+    const claudeMdSrc = path.join(aiFeaturesTplDir, 'CLAUDE.md');
+    const claudeMdDst = path.join(projectDir, 'CLAUDE.md');
+    if (await fs.pathExists(claudeMdSrc)) {
+        let content = await fs.readFile(claudeMdSrc, 'utf-8');
+        content = content.replace(/\{\{PROJECT_NAME\}\}/g, appName);
+        content = content.replace(/\{\{FRONTEND_TYPE\}\}/g, frontendType);
+        await fs.writeFile(claudeMdDst, content, 'utf-8');
+    }
+
+    done();
+}
+
+function generateFrontmatter(frontmatter: Record<string, any>): string {
+    const lines: string[] = ['---'];
+    for (const [key, value] of Object.entries(frontmatter)) {
+        if (typeof value === 'boolean') {
+            lines.push(`${key}: ${value}`);
+        } else if (typeof value === 'string') {
+            // Check if value needs quoting
+            if (value.includes(':') || value.includes('"') || value.includes('\n')) {
+                lines.push(`${key}: "${value.replace(/"/g, '\\"')}"`);
+            } else {
+                lines.push(`${key}: ${value}`);
+            }
+        } else if (Array.isArray(value)) {
+            lines.push(`${key}: ${JSON.stringify(value)}`);
+        } else {
+            lines.push(`${key}: ${JSON.stringify(value)}`);
+        }
+    }
+    lines.push('---');
+    return lines.join('\n');
+}
+
+async function generateEditorRules(
+    projectDir: string,
+    editor: string,
+    config: EditorConfig,
+    contents: Record<string, string>,
+    examples: Record<string, string>
+) {
+    const outputDir = path.join(projectDir, config.outputDir);
+    await fs.ensureDir(outputDir);
+
+    if (editor === 'claude' && config.skills) {
+        // Claude Code: Generate separate skill folders
+        for (const [skillName, skillConfig] of Object.entries(config.skills)) {
+            const skillDir = path.join(outputDir, skillName);
+            await fs.ensureDir(skillDir);
+
+            // Generate SKILL.md with frontmatter
+            const frontmatter = generateFrontmatter(skillConfig.frontmatter);
+            const content = contents[skillConfig.content] || '';
+            const skillContent = `${frontmatter}\n\n${content}`;
+            await fs.writeFile(path.join(skillDir, 'SKILL.md'), skillContent, 'utf-8');
+
+            // Copy examples if specified
+            if (skillConfig.examples && skillConfig.examples.length > 0) {
+                const examplesDir = path.join(skillDir, 'examples');
+                await fs.ensureDir(examplesDir);
+                for (const exampleName of skillConfig.examples) {
+                    if (examples[exampleName]) {
+                        await fs.writeFile(
+                            path.join(examplesDir, `${exampleName}.md`),
+                            examples[exampleName],
+                            'utf-8'
+                        );
+                    }
+                }
+            }
+        }
+    } else {
+        // Other editors: Generate single merged file
+        const mergeContentNames = config.mergeContent || [];
+        let mergedContent = '';
+
+        for (const contentName of mergeContentNames) {
+            if (contents[contentName]) {
+                mergedContent += contents[contentName] + '\n\n';
+            }
+        }
+
+        // Generate file with frontmatter
+        const frontmatter = config.frontmatter ? generateFrontmatter(config.frontmatter) : '';
+        const fileName = config.fileName || 'rules';
+        const fileContent = frontmatter ? `${frontmatter}\n\n${mergedContent.trim()}` : mergedContent.trim();
+
+        await fs.writeFile(
+            path.join(outputDir, `${fileName}${config.fileExtension}`),
+            fileContent,
+            'utf-8'
+        );
+
+        // Generate root file for OpenCode (AGENTS.md)
+        if (config.rootFile) {
+            const rootOutputDir = path.join(projectDir, config.rootFile.outputDir);
+            await fs.ensureDir(rootOutputDir);
+            // Generate a simplified version for AGENTS.md
+            await fs.writeFile(
+                path.join(rootOutputDir, config.rootFile.name),
+                generateAgentsContent(mergedContent),
+                'utf-8'
+            );
+        }
+    }
+}
+
+function generateAgentsContent(content: string): string {
+    // Generate a simplified AGENTS.md content from the full guide
+    return `# TSRPC Project Agent Instructions
+
+This is a full-stack TypeScript project using TSRPC framework for type-safe RPC communication.
+
+## Project Structure
+
+- \`backend/src/api/\` - API implementations (Api*.ts)
+- \`backend/src/shared/protocols/\` - Protocol definitions (Pt*.ts)
+- \`frontend/src/shared/\` - Symlink to backend shared code
+
+## Creating a New API
+
+1. **Define Protocol** in \`backend/src/shared/protocols/Pt{Name}.ts\`:
+   - Request interface: \`Req{Name}\`
+   - Response interface: \`Res{Name}\`
+
+2. **Implement API** in \`backend/src/api/Api{Name}.ts\`:
+   - Use \`call.succ({...})\` for success
+   - Use \`call.error("message")\` for errors
+   - Access request via \`call.req\`
+
+3. **Regenerate Protocol**: \`cd backend && npm run proto\`
+
+## Code Patterns
+
+\`\`\`typescript
+// API Implementation
+export async function ApiExample(call: ApiCall<ReqExample, ResExample>) {
+    call.succ({ result: "value" });
+}
+
+// Client Call
+const result = await client.callApi("Example", { param: "value" });
+if (result.isSucc) console.log(result.res);
+\`\`\`
+
+## Key Commands
+
+- \`npm run dev\` - Start development servers
+- \`cd backend && npm run proto\` - Regenerate protocol after changes
+
+## Type Safety
+
+TSRPC automatically validates requests against TypeScript types at runtime.
+`;
 }
