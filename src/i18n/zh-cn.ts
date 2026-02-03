@@ -52,6 +52,12 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     wsLongService: 'WebSocket 长连接',
 
     selectFeatures: '选择附加功能：',
+    selectAIEditors: '选择要支持的 AI 编辑器：',
+    aiEditors: {
+        claude: 'Claude Code (.claude/skills + CLAUDE.md)',
+        opencode: 'OpenCode (.opencode/rules + AGENTS.md)',
+        trae: 'TRAE (.trae/skills)'
+    },
 
     // CreateApp
     checkNpmEnv: '检测 NPM 环境',
@@ -65,6 +71,8 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
         `\n\n    cd ${dirName}\n    ${pureCmd}\n`),
     copyFiles: (dirName: string) => `复制文件到 "${dirName}"`,
     genPackageJson: (dirName: string) => `生成 "${dirName}/package.json"`,
+    initGit: '初始化 Git 仓库',
+    initGitSkipped: 'Git 不可用，已跳过',
 
     linkFailed: '创建 Symlink 授权失败，请在授权弹框选择 "是" 以继续：',
     linkRetry: '重 试',

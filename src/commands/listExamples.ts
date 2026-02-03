@@ -46,14 +46,16 @@ function renderExample(
   name: string,
   displayName: string,
   description: string,
+  tsrpcVersion: string,
   difficulty?: ExampleDifficulty,
   tags?: string[],
   isOfficial: boolean = false
 ): void {
   const badge = isOfficial ? chalk.green(' ⭐ 官方') : ''
   const diffDisplay = getDifficultyDisplay(difficulty)
+  const versionDisplay = chalk.blue(`[TSRPC ${tsrpcVersion}]`)
 
-  console.log(chalk.cyan(`  ${name}`) + `  ${diffDisplay}${badge}`)
+  console.log(chalk.cyan(`  ${name}`) + `  ${versionDisplay} ${diffDisplay}${badge}`)
   console.log(`    ${displayName}`)
   if (description) {
     console.log(chalk.gray(`    ${description}`))
@@ -79,6 +81,7 @@ function renderOfficialExamples(examples: RegistryExample[]): void {
       example.name,
       getLocalizedValue(example.displayName),
       getLocalizedValue(example.description),
+      example.tsrpcVersion,
       example.difficulty,
       example.tags,
       true
@@ -102,8 +105,9 @@ function renderCommunityExamples(examples: CommunityExample[]): void {
       : ''
     const author = example.author ? chalk.gray(` by ${example.author}`) : ''
     const stars = example.stars ? chalk.yellow(` ⭐ ${example.stars}`) : ''
+    const versionDisplay = chalk.blue(`[TSRPC ${example.tsrpcVersion}]`)
 
-    console.log(chalk.cyan(`  ${example.name}`) + stars)
+    console.log(chalk.cyan(`  ${example.name}`) + `  ${versionDisplay}` + stars)
     console.log(`    ${example.repo}${author}`)
     if (description) {
       console.log(chalk.gray(`    ${description}`))

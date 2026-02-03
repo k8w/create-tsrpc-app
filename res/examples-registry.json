@@ -1,24 +1,5 @@
 {
   "version": 1,
   "repository": "k8w/create-tsrpc-app",
-  "examples": [
-    {
-      "name": "ecommerce-admin",
-      "displayName": {
-        "zh-CN": "电商管理后台",
-        "en-US": "E-commerce Admin Panel"
-      },
-      "description": {
-        "zh-CN": "完整的电商后台管理系统，演示 TSRPC 在企业级应用中的最佳实践",
-        "en-US": "A complete e-commerce admin system demonstrating TSRPC best practices"
-      },
-      "path": "examples/ecommerce-admin",
-      "tags": ["fullstack", "react", "http", "crud", "admin"],
-      "difficulty": "intermediate",
-      "stack": {
-        "server": "http",
-        "client": "react"
-      }
-    }
-  ]
+  "examples": []
 }

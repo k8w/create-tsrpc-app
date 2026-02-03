@@ -93,13 +93,11 @@ const currentUser = call.conn.currentUser;
 After creating the protocol and API files, regenerate the service protocol:
 
 ```bash
-npx tsrpc-cli proto --input ./src/shared/protocols --output ./src/shared/protocols/serviceProto.ts
+cd backend && npm run proto
+# Or: npx tsrpc-cli proto --input ./src/shared/protocols --output ./src/shared/protocols/serviceProto.ts
 ```
 
-Or if you have npm scripts configured:
-```bash
-npm run proto
-```
+⚠️ **IMPORTANT**: `serviceProto.ts` is auto-generated. **NEVER edit it manually** - your changes will be lost when regenerating. Always modify `Pt*.ts` files instead.
 
 ## Client-Side Usage
 

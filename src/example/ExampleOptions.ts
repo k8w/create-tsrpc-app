@@ -33,6 +33,9 @@ export interface ExampleJson {
   /** Unique identifier, used for CLI parameter (e.g., --example ecommerce-admin) */
   name: string
 
+  /** Compatible TSRPC version range (SemVer format, e.g., "^3.0.0", ">=3.4.0 <5.0.0") */
+  tsrpcVersion: string
+
   /** Display name with multi-language support */
   displayName: LocalizedString
 
@@ -116,6 +119,8 @@ export interface ResolvedExample {
  */
 export interface RegistryExample {
   name: string
+  /** Compatible TSRPC version range (SemVer format) */
+  tsrpcVersion: string
   displayName: LocalizedString
   displayNameEn?: string  // Legacy field
   description: LocalizedString
@@ -142,6 +147,8 @@ export interface CommunityExample {
   repo: string
   branch?: string
   subpath?: string
+  /** Compatible TSRPC version range (SemVer format) */
+  tsrpcVersion: string
   description?: LocalizedString
   author?: string
   stars?: number

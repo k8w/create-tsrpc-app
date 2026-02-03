@@ -52,6 +52,12 @@ Options:
     wsLongService: 'WebSocket long connection',
 
     selectFeatures: 'Select additional features: ',
+    selectAIEditors: 'Select AI editors to support: ',
+    aiEditors: {
+        claude: 'Claude Code (.claude/skills + CLAUDE.md)',
+        opencode: 'OpenCode (.opencode/rules + AGENTS.md)',
+        trae: 'TRAE (.trae/skills)'
+    },
 
     // CreateApp
     checkNpmEnv: 'Check NPM environment',
@@ -65,6 +71,8 @@ Options:
     runLocalServer: 'Run local dev server:\n',
     copyFiles: (dirName: string) => `Copy files to "${dirName}"`,
     genPackageJson: (dirName: string) => `Generate "${dirName}/package.json"`,
+    initGit: 'Initialize Git repository',
+    initGitSkipped: 'Git not available, skipped',
 
     linkFailed: 'Authorization to create Symlink failed. Please select "Yes" in the authorization dialog: ',
     linkRetry: 'Retry',

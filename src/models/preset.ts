@@ -9,17 +9,20 @@ export const preset: { [key: string]: Omit<CreateOptions, 'projectDir'> } = {
     browser: {
         server: 'http',
         client: 'browser',
-        features: ['tailwind', 'ai-friendly']
+        features: ['tailwind', 'ai-friendly'],
+        aiEditors: ['claude']
     },
     react: {
         server: 'http',
         client: 'react',
-        features: ['tailwind', 'ai-friendly']
+        features: ['tailwind', 'ai-friendly'],
+        aiEditors: ['claude']
     },
     vue3: {
         server: 'http',
         client: 'vue3',
-        features: ['tailwind', 'ai-friendly']
+        features: ['tailwind', 'ai-friendly'],
+        aiEditors: ['claude']
     },
     'server-ws': {
         server: 'ws',

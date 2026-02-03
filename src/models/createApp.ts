@@ -1,9 +1,10 @@
 import chalk from "chalk";
+import { execSync } from "child_process";
 import fs from "fs-extra";
 import ncu from "npm-check-updates";
 import path from "path";
 import { i18n } from "../i18n/i18n";
-import { CreateOptions } from "./CreateOptions";
+import { AIEditor, CreateOptions } from "./CreateOptions";
 import { ensureSymlinks } from "./ensureSymlinks";
 import { getInstallEnv, npmInstall } from "./npmInstall";
 import { spinner } from "./spinner";
@@ -17,9 +18,9 @@ export async function createApp(options: CreateOptions) {
     spinner.text = '';
     spinner.color = 'yellow';
 
-    // 计算步骤数量 后端4 前端5 NPM1 AI Friendly1
+    // 计算步骤数量 后端4 前端5 NPM1 AI Friendly1 Git1
     const hasAIFriendly = options.features.indexOf('ai-friendly') > -1 && options.client !== 'none';
-    totalStep = 5 + (options.client === 'none' ? 0 : 4) + (hasAIFriendly ? 1 : 0);
+    totalStep = 5 + (options.client === 'none' ? 0 : 4) + (hasAIFriendly ? 1 : 0) + 1; // +1 for git init
 
     // 判断安装环境
     doing(i18n.checkNpmEnv);
@@ -64,6 +65,9 @@ export async function createApp(options: CreateOptions) {
         client ? npmInstall(installEnv.cmd, client.clientDir) : true
     ])
     done(npmResServer && npmResClient);
+
+    // 初始化 Git 仓库
+    await initGit(options.projectDir);
 
     console.log(chalk.green(`\n${'='.repeat(SCREEN_WIDTH)}\n`));
 
@@ -389,19 +393,26 @@ async function setupAIFriendly(projectDir: string, options: CreateOptions) {
         }
     }
 
-    // Generate rules for each editor
+    // Generate rules for each editor (filtered by user selection)
     for (const [editor, config] of Object.entries(editorConfigs)) {
+        // Skip if user selected specific editors and this one isn't included
+        if (options.aiEditors && options.aiEditors.length > 0 && !options.aiEditors.includes(editor as AIEditor)) {
+            continue;
+        }
         await generateEditorRules(projectDir, editor, config, contents, examples);
     }
 
-    // Copy and customize CLAUDE.md (for Claude Code)
-    const claudeMdSrc = path.join(aiFeaturesTplDir, 'CLAUDE.md');
-    const claudeMdDst = path.join(projectDir, 'CLAUDE.md');
-    if (await fs.pathExists(claudeMdSrc)) {
-        let content = await fs.readFile(claudeMdSrc, 'utf-8');
-        content = content.replace(/\{\{PROJECT_NAME\}\}/g, appName);
-        content = content.replace(/\{\{FRONTEND_TYPE\}\}/g, frontendType);
-        await fs.writeFile(claudeMdDst, content, 'utf-8');
+    // Copy and customize CLAUDE.md (for Claude Code) - only if claude is selected
+    if (!options.aiEditors || options.aiEditors.length === 0 || options.aiEditors.includes('claude')) {
+        const claudeMdSrc = path.join(aiFeaturesTplDir, 'CLAUDE.md');
+        const claudeMdDst = path.join(projectDir, 'CLAUDE.md');
+        if (await fs.pathExists(claudeMdSrc)) {
+            let content = await fs.readFile(claudeMdSrc, 'utf-8');
+            content = content.replace(/\{\{PROJECT_NAME\}\}/g, appName);
+            content = content.replace(/\{\{FRONTEND_TYPE\}\}/g, frontendType);
+            content = content.replace(/\{\{RECOMMENDED_SKILLS\}\}/g, getRecommendedSkills(options.client));
+            await fs.writeFile(claudeMdDst, content, 'utf-8');
+        }
     }
 
     done();
@@ -439,8 +450,8 @@ async function generateEditorRules(
     const outputDir = path.join(projectDir, config.outputDir);
     await fs.ensureDir(outputDir);
 
-    if (editor === 'claude' && config.skills) {
-        // Claude Code: Generate separate skill folders
+    if (config.skills) {
+        // Generate separate skill folders (Claude Code, TRAE, etc.)
         for (const [skillName, skillConfig] of Object.entries(config.skills)) {
             const skillDir = path.join(outputDir, skillName);
             await fs.ensureDir(skillDir);
@@ -549,4 +560,45 @@ if (result.isSucc) console.log(result.res);
 
 TSRPC automatically validates requests against TypeScript types at runtime.
 `;
+}
+
+async function initGit(projectDir: string) {
+    doing(i18n.initGit);
+    try {
+        execSync('git init', { cwd: projectDir, stdio: 'ignore' });
+        // Create initial .gitignore if not exists
+        const gitignorePath = path.join(projectDir, '.gitignore');
+        if (!await fs.pathExists(gitignorePath)) {
+            await fs.writeFile(gitignorePath, `node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+`, 'utf-8');
+        }
+        // Create initial commit
+        execSync('git add -A', { cwd: projectDir, stdio: 'ignore' });
+        execSync('git commit -m "Initial commit from create-tsrpc-app"', { cwd: projectDir, stdio: 'ignore' });
+        done(true);
+    } catch (e) {
+        // git not available, silently skip
+        done(false, i18n.initGitSkipped);
+    }
+}
+
+function getRecommendedSkills(client: CreateOptions['client']): string {
+    const skills: string[] = [];
+
+    if (client === 'react') {
+        skills.push('- [vercel-react-best-practices](https://skills.sh/vercel-labs/agent-skills/vercel-react-best-practices) - React/Next.js performance optimization');
+    } else if (client === 'vue3') {
+        skills.push('- [vue-best-practices](https://skills.sh/hyf0/vue-skills/vue-best-practices) - Vue.js best practices');
+    }
+
+    if (skills.length === 0) {
+        return '\n_No framework-specific skills recommended for this project type._\n';
+    }
+
+    return '\n' + skills.join('\n') + '\n';
 }

@@ -1,8 +1,11 @@
+export type AIEditor = 'claude' | 'opencode' | 'trae'
+
 export interface CreateOptions {
     projectDir: string
     server: 'http' | 'ws'
     client: ClientPlatform
     features: (ServerFeature | ClientFeature)[]
+    aiEditors?: AIEditor[]  // Selected AI editors when ai-friendly is enabled
 }
 
 export type ClientPlatform = 'browser' | 'react' | 'vue3' | 'none' | 'node'

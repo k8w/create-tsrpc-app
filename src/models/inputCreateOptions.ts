@@ -7,7 +7,7 @@ import { getAllExamples } from "../example/ExampleRegistry";
 import { parseExampleArg } from "../example/ExampleResolver";
 import { LocalizedString, RegistryExample, CommunityExample } from "../example/ExampleOptions";
 import { i18n, isZhCN } from "../i18n/i18n";
-import { clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
+import { AIEditor, clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
 import { VERSION } from "./version";
 
 /**
@@ -117,11 +117,29 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
         features.push('unitTest');
     }
 
+    // AI Editor selection when ai-friendly is enabled (skip if already provided via preset)
+    let aiEditors: AIEditor[] | undefined = options.aiEditors;
+    if (features.includes('ai-friendly') && !aiEditors) {
+        const { selectedEditors } = await inquirer.prompt([{
+            type: 'checkbox',
+            message: i18n.selectAIEditors,
+            name: 'selectedEditors',
+            choices: [
+                { name: i18n.aiEditors.claude, value: 'claude', checked: true },
+                { name: i18n.aiEditors.opencode, value: 'opencode', checked: false },
+                { name: i18n.aiEditors.trae, value: 'trae', checked: false }
+            ],
+            pageSize: 10
+        }]);
+        aiEditors = selectedEditors;
+    }
+
     return {
         projectDir: projectDir,
         server: server,
         client: client,
-        features: features
+        features: features,
+        aiEditors: aiEditors
     };
 }
 
@@ -188,8 +206,9 @@ async function selectExampleOrScratch(projectDir: string, forceExample?: boolean
         choices.push(new inquirer.Separator(chalk.green('  ' + i18n.example.officialSection)));
         for (const example of official) {
             const displayName = getLocalizedValue(example.displayName);
+            const versionTag = chalk.blue(`[${example.tsrpcVersion}]`);
             choices.push({
-                name: `  ${chalk.cyan(example.name)} - ${displayName}`,
+                name: `  ${chalk.cyan(example.name)} ${versionTag} - ${displayName}`,
                 value: example.name
             });
         }
@@ -203,8 +222,9 @@ async function selectExampleOrScratch(projectDir: string, forceExample?: boolean
             const displayName = example.description
                 ? getLocalizedValue(example.description)
                 : example.repo;
+            const versionTag = chalk.blue(`[${example.tsrpcVersion}]`);
             choices.push({
-                name: `  ${chalk.cyan(example.name)} - ${displayName}`,
+                name: `  ${chalk.cyan(example.name)} ${versionTag} - ${displayName}`,
                 value: example.name
             });
         }

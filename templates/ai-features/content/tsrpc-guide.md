@@ -13,7 +13,7 @@ project/
 │   │   ├── shared/                 # Shared code (symlinked to frontend)
 │   │   │   └── protocols/
 │   │   │       ├── PtHello.ts      # Protocol definitions
-│   │   │       └── serviceProto.ts # Auto-generated service protocol
+│   │   │       └── serviceProto.ts # ⚠️ Auto-generated, NEVER edit manually
 │   │   └── index.ts                # Server entry
 │   └── package.json
 │
@@ -61,8 +61,11 @@ export async function ApiHello(call: ApiCall<ReqHello, ResHello>) {
 Auto-generated file containing all protocol metadata. Regenerate after protocol changes:
 
 ```bash
-npx tsrpc-cli proto --input ./src/shared/protocols --output ./src/shared/protocols/serviceProto.ts
+cd backend && npm run proto
+# Or: npx tsrpc-cli proto --input ./src/shared/protocols --output ./src/shared/protocols/serviceProto.ts
 ```
+
+⚠️ **NEVER edit `serviceProto.ts` manually** - always modify `Pt*.ts` files and regenerate.
 
 ### 4. Server
 

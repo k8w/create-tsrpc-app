@@ -38,6 +38,7 @@ your-example/
   "$schema": "https://raw.githubusercontent.com/k8w/create-tsrpc-app/main/schemas/example.schema.json",
   "name": "your-example-name",
   "version": "1.0.0",
+  "tsrpcVersion": "^3.0.0",
   "displayName": {
     "zh-CN": "示例中文名称",
     "en-US": "Example English Name"
@@ -64,9 +65,19 @@ your-example/
 | Field | Description |
 |-------|-------------|
 | `name` | Unique identifier (kebab-case, e.g., `ecommerce-admin`) |
+| `tsrpcVersion` | Compatible TSRPC version range (SemVer format, e.g., `^3.0.0`, `>=3.4.0 <5.0.0`) |
 | `displayName` | Display name with multi-language support |
 | `description` | Description with multi-language support |
 | `stack` | Technology stack (`server`: http/ws, `client`: react/vue3/browser/none) |
+
+### tsrpcVersion Format
+
+| Format | Meaning |
+|--------|---------|
+| `^3.0.0` | Compatible with 3.x series |
+| `^4.0.0` | Compatible with 4.x series |
+| `>=3.4.0 <5.0.0` | Compatible with 3.4+ through 4.x |
+| `3.x \|\| 4.x` | Compatible with both 3.x and 4.x |
 
 ### Optional Fields
 
@@ -127,6 +138,7 @@ Add your example to the community index while hosting it in your own repository.
          "repo": "your-username/your-repo",
          "branch": "main",
          "subpath": "",
+         "tsrpcVersion": "^3.0.0",
          "description": {
            "zh-CN": "中文描述",
            "en-US": "English description"
