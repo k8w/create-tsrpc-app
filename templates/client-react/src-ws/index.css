@@ -1,0 +1,15 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app > h1 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.app > .chatrooms {
+  display: flex;
+  justify-content: center;
+}

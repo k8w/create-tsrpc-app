@@ -2,11 +2,31 @@ import chalk from "chalk";
 import fs from "fs";
 import inquirer from "inquirer";
 import path from "path";
-import { i18n } from "../i18n/i18n";
-import { CreateOptions } from "./CreateOptions";
+import { createFromExample } from "../example/createFromExample";
+import { getAllExamples } from "../example/ExampleRegistry";
+import { parseExampleArg } from "../example/ExampleResolver";
+import { LocalizedString, RegistryExample, CommunityExample } from "../example/ExampleOptions";
+import { i18n, isZhCN } from "../i18n/i18n";
+import { AIEditor, clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
 import { VERSION } from "./version";
 
-export async function inputCreateOptions(options: Partial<CreateOptions>): Promise<CreateOptions> {
+/**
+ * Get localized string value
+ */
+function getLocalizedValue(str: LocalizedString | string | undefined): string {
+    if (!str) return '';
+    if (typeof str === 'string') return str;
+    return isZhCN ? str['zh-CN'] : str['en-US'];
+}
+
+export interface InputCreateOptionsExt extends Partial<CreateOptions> {
+    /** Force show example selection (--from-example) */
+    fromExample?: boolean;
+    /** Skip example selection (--no-example) */
+    noExample?: boolean;
+}
+
+export async function inputCreateOptions(options: InputCreateOptionsExt): Promise<CreateOptions> {
     console.clear();
     console.log(i18n.welcome(VERSION));
 
@@ -39,12 +59,28 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
         }
     }
 
+    // Check if user wants to start from example
+    // --from-example: force show example selection
+    // --no-example: skip example selection
+    // default: show example selection only when no preset is used
+    const shouldShowExampleSelection = options.fromExample ||
+        (!options.noExample && !options.client && !options.server);
+
+    if (shouldShowExampleSelection) {
+        const selectedExample = await selectExampleOrScratch(projectDir, options.fromExample);
+        if (selectedExample) {
+            // User selected an example, create from it and exit
+            // This will throw if failed
+            return selectedExample as any; // Return special marker
+        }
+        // User chose "from scratch", continue with normal flow
+    }
+
     // client
     // 请选择要创建的项目类型
     let client = await select(i18n.selectProjectType, [
         new inquirer.Separator('\n' + i18n.projectCategory.browser + '\n'),
         { name: i18n.projectType.react, value: 'react' },
-        { name: i18n.projectType.vue2, value: 'vue2' },
         { name: i18n.projectType.vue3, value: 'vue3' },
         { name: i18n.projectType.nativeBrowser, value: 'browser' },
 
@@ -59,38 +95,51 @@ export async function inputCreateOptions(options: Partial<CreateOptions>): Promi
     ], options.server);
 
     // features
-    // let features: CreateOptions['features'] = options.features || [];
-    // if (serverFeatures.length || clientFeatures.length) {
-    //     let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
-    //     let featureChoices = platformClientFeatures.length ? [
-    //         // new inquirer.Separator(` ===== ${i18n.server} ===== `),
-    //         ...serverFeatures,
-    //         // new inquirer.Separator(` ===== ${clientName} ===== `),
-    //         ...platformClientFeatures
-    //     ] : serverFeatures;
-    //     features = (await inquirer.prompt([{
-    //         type: 'checkbox',
-    //         message: i18n.selectFeatures,
-    //         name: 'features',
-    //         choices: featureChoices,
-    //         pageSize: 20
-    //     }], { features: options.features })).features as CreateOptions['features'];
-    //     if (!features.length && !options.features && !(await inquirer.prompt({
-    //         type: 'confirm',
-    //         name: 'res',
-    //         message: i18n['confirm?'],
-    //         default: true
-    //     })).res) {
-    //         console.log(i18n.canceled);
-    //         process.exit(-1);
-    //     }
-    // }
+    let features: CreateOptions['features'] = options.features || [];
+    let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
+    let featureChoices = [...serverFeatures, ...platformClientFeatures];
+    
+    if (featureChoices.length) {
+        features = (await inquirer.prompt([{
+            type: 'checkbox',
+            message: i18n.selectFeatures,
+            name: 'features',
+            choices: featureChoices,
+            pageSize: 20
+        }], { features: options.features })).features as CreateOptions['features'];
+    }
+
+    // Always include symlink and unitTest
+    if (!features.includes('symlink')) {
+        features.push('symlink');
+    }
+    if (!features.includes('unitTest')) {
+        features.push('unitTest');
+    }
+
+    // AI Editor selection when ai-friendly is enabled (skip if already provided via preset)
+    let aiEditors: AIEditor[] | undefined = options.aiEditors;
+    if (features.includes('ai-friendly') && !aiEditors) {
+        const { selectedEditors } = await inquirer.prompt([{
+            type: 'checkbox',
+            message: i18n.selectAIEditors,
+            name: 'selectedEditors',
+            choices: [
+                { name: i18n.aiEditors.claude, value: 'claude', checked: true },
+                { name: i18n.aiEditors.opencode, value: 'opencode', checked: false },
+                { name: i18n.aiEditors.trae, value: 'trae', checked: false }
+            ],
+            pageSize: 10
+        }]);
+        aiEditors = selectedEditors;
+    }
 
     return {
         projectDir: projectDir,
         server: server,
         client: client,
-        features: ['symlink', 'unitTest']
+        features: features,
+        aiEditors: aiEditors
     };
 }
 
@@ -107,4 +156,106 @@ export async function select<T extends string>(msg: string, options: { name: str
         pageSize: 12
     }, { res: answer });
     return res.res;
+}
+
+/**
+ * Ask user whether to start from example, then show example selection if yes
+ * @param projectDir - Target project directory
+ * @param forceExample - If true, skip the yes/no question (--from-example flag)
+ * Returns CreateOptions marker if example was created, or null to continue with template
+ */
+async function selectExampleOrScratch(projectDir: string, forceExample?: boolean): Promise<CreateOptions | null> {
+    // Fetch available examples
+    const { official, community } = await getAllExamples();
+    const hasExamples = official.length > 0 || community.length > 0;
+
+    if (!hasExamples) {
+        if (forceExample) {
+            // --from-example was used but no examples available
+            console.log(chalk.yellow(i18n.example.noExamples));
+            process.exit(1);
+        }
+        // No examples available, skip this step
+        return null;
+    }
+
+    // Step 1: Ask if user wants to start from example (unless --from-example is used)
+    if (!forceExample) {
+        const { wantExample } = await inquirer.prompt({
+            type: 'list',
+            name: 'wantExample',
+            message: i18n.example.askUseExample,
+            choices: [
+                { name: i18n.example.startFromScratch, value: false },
+                { name: i18n.example.startFromExample, value: true }
+            ],
+            default: 0
+        });
+
+        if (!wantExample) {
+            // User chose not to use example, continue with template
+            return null;
+        }
+    }
+
+    // Step 2: Show example selection list
+    const choices: any[] = [];
+
+    // Add official examples
+    if (official.length > 0) {
+        choices.push(new inquirer.Separator(chalk.green('  ' + i18n.example.officialSection)));
+        for (const example of official) {
+            const displayName = getLocalizedValue(example.displayName);
+            const versionTag = chalk.blue(`[${example.tsrpcVersion}]`);
+            choices.push({
+                name: `  ${chalk.cyan(example.name)} ${versionTag} - ${displayName}`,
+                value: example.name
+            });
+        }
+    }
+
+    // Add community examples
+    if (community.length > 0) {
+        choices.push(new inquirer.Separator(''));
+        choices.push(new inquirer.Separator(chalk.blue('  ' + i18n.example.communitySection)));
+        for (const example of community) {
+            const displayName = example.description
+                ? getLocalizedValue(example.description)
+                : example.repo;
+            const versionTag = chalk.blue(`[${example.tsrpcVersion}]`);
+            choices.push({
+                name: `  ${chalk.cyan(example.name)} ${versionTag} - ${displayName}`,
+                value: example.name
+            });
+        }
+    }
+
+    // Prompt user to select example
+    const answer = await inquirer.prompt({
+        type: 'list',
+        name: 'choice',
+        message: i18n.example.selectExample,
+        choices: choices,
+        pageSize: 15
+    });
+
+    // User selected an example, create from it
+    const { official: officialExamples, community: communityExamples } = await getAllExamples();
+    const exampleSource = parseExampleArg(answer.choice,
+        { version: 1, repository: 'k8w/create-tsrpc-app', examples: officialExamples },
+        { version: 1, examples: communityExamples }
+    );
+
+    const result = await createFromExample({
+        projectDir,
+        exampleSource
+    });
+
+    if (!result.success) {
+        throw new Error(result.errors?.join('\n') || 'Failed to create from example');
+    }
+
+    // Return a special marker to indicate we're done
+    // The caller should check for this and exit early
+    return { __fromExample: true } as any;
 }

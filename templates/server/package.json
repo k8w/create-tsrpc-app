@@ -7,21 +7,20 @@
     "dev": "tsrpc-cli dev",
     "build": "tsrpc-cli build",
     "doc": "tsrpc-cli doc",
-    "test": "mocha test/**/*.test.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "proto": "tsrpc-cli proto",
     "sync": "tsrpc-cli sync",
     "api": "tsrpc-cli api"
   },
   "devDependencies": {
-    "@types/mocha": "^8.2.3",
-    "@types/node": "^15.14.9",
-    "mocha": "^9.2.2",
-    "onchange": "^7.1.0",
-    "ts-node": "^10.8.2",
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
     "tsrpc-cli": "^2.4.5",
-    "typescript": "^4.7.4"
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
   },
   "dependencies": {
-    "tsrpc": "^3.4.1"
+    "tsrpc": "^3.4.21"
   }
 }

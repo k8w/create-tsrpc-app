@@ -1,7 +1,8 @@
-import { Chatroom } from "./Chatroom";
+import './index.css'
+import { Chatroom } from './Chatroom'
 
-document.querySelectorAll('.chat-room').forEach(v => {
-    new Chatroom(v as HTMLDivElement);
-});
+document.querySelectorAll('.chat-room').forEach((v) => {
+  new Chatroom(v as HTMLDivElement)
+})
 
-export { };
+export {}
