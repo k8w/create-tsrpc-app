@@ -7,7 +7,7 @@ import { getAllExamples } from "../example/ExampleRegistry";
 import { parseExampleArg } from "../example/ExampleResolver";
 import { LocalizedString, RegistryExample, CommunityExample } from "../example/ExampleOptions";
 import { i18n, isZhCN } from "../i18n/i18n";
-import { AIEditor, clientFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
+import { AIEditor, clientFeatures, commonFeatures, CreateOptions, serverFeatures } from "./CreateOptions";
 import { VERSION } from "./version";
 
 /**
@@ -98,7 +98,7 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
     // features
     let features: CreateOptions['features'] = options.features || [];
     let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
-    let featureChoices = [...serverFeatures, ...platformClientFeatures];
+    let featureChoices = [...commonFeatures, ...serverFeatures, ...platformClientFeatures];
     
     if (featureChoices.length) {
         features = (await inquirer.prompt([{
