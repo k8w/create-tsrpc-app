@@ -59,22 +59,23 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
         }
     }
 
+    // TODO: Enable example selection in v4.0
     // Check if user wants to start from example
     // --from-example: force show example selection
     // --no-example: skip example selection
     // default: show example selection only when no preset is used
-    const shouldShowExampleSelection = options.fromExample ||
-        (!options.noExample && !options.client && !options.server);
-
-    if (shouldShowExampleSelection) {
-        const selectedExample = await selectExampleOrScratch(projectDir, options.fromExample);
-        if (selectedExample) {
-            // User selected an example, create from it and exit
-            // This will throw if failed
-            return selectedExample as any; // Return special marker
-        }
-        // User chose "from scratch", continue with normal flow
-    }
+    // const shouldShowExampleSelection = options.fromExample ||
+    //     (!options.noExample && !options.client && !options.server);
+    //
+    // if (shouldShowExampleSelection) {
+    //     const selectedExample = await selectExampleOrScratch(projectDir, options.fromExample);
+    //     if (selectedExample) {
+    //         // User selected an example, create from it and exit
+    //         // This will throw if failed
+    //         return selectedExample as any; // Return special marker
+    //     }
+    //     // User chose "from scratch", continue with normal flow
+    // }
 
     // client
     // 请选择要创建的项目类型
