@@ -57,6 +57,7 @@ Options:
     selectAIEditors: 'Select AI editors to support: ',
     aiEditors: {
         claude: 'Claude Code (.claude/skills + CLAUDE.md)',
+        cursor: 'Cursor (uses Claude Code config)',
         opencode: 'OpenCode (.opencode/rules + AGENTS.md)',
         trae: 'TRAE (.trae/skills)'
     },

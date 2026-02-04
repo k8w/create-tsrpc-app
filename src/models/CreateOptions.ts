@@ -1,5 +1,5 @@
 import { i18n } from '../i18n/i18n'
-export type AIEditor = 'claude' | 'opencode' | 'trae'
+export type AIEditor = 'claude' | 'cursor' | 'opencode' | 'trae'
 
 export interface CreateOptions {
     projectDir: string

@@ -140,6 +140,7 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
             message: i18n.selectAIEditors,
             choices: [
                 { name: i18n.aiEditors.claude, value: 'claude' as const, checked: true },
+                { name: i18n.aiEditors.cursor, value: 'cursor' as const, checked: false },
                 { name: i18n.aiEditors.opencode, value: 'opencode' as const, checked: false },
                 { name: i18n.aiEditors.trae, value: 'trae' as const, checked: false }
             ],

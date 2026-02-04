@@ -57,6 +57,7 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     selectAIEditors: '选择要支持的 AI 编辑器：',
     aiEditors: {
         claude: 'Claude Code (.claude/skills + CLAUDE.md)',
+        cursor: 'Cursor（使用 Claude Code 配置）',
         opencode: 'OpenCode (.opencode/rules + AGENTS.md)',
         trae: 'TRAE (.trae/skills)'
     },
