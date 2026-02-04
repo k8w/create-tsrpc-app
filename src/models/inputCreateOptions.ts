@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import fs from "fs";
-import inquirer from "inquirer";
+import { input, select, checkbox, confirm, Separator } from "@inquirer/prompts";
 import path from "path";
 import { createFromExample } from "../example/createFromExample";
 import { getAllExamples } from "../example/ExampleRegistry";
@@ -30,30 +30,27 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
     console.clear();
     console.log(i18n.welcome(VERSION));
 
-    let projectDir = options.projectDir;
-    if (projectDir) {
+    let projectDir: string;
+    if (options.projectDir) {
+        projectDir = options.projectDir;
         console.log(i18n.createApp(path.basename(path.resolve(projectDir))));
     }
     // 请输入要创建的项目目录名
     else {
-        projectDir = (await inquirer.prompt([{
-            type: 'input',
-            name: 'projectDir',
+        projectDir = await input({
             message: i18n.inputProjectDir,
-            validate: v => !!v
-        }], { projectDir: projectDir })).projectDir as string;
+            validate: (v: string) => !!v || ' ',
+        });
     }
 
     // 目标文件夹不为空，要以覆盖模式继续吗？
     let dir = fs.existsSync(projectDir) && fs.statSync(projectDir).isDirectory() && fs.readdirSync(projectDir);
     if (dir && dir.filter(v=>!v.startsWith('.')).length) {
         console.log(chalk.cyan(`\n${path.resolve(projectDir)}\n${dir.map(v => chalk.yellow('  |- ' + v)).join('\n')}\n`));
-        if (!(await inquirer.prompt({
-            type: 'confirm',
+        if (!await confirm({
             message: i18n.dirNotEmpty,
-            name: 'res',
-            default: false
-        })).res) {
+            default: false,
+        })) {
             console.log(i18n.canceled);
             process.exit();
         }
@@ -79,35 +76,53 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
 
     // client
     // 请选择要创建的项目类型
-    let client = await select(i18n.selectProjectType, [
-        new inquirer.Separator('\n' + i18n.projectCategory.browser + '\n'),
-        { name: i18n.projectType.react, value: 'react' },
-        { name: i18n.projectType.vue3, value: 'vue3' },
-        { name: i18n.projectType.nativeBrowser, value: 'browser' },
-
-        new inquirer.Separator('\n' + i18n.projectCategory.server + '\n'),
-        { name: i18n.projectType.server, value: 'none' }
-    ] as any, options.client);
+    let client = options.client ?? await select({
+        message: i18n.selectProjectType,
+        choices: [
+            new Separator('\n' + i18n.projectCategory.browser + '\n'),
+            { name: i18n.projectType.react, value: 'react' as const },
+            { name: i18n.projectType.vue3, value: 'vue3' as const },
+            { name: i18n.projectType.nativeBrowser, value: 'browser' as const },
+            new Separator('\n' + i18n.projectCategory.server + '\n'),
+            { name: i18n.projectType.server, value: 'none' as const }
+        ],
+        pageSize: 12,
+    }) as CreateOptions['client'];
 
     // server
-    let server = await select(i18n.selectServerType, [
-        { name: i18n.httpShortService, value: 'http' },
-        { name: i18n.wsLongService, value: 'ws' }
-    ], options.server);
+    let server = options.server ?? await select({
+        message: i18n.selectServerType,
+        choices: [
+            { name: i18n.httpShortService, value: 'http' as const },
+            { name: i18n.wsLongService, value: 'ws' as const }
+        ],
+        pageSize: 12,
+    }) as CreateOptions['server'];
 
     // features
     let features: CreateOptions['features'] = options.features || [];
     let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
     let featureChoices = [...commonFeatures, ...serverFeatures, ...platformClientFeatures];
-    
+
+    const checkboxTheme = {
+        style: {
+            help: (text: string) => {
+                let result = text;
+                for (const [en, localized] of Object.entries(i18n.checkboxKeys)) {
+                    result = result.replace(en, localized);
+                }
+                return chalk.dim(result);
+            }
+        }
+    };
+
     if (featureChoices.length) {
-        features = (await inquirer.prompt([{
-            type: 'checkbox',
+        features = options.features ?? await checkbox({
             message: i18n.selectFeatures,
-            name: 'features',
             choices: featureChoices,
-            pageSize: 20
-        }], { features: options.features })).features as CreateOptions['features'];
+            pageSize: 20,
+            theme: checkboxTheme,
+        });
     }
 
     // Always include symlink and unitTest
@@ -121,18 +136,16 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
     // AI Editor selection when ai-friendly is enabled (skip if already provided via preset)
     let aiEditors: AIEditor[] | undefined = options.aiEditors;
     if (features.includes('ai-friendly') && !aiEditors) {
-        const { selectedEditors } = await inquirer.prompt([{
-            type: 'checkbox',
+        aiEditors = await checkbox({
             message: i18n.selectAIEditors,
-            name: 'selectedEditors',
             choices: [
-                { name: i18n.aiEditors.claude, value: 'claude', checked: true },
-                { name: i18n.aiEditors.opencode, value: 'opencode', checked: false },
-                { name: i18n.aiEditors.trae, value: 'trae', checked: false }
+                { name: i18n.aiEditors.claude, value: 'claude' as const, checked: true },
+                { name: i18n.aiEditors.opencode, value: 'opencode' as const, checked: false },
+                { name: i18n.aiEditors.trae, value: 'trae' as const, checked: false }
             ],
-            pageSize: 10
-        }]);
-        aiEditors = selectedEditors;
+            pageSize: 10,
+            theme: checkboxTheme,
+        });
     }
 
     return {
@@ -146,17 +159,6 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
 
 export function getProjectName(projectDir: string) {
     return path.basename(path.resolve(projectDir));
-}
-
-export async function select<T extends string>(msg: string, options: { name: string, value: T }[], answer?: T): Promise<T> {
-    let res = await inquirer.prompt({
-        type: 'list',
-        name: 'res',
-        message: msg,
-        choices: options,
-        pageSize: 12
-    }, { res: answer });
-    return res.res;
 }
 
 /**
@@ -182,15 +184,12 @@ async function selectExampleOrScratch(projectDir: string, forceExample?: boolean
 
     // Step 1: Ask if user wants to start from example (unless --from-example is used)
     if (!forceExample) {
-        const { wantExample } = await inquirer.prompt({
-            type: 'list',
-            name: 'wantExample',
+        const wantExample = await select({
             message: i18n.example.askUseExample,
             choices: [
                 { name: i18n.example.startFromScratch, value: false },
                 { name: i18n.example.startFromExample, value: true }
             ],
-            default: 0
         });
 
         if (!wantExample) {
@@ -204,7 +203,7 @@ async function selectExampleOrScratch(projectDir: string, forceExample?: boolean
 
     // Add official examples
     if (official.length > 0) {
-        choices.push(new inquirer.Separator(chalk.green('  ' + i18n.example.officialSection)));
+        choices.push(new Separator(chalk.green('  ' + i18n.example.officialSection)));
         for (const example of official) {
             const displayName = getLocalizedValue(example.displayName);
             const versionTag = chalk.blue(`[${example.tsrpcVersion}]`);
@@ -217,8 +216,8 @@ async function selectExampleOrScratch(projectDir: string, forceExample?: boolean
 
     // Add community examples
     if (community.length > 0) {
-        choices.push(new inquirer.Separator(''));
-        choices.push(new inquirer.Separator(chalk.blue('  ' + i18n.example.communitySection)));
+        choices.push(new Separator(''));
+        choices.push(new Separator(chalk.blue('  ' + i18n.example.communitySection)));
         for (const example of community) {
             const displayName = example.description
                 ? getLocalizedValue(example.description)
@@ -232,17 +231,15 @@ async function selectExampleOrScratch(projectDir: string, forceExample?: boolean
     }
 
     // Prompt user to select example
-    const answer = await inquirer.prompt({
-        type: 'list',
-        name: 'choice',
+    const choice = await select<string>({
         message: i18n.example.selectExample,
         choices: choices,
-        pageSize: 15
+        pageSize: 15,
     });
 
     // User selected an example, create from it
     const { official: officialExamples, community: communityExamples } = await getAllExamples();
-    const exampleSource = parseExampleArg(answer.choice,
+    const exampleSource = parseExampleArg(choice,
         { version: 1, repository: 'k8w/create-tsrpc-app', examples: officialExamples },
         { version: 1, examples: communityExamples }
     );

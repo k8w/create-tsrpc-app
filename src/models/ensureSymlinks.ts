@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { exec } from 'child_process';
 import fs from "fs-extra";
-import inquirer from "inquirer";
+import { select } from "@inquirer/prompts";
 import path from "path";
 import { i18n } from "../i18n/i18n";
 import { spinner } from "./spinner";
@@ -64,15 +64,13 @@ export async function ensureSymlinks(confs: { src: string, dst: string }[], isEl
                 // 提权失败，询问是否创建 junction
                 if (!elevateResult) {
                     spinner.stop();
-                    let answer: 'retry' | 'junction' = (await inquirer.prompt({
-                        type: 'list',
+                    let answer: 'retry' | 'junction' = await select({
                         message: chalk.yellow(i18n.linkFailed),
                         choices: [
-                            { name: i18n.linkRetry, value: 'retry' },
-                            { name: i18n.linkJunction, value: 'junction' },
+                            { name: i18n.linkRetry, value: 'retry' as const },
+                            { name: i18n.linkJunction, value: 'junction' as const },
                         ],
-                        name: 'res'
-                    })).res;
+                    });
                     spinner.start();
 
                     // 清除结果，重试

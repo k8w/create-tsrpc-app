@@ -25,6 +25,25 @@
           "argument-hint": "[flow-type]"
         }
       },
+      "tsrpc-msg": {
+        "content": "tsrpc-msg",
+        "frontmatter": {
+          "name": "tsrpc-msg",
+          "description": "Use when implementing real-time messaging, WebSocket communication, chat systems, or pub/sub patterns. Triggers on phrases like \"send message\", \"broadcast\", \"real-time\", \"WebSocket message\", \"chat\"",
+          "user-invocable": true,
+          "argument-hint": "[MsgName]"
+        }
+      },
+      "tsrpc-db": {
+        "content": "tsrpc-db",
+        "examples": ["db-example"],
+        "frontmatter": {
+          "name": "tsrpc-db",
+          "description": "Use when setting up database connections, creating CRUD APIs, designing data models, or working with MongoDB in TSRPC. Triggers on phrases like \"database\", \"MongoDB\", \"CRUD\", \"collection\", \"data model\"",
+          "user-invocable": true,
+          "argument-hint": "[collection-name]"
+        }
+      },
       "tsrpc-guide": {
         "content": "tsrpc-guide",
         "frontmatter": {
@@ -48,7 +67,7 @@
     },
     "frontmatter": {
       "globs": ["**/*.ts", "**/*.tsx"],
-      "keywords": ["api", "tsrpc", "protocol", "middleware", "flow"]
+      "keywords": ["api", "tsrpc", "protocol", "middleware", "flow", "message", "database", "mongodb"]
     }
   },
   "trae": {
@@ -73,6 +92,23 @@
           "name": "tsrpc-flow",
           "description": "Use when adding middleware, implementing authentication, encryption, logging, request interception, or response transformation. Triggers on phrases like add middleware, authentication, logging, intercept request",
           "tags": ["tsrpc", "middleware", "flow"]
+        }
+      },
+      "tsrpc-msg": {
+        "content": "tsrpc-msg",
+        "frontmatter": {
+          "name": "tsrpc-msg",
+          "description": "Use when implementing real-time messaging, WebSocket communication, chat systems, or pub/sub patterns. Triggers on phrases like send message, broadcast, real-time, WebSocket message, chat",
+          "tags": ["tsrpc", "message", "websocket"]
+        }
+      },
+      "tsrpc-db": {
+        "content": "tsrpc-db",
+        "examples": ["db-example"],
+        "frontmatter": {
+          "name": "tsrpc-db",
+          "description": "Use when setting up database connections, creating CRUD APIs, designing data models, or working with MongoDB in TSRPC. Triggers on phrases like database, MongoDB, CRUD, collection, data model",
+          "tags": ["tsrpc", "database", "mongodb"]
         }
       },
       "tsrpc-guide": {
