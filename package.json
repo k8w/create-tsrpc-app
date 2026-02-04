@@ -1,6 +1,6 @@
 {
     "name": "create-tsrpc-app",
-    "version": "1.4.0",
+    "version": "2.0.0-20250204001",
     "description": "Quickly create TSRPC projects",
     "main": "index.js",
     "engines": {
@@ -11,7 +11,8 @@
         "switch:ws": "node scripts/switch.js ws",
         "switch:http": "node scripts/switch.js http",
         "sync": "node scripts/sync.js http && node scripts/sync.js ws",
-        "build": "shx rm -rf dist && rollup -c && node scripts/copyTemplates.js && shx cp -rf res LICENSE README.md dist/ && node scripts/postBuild.js"
+        "build": "shx rm -rf dist && rollup -c && node scripts/copyTemplates.js && shx cp -rf res LICENSE README.md dist/ && node scripts/postBuild.js",
+        "release:beta": "cd dist && npm publish --tag beta --registry https://registry.npmjs.com && cd .."
     },
     "bin": {
         "create-tsrpc-app": "./index.js"

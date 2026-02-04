@@ -1,5 +1,28 @@
 # Change Log
 
+## [2.0.0] - 2026-02-04
+### Added
+- Example system: `--example <name>`, `--list-examples`, `--from-example` / `--no-example`, interactive example selection with arrow key navigation
+- Example system: GitHub repo format (`user/repo` or `user/repo#branch`), codeload.github.com tarball download with 7-day cache, `--clear-cache` for `~/.cta-cache/`
+- Example system: `examples-registry.json`, `community-examples.json`, `CONTRIBUTING-EXAMPLES.md`, verified field and security warning for community examples
+- Tailwind CSS option (enabled by default in presets); Tailwind v4 with `@tailwindcss/vite` and new `@import "tailwindcss"` syntax
+- AI features: editor selection (Claude/OpenCode/TRAE)
+- Git init: auto-initialize git repo with initial commit for new projects
+- Example system: show `tsrpcVersion` in `--list-examples` and interactive selection
+- `CONTRIBUTION.md` contribution guide
+### Changed
+- **BREAKING**: Remove Vue 2 template (EOL)
+- **BREAKING**: Replace CRA/Craco with Vite for React template; React 17 → 19 (createRoot API)
+- **BREAKING**: Replace Vue CLI with Vite for Vue 3 template; Vue 3.2 → 3.5 (`<script setup>`)
+- **BREAKING**: Replace Webpack with Vite for browser template
+- **BREAKING**: Replace Mocha with Vitest for server testing (Jest-compatible API)
+- TypeScript 4 → 5; `@types/node` 15 → 22
+- Presets include Tailwind by default; remove Vue 2 from i18n
+- Remove `package-lock.json` from version control
+### Fixed
+- i18n detection: replace unstable `os-locale` with env var detection (LC_ALL > LC_MESSAGES > LANG), improve Chinese locale matching (`zh_*`, `zh-*`, `zh.*`)
+- Disable example selection in interactive mode until v4.0 (`--example` and `--list-examples` still work)
+
 ## [1.3.1] - 2022-07-03
 ### Changed
 - Update to `tsrpc-cli@2.4.5`
