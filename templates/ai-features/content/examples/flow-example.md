@@ -1,6 +1,6 @@
 # Complete Authentication Flow Example
 
-This example shows a production-ready authentication system using TSRPC flows.
+This example shows a production-ready authentication system using TSRPC flows with **protocol config-driven** access control.
 
 ## Project Structure
 
@@ -8,14 +8,32 @@ This example shows a production-ready authentication system using TSRPC flows.
 src/
 ├── flows/
 │   ├── index.ts          # Flow registration
-│   ├── authFlow.ts       # Authentication
+│   ├── authFlow.ts       # Authentication (conf-driven)
 │   └── loggingFlow.ts    # Request logging
 ├── models/
 │   └── Auth.ts           # Auth utilities
 └── index.ts              # Server entry
 ```
 
-## 1. Auth Utilities
+## 1. Type Extension
+
+Extend TSRPC types to add custom fields to Connection. Write in any referenced `.ts` file (NOT `.d.ts`):
+
+```typescript
+// types/tsrpc-ext.ts
+import { CurrentUser } from "../models/Auth";
+
+// This is the TSRPC-recommended way to extend types
+declare module 'tsrpc' {
+    export interface BaseConnection {
+        currentUser?: CurrentUser;
+        __requestId?: string;
+        __startTime?: number;
+    }
+}
+```
+
+## 2. Auth Utilities
 
 ```typescript
 // models/Auth.ts
@@ -25,11 +43,6 @@ import { Global } from './Global';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const TOKEN_EXPIRY = '7d';
-
-export interface TokenPayload {
-    userId: string;
-    exp: number;
-}
 
 export interface CurrentUser {
     _id: ObjectId;
@@ -47,25 +60,24 @@ export class Auth {
         );
     }
 
-    static verifyToken(token: string): TokenPayload | null {
+    static verifyToken(token: string): { userId: string } | null {
         try {
-            return jwt.verify(token, JWT_SECRET) as TokenPayload;
+            return jwt.verify(token, JWT_SECRET) as { userId: string };
         } catch {
             return null;
         }
     }
 
     static async getUserById(userId: string): Promise<CurrentUser | null> {
-        const user = await Global.db.collection('users').findOne(
+        const user = await Global.collection('User').findOne(
             { _id: new ObjectId(userId) },
-            { projection: { password: 0, salt: 0 } }  // Exclude sensitive fields
+            { projection: { password: 0, salt: 0 } }
         );
         return user as CurrentUser | null;
     }
 
     static extractToken(authHeader?: string): string | null {
         if (!authHeader) return null;
-        // Support "Bearer <token>" format
         const parts = authHeader.split(' ');
         if (parts.length === 2 && parts[0] === 'Bearer') {
             return parts[1];
@@ -75,104 +87,87 @@ export class Auth {
 }
 ```
 
-## 2. Authentication Flow
+## 3. Authentication Flow (Config-Driven)
+
+Instead of hardcoding public API lists, use protocol `conf` to control access:
 
 ```typescript
 // flows/authFlow.ts
-import { ApiCall, BaseConnection } from "tsrpc";
-import { Auth, CurrentUser } from "../models/Auth";
-
-// Extend connection type to include currentUser
-declare module 'tsrpc' {
-    interface BaseConnection {
-        currentUser?: CurrentUser;
-    }
-}
-
-// APIs that don't require authentication
-const PUBLIC_APIS = new Set([
-    'Login',
-    'Register',
-    'ForgotPassword',
-    'ResetPassword',
-    'GetPublicConfig'
-]);
-
-// APIs that require admin role
-const ADMIN_APIS = new Set([
-    'AdminGetUsers',
-    'AdminDeleteUser',
-    'AdminUpdateSettings'
-]);
+import { ApiCall } from "tsrpc";
+import { Auth } from "../models/Auth";
 
 export async function authFlow(call: ApiCall<any, any>) {
-    const apiName = call.service.name;
+    // Read config from protocol definition (export const conf = { ... })
+    const conf = call.service.conf;
 
-    // Skip auth for public APIs
-    if (PUBLIC_APIS.has(apiName)) {
+    // If protocol has no conf or needLogin is not set, skip auth
+    if (!conf?.needLogin) {
         return call;
     }
 
-    // Get token from Authorization header
+    // Get token from Authorization header or request body
     const authHeader = call.conn.httpReq?.headers['authorization'] as string | undefined;
     const token = Auth.extractToken(authHeader) || call.req.__token;
 
     if (!token) {
-        call.error('Authentication required', {
-            code: 'NEED_LOGIN',
-            httpCode: 401
-        });
+        call.error('Authentication required', { code: 'NEED_LOGIN' });
         return undefined;
     }
 
     // Verify token
     const payload = Auth.verifyToken(token);
     if (!payload) {
-        call.error('Invalid or expired token', {
-            code: 'INVALID_TOKEN',
-            httpCode: 401
-        });
+        call.error('Invalid or expired token', { code: 'INVALID_TOKEN' });
         return undefined;
     }
 
     // Get user from database
     const user = await Auth.getUserById(payload.userId);
     if (!user) {
-        call.error('User not found', {
-            code: 'USER_NOT_FOUND',
-            httpCode: 401
-        });
+        call.error('User not found', { code: 'USER_NOT_FOUND' });
         return undefined;
     }
 
-    // Check admin permission for admin APIs
-    if (ADMIN_APIS.has(apiName) && !user.roles.includes('admin')) {
-        call.error('Admin permission required', {
-            code: 'FORBIDDEN',
-            httpCode: 403
-        });
-        return undefined;
+    // Check role-based access from protocol conf
+    if (conf.needRoles?.length) {
+        const hasRole = conf.needRoles.some((r: string) => user.roles.includes(r));
+        if (!hasRole) {
+            call.error('Insufficient permissions', { code: 'FORBIDDEN' });
+            return undefined;
+        }
     }
 
-    // Attach user to connection
+    // Attach user to connection — available in API handler as call.conn.currentUser
     call.conn.currentUser = user;
 
     return call;
 }
 ```
 
-## 3. Logging Flow
+### Protocol examples with conf:
+
+```typescript
+// protocols/user/PtlGetProfile.ts — requires login
+export interface ReqGetProfile { }
+export interface ResGetProfile { profile: { /* ... */ } }
+export const conf = { needLogin: true }
+
+// protocols/admin/PtlDeleteUser.ts — requires admin role
+export interface ReqDeleteUser { userId: string }
+export interface ResDeleteUser { success: boolean }
+export const conf = { needLogin: true, needRoles: ['admin'] }
+
+// protocols/PtlGetPublicConfig.ts — public, no conf needed
+export interface ReqGetPublicConfig { }
+export interface ResGetPublicConfig { config: { /* ... */ } }
+// No conf export → authFlow skips this API
+```
+
+## 4. Logging Flow
 
 ```typescript
 // flows/loggingFlow.ts
-import { ApiCall, BaseConnection } from "tsrpc";
-
-declare module 'tsrpc' {
-    interface BaseConnection {
-        __requestId?: string;
-        __startTime?: number;
-    }
-}
+import { ApiCall } from "tsrpc";
 
 function generateRequestId(): string {
     return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -182,7 +177,7 @@ export async function preLoggingFlow(call: ApiCall<any, any>) {
     call.conn.__requestId = generateRequestId();
     call.conn.__startTime = Date.now();
 
-    // Log request (sanitize sensitive data)
+    // Sanitize sensitive data before logging
     const logData = { ...call.req };
     if (logData.password) logData.password = '***';
     if (logData.__token) logData.__token = '***';
@@ -204,7 +199,6 @@ export async function postLoggingFlow(call: ApiCall<any, any>) {
         `[${call.conn.__requestId}] <- ${call.service.name} [${status}] ${duration}ms`
     );
 
-    // Log errors with details
     if (call.return && !call.return.isSucc) {
         call.logger.warn(`[${call.conn.__requestId}] Error:`, call.return.err);
     }
@@ -213,7 +207,7 @@ export async function postLoggingFlow(call: ApiCall<any, any>) {
 }
 ```
 
-## 4. Flow Registration
+## 5. Flow Registration
 
 ```typescript
 // flows/index.ts
@@ -225,7 +219,7 @@ export function registerFlows(server: HttpServer<any> | WsServer<any>) {
     // Pre-API flows (order matters!)
     server.flows.preApiCallFlow.push(
         preLoggingFlow,  // Log first for debugging
-        authFlow         // Then authenticate
+        authFlow         // Then authenticate (conf-driven)
     );
 
     // Post-API flows
@@ -235,48 +229,69 @@ export function registerFlows(server: HttpServer<any> | WsServer<any>) {
 }
 ```
 
-## 5. Server Entry
+## 6. Server Entry
 
 ```typescript
 // index.ts
+import path from "path";
 import { HttpServer } from "tsrpc";
 import { serviceProto } from "./shared/protocols/serviceProto";
 import { registerFlows } from "./flows";
 import { Global } from "./models/Global";
 
 async function main() {
-    // Initialize database
     await Global.initDb();
 
-    // Create server
     const server = new HttpServer(serviceProto, {
         port: 3000,
         cors: '*'
     });
 
-    // Register flows
     registerFlows(server);
 
-    // Auto-implement APIs from ./api folder
     await server.autoImplementApi(path.resolve(__dirname, 'api'));
-
-    // Start server
     await server.start();
-    console.log('Server started on port 3000');
 }
 
 main();
 ```
 
-## 6. Using in API
+## 7. Client-Side Flow: Pre-Login Check
+
+Add a client-side flow to intercept API calls that require login:
 
 ```typescript
-// api/ApiGetProfile.ts
+// client/flows.ts
+
+// Auto-check login before calling APIs that need it
+client.flows.preCallApiFlow.push(v => {
+    // Read the same conf that server reads
+    const conf = client.serviceMap.apiName2Service[v.apiName]!.conf;
+
+    if (conf?.needLogin && !isLogined()) {
+        // Redirect to login page
+        window.location.href = '/login';
+        return undefined;  // Abort the API call
+    }
+
+    // Auto-attach token to request
+    if (isLogined()) {
+        v.req.__token = getToken();
+    }
+
+    return v;
+});
+```
+
+## 8. Using in API
+
+```typescript
+// api/user/ApiGetProfile.ts
 import { ApiCall } from "tsrpc";
-import { ReqGetProfile, ResGetProfile } from "../shared/protocols/PtGetProfile";
+import { ReqGetProfile, ResGetProfile } from "../../shared/protocols/user/PtlGetProfile";
 
 export async function ApiGetProfile(call: ApiCall<ReqGetProfile, ResGetProfile>) {
-    // currentUser is guaranteed to exist (authFlow ran first)
+    // currentUser is guaranteed by authFlow (since conf.needLogin = true)
     const user = call.conn.currentUser!;
 
     call.succ({
@@ -292,8 +307,9 @@ export async function ApiGetProfile(call: ApiCall<ReqGetProfile, ResGetProfile>)
 
 ## Key Takeaways
 
-1. **Type Extension**: Use `declare module` to extend connection types
-2. **Flow Order**: Logging -> Auth -> Business logic
-3. **Error Codes**: Use consistent error codes for client handling
-4. **Sensitive Data**: Always sanitize passwords and tokens in logs
-5. **Request ID**: Generate unique IDs for request tracing
+1. **Config-driven auth**: Use `export const conf = { needLogin: true }` in protocols instead of hardcoded API name lists
+2. **Type extension**: Use `declare module 'tsrpc'` to add fields to `BaseConnection` — this is the TSRPC-recommended approach
+3. **Flow order**: Rate limiting → Logging → Auth → Business logic
+4. **Both sides**: Both server and client can read protocol `conf` for consistent behavior
+5. **Sensitive data**: Always sanitize passwords and tokens in logs
+6. **Pre vs Post**: Pre Flows abort blocks the API; Post Flow abort only stops remaining post nodes
