@@ -58,6 +58,11 @@ Options:
         opencode: 'OpenCode (.opencode/rules + AGENTS.md)',
         trae: 'TRAE (.trae/skills)'
     },
+    checkboxKeys: {
+        'toggle': 'toggle',
+        'select all': 'select all',
+        'invert selection': 'invert',
+    } as Record<string, string>,
 
     // CreateApp
     checkNpmEnv: 'Check NPM environment',

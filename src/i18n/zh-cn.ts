@@ -58,6 +58,11 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
         opencode: 'OpenCode (.opencode/rules + AGENTS.md)',
         trae: 'TRAE (.trae/skills)'
     },
+    checkboxKeys: {
+        'toggle': '切换',
+        'select all': '全选',
+        'invert selection': '反选',
+    } as Record<string, string>,
 
     // CreateApp
     checkNpmEnv: '检测 NPM 环境',
