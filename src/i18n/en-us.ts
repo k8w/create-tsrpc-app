@@ -52,6 +52,8 @@ Options:
     wsLongService: 'WebSocket long connection',
 
     selectFeatures: 'Select additional features: ',
+    featureAIFriendly: 'AI Ready (AI Skills, Rules...)',
+    setupAIFriendly: 'Setup AI Ready (Multi-Editor Rules)',
     selectAIEditors: 'Select AI editors to support: ',
     aiEditors: {
         claude: 'Claude Code (.claude/skills + CLAUDE.md)',

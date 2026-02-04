@@ -499,7 +499,7 @@ interface EditorConfig {
 }
 
 async function setupAIFriendly(projectDir: string, options: CreateOptions) {
-    doing('Setup AI Friendly (Multi-Editor Rules)');
+    doing(i18n.setupAIFriendly);
 
     const aiFeaturesTplDir = path.join(tplDir, 'ai-features');
     const contentDir = path.join(aiFeaturesTplDir, 'content');

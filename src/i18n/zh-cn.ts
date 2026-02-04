@@ -52,6 +52,8 @@ ${chalk.bold(chalk.green('create-tsrpc-app ') + chalk.yellow('<项目目录>')) 
     wsLongService: 'WebSocket 长连接',
 
     selectFeatures: '选择附加功能：',
+    featureAIFriendly: 'AI 编程（AI Skills，Rules...）',
+    setupAIFriendly: '配置 AI 编程（多编辑器 Rules）',
     selectAIEditors: '选择要支持的 AI 编辑器：',
     aiEditors: {
         claude: 'Claude Code (.claude/skills + CLAUDE.md)',

@@ -102,7 +102,7 @@ export async function inputCreateOptions(options: InputCreateOptionsExt): Promis
     // features
     let features: CreateOptions['features'] = options.features || [];
     let platformClientFeatures = clientFeatures.filter(v => v.platforms.indexOf(client) > -1);
-    let featureChoices = [...commonFeatures, ...serverFeatures, ...platformClientFeatures];
+    let featureChoices = [...platformClientFeatures, ...commonFeatures, ...serverFeatures];
 
     const checkboxTheme = {
         style: {
