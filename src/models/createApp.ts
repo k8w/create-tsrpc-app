@@ -499,7 +499,7 @@ interface EditorConfig {
 }
 
 async function setupAIFriendly(projectDir: string, options: CreateOptions) {
-    doing('Setup AI Friendly (Multi-Editor Rules)');
+    doing(i18n.setupAIFriendly);
 
     const aiFeaturesTplDir = path.join(tplDir, 'ai-features');
     const contentDir = path.join(aiFeaturesTplDir, 'content');
@@ -541,17 +541,21 @@ async function setupAIFriendly(projectDir: string, options: CreateOptions) {
         }
     }
 
+    // Normalize: cursor uses claude's config, so treat cursor selection as claude
+    const effectiveEditors = options.aiEditors?.map(e => e === 'cursor' ? 'claude' : e) as AIEditor[] | undefined;
+    const uniqueEditors = effectiveEditors ? [...new Set(effectiveEditors)] : undefined;
+
     // Generate rules for each editor (filtered by user selection)
     for (const [editor, config] of Object.entries(editorConfigs)) {
         // Skip if user selected specific editors and this one isn't included
-        if (options.aiEditors && options.aiEditors.length > 0 && !options.aiEditors.includes(editor as AIEditor)) {
+        if (uniqueEditors && uniqueEditors.length > 0 && !uniqueEditors.includes(editor as AIEditor)) {
             continue;
         }
         await generateEditorRules(projectDir, editor, config, contents, examples);
     }
 
-    // Copy and customize CLAUDE.md (for Claude Code) - only if claude is selected
-    if (!options.aiEditors || options.aiEditors.length === 0 || options.aiEditors.includes('claude')) {
+    // Copy and customize CLAUDE.md (for Claude Code / Cursor) - only if claude or cursor is selected
+    if (!uniqueEditors || uniqueEditors.length === 0 || uniqueEditors.includes('claude')) {
         const claudeMdSrc = path.join(aiFeaturesTplDir, 'CLAUDE.md');
         const claudeMdDst = path.join(projectDir, 'CLAUDE.md');
         if (await fs.pathExists(claudeMdSrc)) {

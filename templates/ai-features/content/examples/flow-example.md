@@ -273,7 +273,7 @@ main();
 ```typescript
 // api/ApiGetProfile.ts
 import { ApiCall } from "tsrpc";
-import { ReqGetProfile, ResGetProfile } from "../shared/protocols/PtGetProfile";
+import { ReqGetProfile, ResGetProfile } from "../shared/protocols/PtlGetProfile";
 
 export async function ApiGetProfile(call: ApiCall<ReqGetProfile, ResGetProfile>) {
     // currentUser is guaranteed to exist (authFlow ran first)

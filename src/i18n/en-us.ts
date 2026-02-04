@@ -52,12 +52,20 @@ Options:
     wsLongService: 'WebSocket long connection',
 
     selectFeatures: 'Select additional features: ',
+    featureAIFriendly: 'AI Ready (AI Skills, Rules...)',
+    setupAIFriendly: 'Setup AI Ready (Multi-Editor Rules)',
     selectAIEditors: 'Select AI editors to support: ',
     aiEditors: {
         claude: 'Claude Code (.claude/skills + CLAUDE.md)',
+        cursor: 'Cursor (uses Claude Code config)',
         opencode: 'OpenCode (.opencode/rules + AGENTS.md)',
         trae: 'TRAE (.trae/skills)'
     },
+    checkboxKeys: {
+        'toggle': 'toggle',
+        'select all': 'select all',
+        'invert selection': 'invert',
+    } as Record<string, string>,
 
     // CreateApp
     checkNpmEnv: 'Check NPM environment',

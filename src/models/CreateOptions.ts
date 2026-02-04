@@ -1,4 +1,5 @@
-export type AIEditor = 'claude' | 'opencode' | 'trae'
+import { i18n } from '../i18n/i18n'
+export type AIEditor = 'claude' | 'cursor' | 'opencode' | 'trae'
 
 export interface CreateOptions {
     projectDir: string
@@ -40,14 +41,14 @@ export const clientFeatures: {
     platforms: CreateOptions['client'][]
 }[] = [
         {
-            name: 'Tailwind CSS',
-            value: 'tailwind',
+            name: i18n.featureAIFriendly,
+            value: 'ai-friendly',
             checked: true,
             platforms: ['browser', 'react', 'vue3'],
         },
         {
-            name: 'AI Friendly (Claude Code Skills)',
-            value: 'ai-friendly',
+            name: 'Tailwind CSS',
+            value: 'tailwind',
             checked: true,
             platforms: ['browser', 'react', 'vue3'],
         },

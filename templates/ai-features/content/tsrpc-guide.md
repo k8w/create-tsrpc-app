@@ -12,7 +12,7 @@ project/
 │   │   │   └── ApiHello.ts
 │   │   ├── shared/                 # Shared code (symlinked to frontend)
 │   │   │   └── protocols/
-│   │   │       ├── PtHello.ts      # Protocol definitions
+│   │   │       ├── PtlHello.ts      # Protocol definitions
 │   │   │       └── serviceProto.ts # ⚠️ Auto-generated, NEVER edit manually
 │   │   └── index.ts                # Server entry
 │   └── package.json
@@ -25,12 +25,12 @@ project/
 
 ## Core Concepts
 
-### 1. Protocol (Pt*.ts)
+### 1. Protocol (Ptl*.ts)
 
 Protocols define the contract between client and server:
 
 ```typescript
-// PtHello.ts
+// PtlHello.ts
 export interface ReqHello {
     name: string;
 }
@@ -41,7 +41,8 @@ export interface ResHello {
 ```
 
 **Naming Convention:**
-- File: `Pt{ApiName}.ts`
+
+- File: `Ptl{ApiName}.ts`
 - Request: `Req{ApiName}`
 - Response: `Res{ApiName}`
 
@@ -65,7 +66,7 @@ cd backend && npm run proto
 # Or: npx tsrpc-cli proto --input ./src/shared/protocols --output ./src/shared/protocols/serviceProto.ts
 ```
 
-⚠️ **NEVER edit `serviceProto.ts` manually** - always modify `Pt*.ts` files and regenerate.
+⚠️ **NEVER edit `serviceProto.ts` manually** - always modify `Ptl*.ts` files and regenerate.
 
 ### 4. Server
 
@@ -116,22 +117,26 @@ TSRPC supports all TypeScript types:
 ## API Call Patterns
 
 ### Success Response
+
 ```typescript
 call.succ({ data: result });
 ```
 
 ### Error Response
+
 ```typescript
 call.error('Error message');
 call.error('Error message', { code: 'ERROR_CODE' });
 ```
 
 ### Access Request Data
+
 ```typescript
 const { name, page } = call.req;
 ```
 
 ### Access Connection
+
 ```typescript
 // IP address
 const ip = call.conn.ip;
@@ -144,6 +149,7 @@ const headers = call.conn.httpReq?.headers;
 ```
 
 ### Logging
+
 ```typescript
 call.logger.log('Info message');
 call.logger.warn('Warning');
@@ -168,6 +174,7 @@ if (result.isSucc) {
 ## WebSocket Messages
 
 ### Define Message Protocol
+
 ```typescript
 // MsgChat.ts
 export interface MsgChat {
@@ -178,6 +185,7 @@ export interface MsgChat {
 ```
 
 ### Server: Send Message
+
 ```typescript
 // To specific connection
 conn.sendMsg('Chat', { content: 'Hello', ... });
@@ -187,6 +195,7 @@ server.broadcastMsg('Chat', { content: 'Hello', ... });
 ```
 
 ### Server: Listen for Messages
+
 ```typescript
 server.listenMsg('Chat', async (msg, conn) => {
     console.log('Received:', msg.content);
@@ -194,6 +203,7 @@ server.listenMsg('Chat', async (msg, conn) => {
 ```
 
 ### Client: Send/Listen
+
 ```typescript
 // Send
 client.sendMsg('Chat', { content: 'Hello', ... });
@@ -243,6 +253,6 @@ npx tsrpc-cli sync --from ./backend/src/shared --to ./frontend/src/shared
 
 ## Resources
 
-- Documentation: https://tsrpc.cn/
-- GitHub: https://github.com/k8w/tsrpc
-- Examples: https://github.com/k8w/tsrpc-examples
+- Documentation: <https://tsrpc.cn/>
+- GitHub: <https://github.com/k8w/tsrpc>
+- Examples: <https://github.com/k8w/tsrpc-examples>
