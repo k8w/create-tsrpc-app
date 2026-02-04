@@ -61,6 +61,7 @@
         "minimist": "^1.2.6",
         "npm-check-updates": "^11.8.5",
         "ora": "^5.4.1",
+        "os-locale-s": "^1.0.26",
         "tar": "^6.2.0"
     }
 }

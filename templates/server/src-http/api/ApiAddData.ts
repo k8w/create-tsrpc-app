@@ -12,7 +12,7 @@ export default async function (call: ApiCall<ReqAddData, ResAddData>) {
         return;
     }
 
-    let time = new Date();
+    const time = new Date();
     AllData.unshift({
         content: call.req.content,
         time: time

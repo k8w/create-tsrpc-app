@@ -157,8 +157,23 @@ async function createServer(options: CreateOptions, registry: string | undefined
         delete packageJson.scripts['test:watch'];
         delete packageJson.devDependencies.vitest;
     }
+    // ESLint
+    if (options.features.indexOf('eslint') > -1) {
+        packageJson.devDependencies = packageJson.devDependencies || {};
+        packageJson.devDependencies['eslint'] = '^9.0.0';
+        packageJson.devDependencies['@eslint/js'] = '^9.0.0';
+        packageJson.devDependencies['typescript-eslint'] = '^8.0.0';
+        packageJson.devDependencies['globals'] = '^15.0.0';
+        packageJson.scripts = packageJson.scripts || {};
+        packageJson.scripts['lint'] = 'eslint src/';
+    }
     await fs.writeFile(path.join(serverDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     done();
+
+    // ESLint 配置文件
+    if (options.features.indexOf('eslint') > -1) {
+        await setupESLint(serverDir, 'server');
+    }
 
     // 安装依赖
     doing(`npm-check-update`)
@@ -214,20 +229,43 @@ async function createBrowserClient(options: CreateOptions, registry: string | un
     doing(i18n.genPackageJson(clientDirName))
     let packageJson = JSON.parse(await fs.readFile(path.join(clientDir, 'package.json'), 'utf-8'));
     packageJson.name = `${appName}-${clientDirName}`;
-    
+
     // Tailwind CSS v4
     if (useTailwind) {
         packageJson.devDependencies = packageJson.devDependencies || {};
         packageJson.devDependencies['tailwindcss'] = '^4.0.0';
         packageJson.devDependencies['@tailwindcss/vite'] = '^4.0.0';
     }
-    
+
+    // ESLint
+    const useESLint = options.features.indexOf('eslint') > -1;
+    if (useESLint) {
+        packageJson.devDependencies = packageJson.devDependencies || {};
+        packageJson.devDependencies['eslint'] = '^9.0.0';
+        packageJson.devDependencies['@eslint/js'] = '^9.0.0';
+        packageJson.devDependencies['typescript-eslint'] = '^8.0.0';
+        packageJson.devDependencies['globals'] = '^15.0.0';
+        if (options.client === 'react') {
+            packageJson.devDependencies['eslint-plugin-react-hooks'] = '^5.0.0';
+            packageJson.devDependencies['eslint-plugin-react-refresh'] = '^0.4.0';
+        } else if (options.client === 'vue3') {
+            packageJson.devDependencies['eslint-plugin-vue'] = '^9.0.0';
+        }
+        packageJson.scripts = packageJson.scripts || {};
+        packageJson.scripts['lint'] = 'eslint src/';
+    }
+
     await fs.writeFile(path.join(clientDir, 'package.json'), JSON.stringify(packageJson, null, 2), 'utf-8');
     done();
 
     // Tailwind 配置文件
     if (useTailwind) {
         await setupTailwind(clientDir);
+    }
+
+    // ESLint 配置文件
+    if (useESLint) {
+        await setupESLint(clientDir, options.client as 'browser' | 'react' | 'vue3');
     }
 
     // 安装依赖
@@ -287,6 +325,116 @@ async function setupTailwind(clientDir: string) {
 `;
         cssContent = tailwindImport + cssContent;
         await fs.writeFile(cssPath, cssContent, 'utf-8');
+    }
+}
+
+async function setupESLint(targetDir: string, platform: 'server' | 'browser' | 'react' | 'vue3') {
+    const configPath = path.join(targetDir, 'eslint.config.mjs');
+    let config: string;
+
+    switch (platform) {
+        case 'server':
+            config = `import globals from "globals";
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+    { ignores: ["dist/"] },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    {
+        languageOptions: {
+            globals: globals.node,
+        },
+        rules: {
+            "@typescript-eslint/no-empty-object-type": "off",
+        },
+    },
+);
+`;
+            break;
+        case 'react':
+            config = `import globals from "globals";
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+
+export default tseslint.config(
+    { ignores: ["dist/"] },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    {
+        plugins: {
+            "react-hooks": reactHooks,
+            "react-refresh": reactRefresh,
+        },
+        languageOptions: {
+            globals: globals.browser,
+        },
+        rules: {
+            ...reactHooks.configs.recommended.rules,
+            "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+        },
+    },
+);
+`;
+            break;
+        case 'vue3':
+            config = `import globals from "globals";
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import pluginVue from "eslint-plugin-vue";
+
+export default tseslint.config(
+    { ignores: ["dist/"] },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    ...pluginVue.configs["flat/essential"],
+    {
+        languageOptions: {
+            globals: globals.browser,
+        },
+    },
+    {
+        files: ["**/*.vue"],
+        languageOptions: {
+            parserOptions: {
+                parser: tseslint.parser,
+            },
+        },
+    },
+);
+`;
+            break;
+        default:
+            config = `import globals from "globals";
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+    { ignores: ["dist/"] },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    {
+        languageOptions: {
+            globals: globals.browser,
+        },
+    },
+);
+`;
+            break;
+    }
+
+    await fs.writeFile(configPath, config, 'utf-8');
+
+    // 更新 .vscode/settings.json 添加 eslint.useFlatConfig
+    const vscodeDir = path.join(targetDir, '.vscode');
+    const settingsPath = path.join(vscodeDir, 'settings.json');
+    if (await fs.pathExists(settingsPath)) {
+        const settings = JSON.parse(await fs.readFile(settingsPath, 'utf-8'));
+        settings['eslint.useFlatConfig'] = true;
+        await fs.writeFile(settingsPath, JSON.stringify(settings, null, 4), 'utf-8');
     }
 }
 
