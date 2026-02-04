@@ -5,7 +5,7 @@ This example demonstrates creating a complete user registration API.
 ## 1. Protocol Definition
 
 ```typescript
-// shared/protocols/PtUserRegister.ts
+// shared/protocols/PtlUserRegister.ts
 import { ObjectId } from 'mongodb';
 
 export interface ReqUserRegister {
@@ -32,7 +32,7 @@ export interface ResUserRegister {
 ```typescript
 // api/ApiUserRegister.ts
 import { ApiCall } from "tsrpc";
-import { ReqUserRegister, ResUserRegister } from "../shared/protocols/PtUserRegister";
+import { ReqUserRegister, ResUserRegister } from "../shared/protocols/PtlUserRegister";
 import { Global } from "../models/Global";
 import { ObjectId } from "mongodb";
 import * as crypto from "crypto";

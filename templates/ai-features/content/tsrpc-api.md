@@ -12,10 +12,10 @@ To create a new API, you need to complete 3 steps:
 
 ## Step 1: Define Protocol
 
-Create a new file `shared/protocols/Pt{ApiName}.ts`:
+Create a new file `shared/protocols/Ptl{ApiName}.ts`:
 
 ```typescript
-// shared/protocols/PtHello.ts
+// shared/protocols/PtlHello.ts
 
 // Request type - what the client sends
 export interface ReqHello {
@@ -31,13 +31,14 @@ export interface ResHello {
 
 ### Protocol Naming Convention
 
-- File name: `Pt{ApiName}.ts` (e.g., `PtHello.ts`, `PtUserLogin.ts`)
+- File name: `Ptl{ApiName}.ts` (e.g., `PtlHello.ts`, `PtlUserLogin.ts`)
 - Request interface: `Req{ApiName}`
 - Response interface: `Res{ApiName}`
 
 ### Supported Types
 
 TSRPC supports all TypeScript types including:
+
 - Primitives: `string`, `number`, `boolean`, `null`, `undefined`
 - Objects and Arrays
 - Union Types: `string | number`
@@ -52,7 +53,7 @@ Create a new file `api/Api{ApiName}.ts`:
 ```typescript
 // api/ApiHello.ts
 import { ApiCall } from "tsrpc";
-import { ReqHello, ResHello } from "../shared/protocols/PtHello";
+import { ReqHello, ResHello } from "../shared/protocols/PtlHello";
 
 export async function ApiHello(call: ApiCall<ReqHello, ResHello>) {
     // Access request data via call.req
@@ -69,11 +70,13 @@ export async function ApiHello(call: ApiCall<ReqHello, ResHello>) {
 ### API Implementation Patterns
 
 **Success Response:**
+
 ```typescript
 call.succ({ /* response data */ });
 ```
 
 **Error Response:**
+
 ```typescript
 call.error('Error message');
 // or with error code
@@ -81,6 +84,7 @@ call.error('Error message', { code: 'INVALID_INPUT' });
 ```
 
 **Access Connection Info (WebSocket):**
+
 ```typescript
 // Get client connection
 const conn = call.conn;
@@ -97,7 +101,7 @@ cd backend && npm run proto
 # Or: npx tsrpc-cli proto --input ./src/shared/protocols --output ./src/shared/protocols/serviceProto.ts
 ```
 
-⚠️ **IMPORTANT**: `serviceProto.ts` is auto-generated. **NEVER edit it manually** - your changes will be lost when regenerating. Always modify `Pt*.ts` files instead.
+⚠️ **IMPORTANT**: `serviceProto.ts` is auto-generated. **NEVER edit it manually** - your changes will be lost when regenerating. Always modify `Ptl*.ts` files instead.
 
 ## Client-Side Usage
 
@@ -126,6 +130,7 @@ if (result.isSucc) {
 ## Common Patterns
 
 ### API with Database
+
 ```typescript
 export async function ApiGetUser(call: ApiCall<ReqGetUser, ResGetUser>) {
     const user = await db.collection('users').findOne({
@@ -141,6 +146,7 @@ export async function ApiGetUser(call: ApiCall<ReqGetUser, ResGetUser>) {
 ```
 
 ### API with Authentication Check
+
 ```typescript
 export async function ApiUpdateProfile(call: ApiCall<ReqUpdateProfile, ResUpdateProfile>) {
     // Check if user is logged in (requires auth flow)
