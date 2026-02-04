@@ -20,7 +20,7 @@ export default {
             rollupCommonJSResolveHack: true
         }),
         replace({
-            '__PACKAGE_JSON_VERSION__': require('./package.json').version,
+            '__CTA_VERSION__': require('./package.json').version,
             'process.env.NODE_ENV': '"production"'
         }),
         terser({
