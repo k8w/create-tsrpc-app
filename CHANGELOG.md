@@ -1,5 +1,9 @@
 # Change Log
 
+## [2.0.1] - 2026-07-09
+### Fixed
+- Fixed frontend compile error
+
 ## [2.0.0] - 2026-02-04
 ### Added
 - Example system: `--example <name>`, `--list-examples`, `--from-example` / `--no-example`, interactive example selection with arrow key navigation

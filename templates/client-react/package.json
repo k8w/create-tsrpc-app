@@ -20,5 +20,8 @@
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.7.0",
     "vite": "^6.0.0"
+  },
+  "peerDependencies": {
+    "tsrpc-proto": "^1.4.4"
   }
 }
